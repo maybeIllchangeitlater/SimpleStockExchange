@@ -1,19 +1,15 @@
-#include "CallClient.hpp"
+#include "Session.hpp"
 
 namespace s21 {
 
-    void CallClient::Run() {
-        {
-            scopedlock lock(kClients_lock);
-            kClients.emplace_back(shared_from_this());
-        }
+    void Session::Run() {
         scopedlock lock(client_lock_);
         running_ = true;
         last_ping_ = boost::posix_time::microsec_clock::local_time();
         Read();
     }
 
-    void CallClient::Stop() {
+    void Session::Stop() {
         {
             scopedlock lock(client_lock_);
             if (!running_)
@@ -21,47 +17,41 @@ namespace s21 {
             running_ = false;
             socket_.close();
         }
-
-        auto self = shared_from_this();
-        {
-            scopedlock lock(kClients_lock);
-            auto it = std::find(kClients.begin(), kClients.end(), self);
-            kClients.erase(it);
-        }
-        ///update;
+        stop_callback_(shared_from_this());
+        ///update?
     }
 
-    boost::shared_ptr<CallClient> CallClient::MakeShared() {
-        return boost::shared_ptr<CallClient>(new CallClient);
+    boost::shared_ptr<Session> Session::MakeShared(boost::asio::io_context &context, StopCallback & stop_callback) {
+        return boost::shared_ptr<Session>(new Session(context, std::move(stop_callback)));
     }
 
-    bool CallClient::Running() {
+    bool Session::Running() {
         scopedlock lock(client_lock_);
         return running_;
     }
 
-    boost::asio::ip::tcp::socket &CallClient::GetSocket() {
+    boost::asio::ip::tcp::socket &Session::GetSocket() {
         scopedlock lock(client_lock_);
         return socket_;
     }
 
-    const std::string &CallClient::GetUserId() const {
+    const std::string &Session::GetUserId() const {
         scopedlock lock(client_lock_);
         return user_id_;
     }
 
-    void CallClient::SetClientChanged() {
+    void Session::SetClientChanged() {
         scopedlock lock(client_lock_);
         client_changed_ = true;
     }
 
-    void CallClient::Read() {
+    void Session::Read() {
         boost::asio::async_read(socket_, boost::asio::buffer(read_buffer_),
                                 Binder::BindTo(*this, &self::ReadComplete, _1, _2), Binder::BindTo(*this, &self::ReadComplete, _1, _2));
         PostCheckPing();
     }
 
-    void CallClient::OnRead(const boost::system::error_code &error, size_t bytes) {
+    void Session::OnRead(const boost::system::error_code &error, size_t bytes) {
         if (error)
             Stop();
         if (!Running())
@@ -78,13 +68,13 @@ namespace s21 {
 //        else; //throw or something
     }
 
-    bool CallClient::ReadComplete(const boost::system::error_code &error, size_t bytes) {
+    bool Session::ReadComplete(const boost::system::error_code &error, size_t bytes) {
         if(error)
             return false;
         return std::find(read_buffer_.data(), read_buffer_.data() + bytes, '\n') >= read_buffer_.data() + bytes;
     }
 
-    void CallClient::Write(const std::string &message) {
+    void Session::Write(const std::string &message) {
         if(!Running())
             return;
         scopedlock lock(client_lock_);
@@ -93,27 +83,27 @@ namespace s21 {
                                  Binder::BindTo(*this, &self::OnWrite, _1, _2));
     }
 
-    void CallClient::OnLogin(const std::string &message) {
+    void Session::OnLogin(const std::string &message) {
         scopedlock lock(client_lock_);
         //login and password
         //incorrect, if correct - //Write("login successful")
         Write("login successful");
     }
 
-    void CallClient::OnPing() {
+    void Session::OnPing() {
         scopedlock lock(client_lock_);
         Write(client_changed_ ? "Client changed \n" : "Ping \n");
         client_changed_ = false;
     }
 
-    void CallClient::OnCheckPing() {
+    void Session::OnCheckPing() {
         scopedlock lock(client_lock_);
         if((boost::posix_time::microsec_clock::local_time() - last_ping_).total_milliseconds() > kInactivityDeadline)
             Stop();
         last_ping_ = boost::posix_time::microsec_clock::local_time();
     }
 
-    void CallClient::PostCheckPing() {
+    void Session::PostCheckPing() {
         scopedlock lock(client_lock_);
         deadline_timer_.expires_from_now(boost::posix_time::millisec(kInactivityDeadline));
         deadline_timer_.async_wait(Binder::BindTo(*this, &self::OnCheckPing));

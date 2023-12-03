@@ -11,21 +11,20 @@
 #include "../Utility/Binder.hpp"
 
 namespace s21 {
-    class CallClient;
-
-    boost::asio::io_context kContext; //move to main.cpp
-    std::vector<boost::shared_ptr<CallClient>> kClients;
-    boost::recursive_mutex kClients_lock;
+    class Session;
     constexpr static const size_t kInactivityDeadline = 7000;
+    using StopCallback = std::function<void(boost::shared_ptr<Session>)>;
 
-    class CallClient : public boost::enable_shared_from_this<CallClient> {
+    class Session : public boost::enable_shared_from_this<Session> {
     private:
         using scopedlock = boost::recursive_mutex::scoped_lock;
-        using self = CallClient;
+        using self = Session;
 
-        CallClient() : deadline_timer_(kContext), socket_(kContext), running_(false), client_changed_(false) {}
+        Session(boost::asio::io_context &context, StopCallback &&stop_callback)
+        : deadline_timer_(context), socket_(context), stop_callback_(std::move(stop_callback)),
+        running_(false), client_changed_(false) {}
 
-        CallClient(const CallClient &) = delete;
+        Session(const Session &) = delete;
 
 
     public:
@@ -33,13 +32,15 @@ namespace s21 {
 
         void Stop();
 
-        static boost::shared_ptr<CallClient> MakeShared();
+        static boost::shared_ptr<Session> MakeShared(boost::asio::io_context &context, StopCallback & stop_callback);
 
         bool Running();
 
         boost::asio::ip::tcp::socket &GetSocket();
 
         const std::string &GetUserId() const;
+
+        void ChangeClient(const std::string& user_id) { user_id_ = user_id; }
 
         void SetClientChanged();
 
@@ -74,12 +75,13 @@ namespace s21 {
         boost::asio::deadline_timer deadline_timer_;
         boost::asio::ip::tcp::socket socket_;
         mutable boost::recursive_mutex client_lock_;
+        StopCallback stop_callback_;
         std::string user_id_;
         boost::posix_time::ptime last_ping_;
         bool running_;
         bool client_changed_;
     };
-    void ChangeClient(); //?
+//    void ChangeClient(); //?
     // ручки в отдельный класс
 } //s21
 
