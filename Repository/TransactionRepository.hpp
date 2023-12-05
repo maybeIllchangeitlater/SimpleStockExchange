@@ -2,26 +2,17 @@
 #define SIMPLESTOCKEXCHANGE_TRANSACTIONREPOSITORY_HPP
 
 #include <pqxx/pqxx>
-#include "../Utility/UUIDGenerator.hpp"
+#include "../3rdParty/json.hpp"
 
 namespace s21 {
     class TransactionRepository {
     public:
         explicit TransactionRepository(pqxx::connection &db_conn) : db_connection_(db_conn) {}
-
-        void CreateTransaction(const std::string &post_user_id, const std::string& rate,
-                               const std::string &quantity);
-
-        void ReadTransaction(const std::string &transaction_id);
-        void ReadAllUserSellTransactions(const std::string &user_id);
-        void ReadAllUserBuyTransactions(const std::string &user_id);
-//        void ReadQuotations(){
-//
-//        }
-        void UpdateTransactionRate(const std::string &transaction_id, const std::string &rate);
-        void UpdateTransactionQuantity(const std::string &transaction_id, const std::string &quantity);
-        void UpdateTransactionBuyer(const std::string &transaction_id, const std::string &buy_user_id);
-        void DeleteTransaction(const std::string &transaction_id);
+        void CreateTransaction(const std::string &id, const std::string &seller_id, const std::string &buyer_id,
+                               const std::string &rate, const std::string &quantity, const std::string &timestamp);
+        pqxx::result ReadTransaction(const std::string &id);
+        pqxx::result ReadAllUserSellTransactions(const std::string &user_id);
+        pqxx::result ReadAllUserBuyTransactions(const std::string &user_id);
     private:
         pqxx::connection &db_connection_;
     };

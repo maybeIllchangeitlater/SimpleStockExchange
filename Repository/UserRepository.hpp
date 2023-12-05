@@ -12,9 +12,10 @@ namespace s21 {
     public:
         explicit UserRepository(pqxx::connection &db_conn) : db_connection_(db_conn) {}
 
-        void CreateUser(const std::string &username, const std::string &password, const std::string &user_balance);
+        void CreateUser(const std::string &user_id, const std::string &username,
+                                        const std::string &password, const std::string &user_balance);
 
-        void ReadUserById(const std::string &user_id);
+        pqxx::result ReadUserById(const std::string &user_id);
 
         pqxx::result ReadUserByName(const std::string &user_name);
 

@@ -26,11 +26,11 @@ ADD_EXECUTABLE(ServerR
         main.cpp
         Server/Server.cpp
         Repository/UserRepository.hpp
-        Repository/TransactionRepository.hpp
+        Repository/BidRepository.hpp
         Repository/UserRepository.cpp
         Utility/Encoder.hpp
         Utility/UUIDGenerator.hpp
-        Repository/TransactionRepository.cpp)
+        Repository/BidRepository.cpp)
 #target_compile_options(ServerR PRIVATE -lboost_thread)
 TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} ${PQ_LIBRARIES} ${PQXX_LIBRARIES})
 
