@@ -14,11 +14,11 @@ namespace s21{
             if(!task.exec(sql).empty()) {
                 task.commit();
             }else{
-                throw std::runtime_error("Error Creating Bid");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
         }catch(...){
             task.abort();
-            throw std::runtime_error("Error Creating Bid");
+            throw;
         }
     }
 
@@ -34,11 +34,11 @@ namespace s21{
             if(!task.exec(sql).empty()) {
                 task.commit();
             }else{
-                throw std::runtime_error("Error Creating Bid");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
         }catch(...){
             task.abort();
-            throw std::runtime_error("Error Creating Bid");
+            throw;
         }
     }
 
@@ -55,11 +55,11 @@ namespace s21{
             if(!res.empty()) {
                 return res;
             }else{
-                throw std::runtime_error ("Error Reading Bid");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::BID_NOT_FOUND));
             }
         }catch(...){
             task.abort();
-            throw std::runtime_error ("Error Reading Bid");
+            throw;
         }
     }
 
@@ -76,11 +76,11 @@ namespace s21{
             if(!res.empty()) {
                 return res;
             }else{
-                throw std::runtime_error ("Error Reading User Sell Bids");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::BID_NOT_FOUND));
             }
         }catch(...){
             task.abort();
-            throw std::runtime_error ("Error Reading User Sell Bids");
+            throw;
         }
     }
 
@@ -97,11 +97,11 @@ namespace s21{
             if(!res.empty()) {
                 return res;
             }else{
-                throw std::runtime_error ("Error Reading User Buy Bids");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::BID_NOT_FOUND));
             }
         }catch(...){
             task.abort();
-            throw std::runtime_error ("Error Reading User Buy Bids");
+            throw;
         }
     }
 
@@ -110,16 +110,22 @@ namespace s21{
         try{
             std::string buyer = "SELECT buyer_id, seller_id, FROM bid_info WHERE id = " + task.quote(bid_id);
             pqxx::result result = task.exec(buyer);
+            if(result.empty()){
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::BID_NOT_FOUND));
+            }
             if (result[0]["seller_id"].is_null() || result[0]["buyer_id"].is_null()) {
                 std::string sql = "DELETE FROM bid_info WHERE id = " + task.quote(bid_id);
-                task.exec(sql);
-                task.commit();
+                if(!task.exec(sql).empty()) {
+                    task.commit();
+                }else{
+                    throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
+                }
             } else {
-            throw std::logic_error("Cannot Cancel Finished Transaction");
-        }
-    } catch (...){
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
+            }
+        } catch (...){
             task.abort();
-            throw std::runtime_error("Error Cancelling Transaction");
+            throw;
         }
     }
 
@@ -133,11 +139,11 @@ namespace s21{
                 task.exec(sql);
                 task.commit();
             } else {
-                throw std::logic_error("Cannot Finish Unfinished Transaction");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
         } catch (...){
             task.abort();
-            throw std::runtime_error("Error Finishing Transaction");
+            throw;
         }
     }
 
@@ -149,11 +155,11 @@ namespace s21{
             if(!task.exec(sql).empty()) {
                 task.commit();
             }else{
-                throw std::runtime_error("Error Updating Bid Rate");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
         }catch(...){
             task.abort();
-            throw std::runtime_error("Error Updating Bid Rate");
+            throw;
         }
     }
 
@@ -165,11 +171,11 @@ namespace s21{
             if(!task.exec(sql).empty()) {
                 task.commit();
             }else{
-                throw std::runtime_error("Error Updating Bid Quantity");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
         }catch(...){
             task.abort();
-            throw std::runtime_error("Error Updating Bid Quantity");
+            throw;
         }
     }
 

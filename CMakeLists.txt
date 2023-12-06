@@ -19,18 +19,21 @@ SET(CMAKE_CXX_STANDARD 17)
 
 
 ADD_EXECUTABLE(ServerR
-        Server/Session.hpp
-        Server/Session.cpp
-        Utility/Binder.hpp
-        Repository/Handlers.hpp
         main.cpp
-        Server/Server.cpp
-        Repository/UserRepository.hpp
-        Repository/BidRepository.hpp
+        Controller/UserController.hpp
+        Controller/BidController.hpp
+        Repository/BidRepository.cpp
+        Repository/TransactionRepository.cpp
         Repository/UserRepository.cpp
-        Utility/Encoder.hpp
-        Utility/UUIDGenerator.hpp
-        Repository/BidRepository.cpp)
+        Service/BidService.hpp
+        Service/TransactionService.hpp
+        Utility/Binder.hpp
+        Utility/Timestamper.hpp
+        HTTP/Http.hpp
+        Utility/ServerMessage.hpp
+        Utility/ServerMessage.cpp
+        Controller/TransactionController.hpp
+)
 #target_compile_options(ServerR PRIVATE -lboost_thread)
 TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} ${PQ_LIBRARIES} ${PQXX_LIBRARIES})
 

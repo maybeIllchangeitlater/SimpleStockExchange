@@ -4,6 +4,7 @@
 #include "../Repository/UserRepository.hpp"
 #include "../Utility/UUIDGenerator.hpp"
 #include "../Utility/Encoder.hpp"
+#include "../Utility/ServerMessage.hpp"
 #include "../3rdParty/json.hpp"
 
 namespace s21 {
@@ -12,11 +13,10 @@ namespace s21 {
         explicit UserService(UserRepository &repository) :repository_(repository){}
         void CreateUser(const std::string &user_name, const std::string &password, const std::string &user_balance){
             if(!ValidateUserName(user_name)){
-                throw std::logic_error("User Name must be at least 4 symbols long");
+                throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_BAD_NAME));
             }
             if(!ValidatePassword(password)){
-                throw std::logic_error("Password must be at least 6 symbols long and contain lower case,"
-                                       " upper case and symbols/digits");
+                throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_BAD_PASSWORD));
             }
             repository_.CreateUser(UUIDGenerator::Generate(), user_name, Encoder::Encode(password), user_balance);
         }
@@ -28,7 +28,7 @@ namespace s21 {
         }
         void UpdateUserName(const std::string &user_id, const std::string &new_name){
             if(!ValidateUserName(new_name)){
-                throw std::logic_error("User Name must be at least 4 symbols long");
+                throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_BAD_NAME));
             }
             repository_.UpdateUserName(user_id, new_name);
         }
@@ -37,8 +37,7 @@ namespace s21 {
         }
         void UpdateUserPassword(const std::string &user_id, const std::string &new_password){
             if(!ValidatePassword(new_password)){
-                throw std::logic_error("Password must be at least 6 symbols long and contain lower case,"
-                                       " upper case and symbols/digits");
+                throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_BAD_PASSWORD));
             }
             repository_.UpdateUserPassword(user_id, Encoder::Encode(new_password));
         }

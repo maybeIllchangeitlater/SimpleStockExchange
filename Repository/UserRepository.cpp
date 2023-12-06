@@ -15,11 +15,11 @@ namespace s21 {
                 task.commit();
             }
             else{
-                throw std::runtime_error("Error Creating User");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
         }catch(...){
             task.abort();
-            throw std::runtime_error("Error Creating User");
+            throw;
         }
     }
     pqxx::result UserRepository::ReadUserById(const std::string &user_id) {
@@ -31,11 +31,11 @@ namespace s21 {
             if(!res.empty()) {
                 return res;
             }else{
-                throw std::runtime_error("User Not Found");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::USER_NOT_FOUND));
             }
         }catch(...){
             task.abort();
-            throw std::runtime_error("Error Processing Request");
+            throw;
         }
     }
 
@@ -48,11 +48,11 @@ namespace s21 {
             if(!res.empty()) {
                 return res;
             }else{
-                throw std::runtime_error("User Not Found");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::USER_NOT_FOUND));
             }
         }catch(...){
             task.abort();
-            throw std::runtime_error("Error Processing Request");
+            throw;
         }
     }
 
@@ -65,11 +65,11 @@ namespace s21 {
             if(!task.exec(sql).empty()) {
                 task.commit();
             }else{
-                throw std::logic_error("Error Updating User Name");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
         }catch(...){
             task.abort();
-            throw std::logic_error("Error Updating User Name");
+            throw;
         }
     }
 
@@ -81,11 +81,11 @@ namespace s21 {
             if(!task.exec(sql).empty()) {
                 task.commit();
             }else{
-                throw std::logic_error("Error Updating User Password");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
         }catch(...){
             task.abort();
-            throw std::logic_error("Error Updating User Password");
+            throw;
         }
     }
 
@@ -97,11 +97,11 @@ namespace s21 {
             if(!task.exec(sql).empty()) {
                 task.commit();
             }else{
-                throw std::logic_error("Error Updating User Balance");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
         }catch(...){
             task.abort();
-            throw std::logic_error("Error Updating User Balance");
+            throw;
         }
     }
 
@@ -113,11 +113,11 @@ namespace s21 {
             if (!task.exec(sql).empty()) {
                 task.commit();
             } else {
-                throw std::logic_error("User Not Found");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
         } catch (...) {
             task.abort();
-            throw std::logic_error("Error Deleting User");
+            throw;
         }
     }
 } // s21

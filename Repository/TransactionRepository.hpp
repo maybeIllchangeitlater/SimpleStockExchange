@@ -3,6 +3,7 @@
 
 #include <pqxx/pqxx>
 #include "../3rdParty/json.hpp"
+#include "../Utility/ServerMessage.hpp"
 
 namespace s21 {
     class TransactionRepository {

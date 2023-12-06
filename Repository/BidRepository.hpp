@@ -3,6 +3,7 @@
 
 #include <pqxx/pqxx>
 #include "../Utility/UUIDGenerator.hpp"
+#include "../Utility/ServerMessage.hpp"
 
 namespace s21 {
     class BidRepository {

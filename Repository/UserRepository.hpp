@@ -5,6 +5,7 @@
 #include <string>
 #include "../Utility/Encoder.hpp"
 #include "../Utility/UUIDGenerator.hpp"
+#include "../Utility/ServerMessage.hpp"
 
 namespace s21 {
 
@@ -19,7 +20,6 @@ namespace s21 {
 
         pqxx::result ReadUserByName(const std::string &user_name);
 
-        ///check that its not empty
         void UpdateUserName(const std::string &user_id, const std::string &new_username);
 
         void UpdateUserPassword(const std::string &user_id, const std::string &new_password);

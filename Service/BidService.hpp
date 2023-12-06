@@ -5,6 +5,7 @@
 #include "../3rdParty/json.hpp"
 #include "../Utility/UUIDGenerator.hpp"
 #include "../Utility/Timestamper.hpp"
+#include "../Utility/ServerMessage.hpp"
 
 
 
@@ -19,10 +20,10 @@ namespace s21{
         void CreateBid(const std::string &user_id, const std::string& rate,
                                const std::string &quantity, BidType bid_type){
             if(!ValidateRate(rate)){
-                throw std::logic_error("Rate Must Be Above 0");
+                throw std::logic_error(ServerMessage::server_message.at(ServerMessage::BID_BAD_RATE));
             }
             if(!ValidateQuantity(quantity)){
-                throw std::logic_error("Quantity Must Be Above 0");
+                throw std::logic_error(ServerMessage::server_message.at(ServerMessage::BID_BAD_QUANTITY));
             }
             if(bid_type == kBuying){
                 repository_.CreateBuyBid(UUIDGenerator::Generate(), user_id, rate, quantity, Timestamper::GetTimestamp());
@@ -32,13 +33,13 @@ namespace s21{
         }
         void UpdateBidRate(const std::string &bid_id, const std::string &rate){
             if(!ValidateRate(rate)){
-                throw std::logic_error("Rate Must Be Above 0");
+                throw std::logic_error(ServerMessage::server_message.at(ServerMessage::BID_BAD_RATE));
             }
             repository_.UpdateBidRate(bid_id, rate, Timestamper::GetTimestamp());
         }
         void UpdateBidQuantity(const std::string &bid_id, const std::string &quantity){
             if(!ValidateQuantity(quantity)){
-                throw std::logic_error("Quantity Must Be Above 0");
+                throw std::logic_error(ServerMessage::server_message.at(ServerMessage::BID_BAD_QUANTITY));
             }
             repository_.UpdateBidQuantity(bid_id, quantity, Timestamper::GetTimestamp());
         }
@@ -55,7 +56,7 @@ namespace s21{
             return(GenerateBidInfo(repository_.ReadBid(bid_id)[0]));
 
         }
-        std::vector<nlohmann::json> ReadAllUserSellTransactions(const std::string &user_id){
+        std::vector<nlohmann::json> ReadAllUserSellBids(const std::string &user_id){
             auto transactions_info = repository_.ReadAllUserSellBids(user_id);
             std::vector<nlohmann::json> res;
             res.reserve(transactions_info.size());
@@ -64,7 +65,7 @@ namespace s21{
             }
             return res;
         }
-        std::vector<nlohmann::json> ReadAllUserBuyTransactions(const std::string &user_id){
+        std::vector<nlohmann::json> ReadAllUserBuyBids(const std::string &user_id){
             auto transactions_info = repository_.ReadAllUserBuyBids(user_id);
             std::vector<nlohmann::json> res;
             res.reserve(transactions_info.size());

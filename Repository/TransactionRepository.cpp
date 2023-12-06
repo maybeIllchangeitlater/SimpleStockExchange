@@ -14,11 +14,11 @@ namespace s21{
             if(!task.exec(sql).empty()) {
                 task.commit();
             }else{
-                throw std::runtime_error("Error Creating Transaction");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
         }catch(...){
             task.abort();
-            throw std::runtime_error("Error Creating Transaction");
+            throw;
         }
     }
 
@@ -35,11 +35,11 @@ namespace s21{
             if(!res.empty()) {
                 return res;
             }else{
-                throw std::runtime_error("Couldnt Find Transaction");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::TRANSACTION_NOT_FOUND));
             }
         }catch(...){
             task.abort();
-            throw std::runtime_error("Error Reading Transaction");
+            throw;
         }
     }
 
@@ -56,11 +56,11 @@ namespace s21{
             if(!res.empty()) {
                 return res;
             }else{
-                throw std::runtime_error("Couldnt Find Any Sell Transactions");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::TRANSACTION_NOT_FOUND));
             }
         }catch(...){
             task.abort();
-            throw std::runtime_error("Error Reading Transaction");
+            throw;
         }
     }
 
@@ -77,11 +77,11 @@ namespace s21{
             if(!res.empty()) {
                 return res;
             }else{
-                throw std::runtime_error("Couldnt Find Any Buy Transactions");
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::TRANSACTION_NOT_FOUND));
             }
         }catch(...){
             task.abort();
-            throw std::runtime_error("Error Reading Transaction");
+            throw;
         }
     }
 }
