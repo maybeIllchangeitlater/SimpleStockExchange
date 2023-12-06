@@ -33,6 +33,8 @@ ADD_EXECUTABLE(ServerR
         Utility/ServerMessage.hpp
         Utility/ServerMessage.cpp
         Controller/TransactionController.hpp
+        Service/UserService.hpp
+        Repository/BdNames.hpp
 )
 #target_compile_options(ServerR PRIVATE -lboost_thread)
 TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} ${PQ_LIBRARIES} ${PQXX_LIBRARIES})

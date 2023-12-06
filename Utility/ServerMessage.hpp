@@ -32,6 +32,7 @@ namespace s21 {
             OK = 200,
             BAD_REQUEST = 400,
             NOT_FOUND = 404,
+            INTERNAL_SERVER_ERROR = 500
         };
         static const std::unordered_map<ServerMessage::MessageType, const char*> server_message;
         static const std::unordered_map<const char *, ServerMessage::ResponseCode> response_code;

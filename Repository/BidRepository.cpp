@@ -6,11 +6,15 @@ namespace s21{
                                       const std::string &quantity, const std::string &timestamp) {
         pqxx::work task(db_connection_);
         try{
-
-            std::string sql = "INSERT INTO bid_info (id, seller_id, rate, quantity, time) VALUES ("
-                              + task.quote(bid_id) + ", "
-                              + task.quote(seller_id) + ", " + task.quote(rate) + ", "
-                              + task.quote(quantity) + ", " + task.quote(timestamp) + ")";
+            std::string sql = "INSERT INTO " + task.quote(BDNames::bid_table)
+                    + "(" + task.quote(BDNames::bid_table_id)
+                    + ", " + task.quote(BDNames::bid_table_seller_id)
+                    + ", " + task.quote(BDNames::bid_table_rate)
+                    + ", " + task.quote(BDNames::bid_table_quantity)
+                    + ", " + task.quote(BDNames::bid_table_create_update_time)
+                    + " VALUE (" + task.quote(bid_id) + ", "
+                    + task.quote(seller_id) + ", " + task.quote(rate) + ", "
+                    + task.quote(quantity) + ", " + task.quote(timestamp) + ")";
             if(!task.exec(sql).empty()) {
                 task.commit();
             }else{
@@ -26,9 +30,13 @@ namespace s21{
                                      const std::string &quantity, const std::string &timestamp) {
         pqxx::work task(db_connection_);
         try{
-
-            std::string sql = "INSERT INTO bid_info (id, buyer_id, rate, quantity, time) VALUES ("
-                              + task.quote(bid_id) + ", "
+            std::string sql = "INSERT INTO " + task.quote(BDNames::bid_table)
+                              + "(" + task.quote(BDNames::bid_table_id)
+                              + ", " + task.quote(BDNames::bid_table_buyer_id)
+                              + ", " + task.quote(BDNames::bid_table_rate)
+                              + ", " + task.quote(BDNames::bid_table_quantity)
+                              + ", " + task.quote(BDNames::bid_table_create_update_time)
+                              + " VALUE (" + task.quote(bid_id) + ", "
                               + task.quote(buyer_id) + ", " + task.quote(rate) + ", "
                               + task.quote(quantity) +  ", " + task.quote(timestamp) + ")";
             if(!task.exec(sql).empty()) {
@@ -46,11 +54,21 @@ namespace s21{
         pqxx::work task(db_connection_);
         try{
 
-            std::string sql = "SELECT b.id AS bid id, seller.name AS seller username,"
-                              "buyer.name AS buyer username, b.rate, b.quantity, b.time FROM bid_info b "
-                              "JOIN user_info seller ON b.seller_id = seller.id "
-                              "JOIN user_info buyer ON b.buyer_id = buyer.id "
-                              "WHERE id = " + task.quote(bid_id);
+            std::string sql = "SELECT b." + task.quote(BDNames::bid_table_id) + " AS bid id, seller."
+                              + task.quote(BDNames::user_table_user_name) + " AS seller username, buyer."
+                              + task.quote(BDNames::user_table_user_name) + " AS buyer username, b."
+                              + task.quote(BDNames::bid_table_rate)
+                              + " b." + task.quote(BDNames::bid_table_quantity)
+                              + " b." + task.quote(BDNames::bid_table_create_update_time)
+                              + " FROM " + task.quote(BDNames::bid_table)
+                              + " b JOIN " + task.quote(BDNames::user_table) + " seller ON b."
+                              + task.quote(BDNames::bid_table_seller_id)
+                              + " = seller." + task.quote(BDNames::user_table_id)
+                              + " JOIN "  + task.quote(BDNames::user_table) + " buyer ON b."
+                              + task.quote(BDNames::bid_table_buyer_id)
+                              + " = buyer." + task.quote(BDNames::user_table_id)
+                              + " WHERE " + task.quote(BDNames::bid_table_id)
+                              + " = " + task.quote(bid_id);
             pqxx::result res = task.exec(sql);
             if(!res.empty()) {
                 return res;
@@ -67,11 +85,21 @@ namespace s21{
         pqxx::work task(db_connection_);
         try{
 
-            std::string sql = "SELECT b.id AS bid_id, seller.name AS seller username,"
-                              "buyer.name AS buyer username, b.rate, b.quantity, b.time FROM bid_info b "
-                              "JOIN user_info seller ON b.seller_id = seller.id "
-                              "JOIN user_info buyer ON b.buyer_id = buyer.id "
-                              "WHERE seller.id = " + task.quote(seller_id);
+            std::string sql = "SELECT b." + task.quote(BDNames::bid_table_id) + " AS bid id, seller."
+                              + task.quote(BDNames::user_table_user_name) + " AS seller username, buyer."
+                              + task.quote(BDNames::user_table_user_name) + " AS buyer username, b."
+                              + task.quote(BDNames::bid_table_rate)
+                              + " b." + task.quote(BDNames::bid_table_quantity)
+                              + " b." + task.quote(BDNames::bid_table_create_update_time)
+                              + " FROM " + task.quote(BDNames::bid_table)
+                              + " b JOIN " + task.quote(BDNames::user_table) + " seller ON b."
+                              + task.quote(BDNames::bid_table_seller_id)
+                              + " = seller." + task.quote(BDNames::user_table_id)
+                              + " JOIN "  + task.quote(BDNames::user_table) + " buyer ON b."
+                              + task.quote(BDNames::bid_table_buyer_id)
+                              + " = buyer." + task.quote(BDNames::user_table_id)
+                              + " WHERE seller." + task.quote(BDNames::user_table_id)
+                              + " = " + task.quote(seller_id);
             pqxx::result res = task.exec(sql);
             if(!res.empty()) {
                 return res;
@@ -88,11 +116,21 @@ namespace s21{
         pqxx::work task(db_connection_);
         try{
 
-            std::string sql = "SELECT b.id AS bid_id, seller.name AS seller username,"
-                              "buyer.name AS buyer username, b.rate, b.quantity, b.time FROM bid_info b "
-                              "JOIN user_info seller ON b.seller_id = seller.id "
-                              "JOIN user_info buyer ON b.buyer_id = buyer.id "
-                              "WHERE buyer.id = " + task.quote(buyer_id);
+            std::string sql = "SELECT b." + task.quote(BDNames::bid_table_id) + " AS bid id, seller."
+                              + task.quote(BDNames::user_table_user_name) + " AS seller username, buyer."
+                              + task.quote(BDNames::user_table_user_name) + " AS buyer username, b."
+                              + task.quote(BDNames::bid_table_rate)
+                              + " b." + task.quote(BDNames::bid_table_quantity)
+                              + " b." + task.quote(BDNames::bid_table_create_update_time)
+                              + " FROM " + task.quote(BDNames::bid_table)
+                              + " b JOIN " + task.quote(BDNames::user_table) + " seller ON b."
+                              + task.quote(BDNames::bid_table_seller_id)
+                              + " = seller." + task.quote(BDNames::user_table_id)
+                              + " JOIN "  + task.quote(BDNames::user_table) + " buyer ON b."
+                              + task.quote(BDNames::bid_table_buyer_id)
+                              + " = buyer." + task.quote(BDNames::user_table_id)
+                              + " WHERE buyer." + task.quote(BDNames::user_table_id)
+                              + " = " + task.quote(buyer_id);
             pqxx::result res = task.exec(sql);
             if(!res.empty()) {
                 return res;
@@ -108,13 +146,20 @@ namespace s21{
     void BidRepository::DeleteUnfinishedBid(const std::string &bid_id) {
         pqxx::work task(db_connection_);
         try{
-            std::string buyer = "SELECT buyer_id, seller_id, FROM bid_info WHERE id = " + task.quote(bid_id);
-            pqxx::result result = task.exec(buyer);
+            std::string participants = "SELECT " + task.quote(BDNames::bid_table_buyer_id) + ", "
+                                + task.quote(BDNames::bid_table_seller_id) + ", "
+                                + " FROM " + task.quote(BDNames::bid_table)
+                                + " WHERE " + task.quote(BDNames::bid_table_id)
+                                + " = " + task.quote(bid_id);
+            pqxx::result result = task.exec(participants);
             if(result.empty()){
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::BID_NOT_FOUND));
             }
-            if (result[0]["seller_id"].is_null() || result[0]["buyer_id"].is_null()) {
-                std::string sql = "DELETE FROM bid_info WHERE id = " + task.quote(bid_id);
+            if (result[0][BDNames::bid_table_seller_id].is_null()
+                || result[0][BDNames::bid_table_buyer_id].is_null()) {
+                std::string sql = "DELETE FROM " + task.quote(BDNames::bid_table)
+                        + " WHERE " + task.quote(BDNames::bid_table_id)
+                        + " = " + task.quote(bid_id);
                 if(!task.exec(sql).empty()) {
                     task.commit();
                 }else{
@@ -132,10 +177,17 @@ namespace s21{
     void BidRepository::DeleteFinishedBid(const std::string &bid_id) {
         pqxx::work task(db_connection_);
         try{
-            std::string buyer = "SELECT buyer_id, seller_id, FROM bid_info WHERE id = " + task.quote(bid_id);
-            pqxx::result result = task.exec(buyer);
-            if (!result[0]["seller_id"].is_null() && !result[0]["buyer_id"].is_null()) {
-                std::string sql = "DELETE FROM bid_info WHERE id = " + task.quote(bid_id);
+            std::string participants = "SELECT " + task.quote(BDNames::bid_table_buyer_id) + ", "
+                                       + task.quote(BDNames::bid_table_seller_id) + ", "
+                                       + " FROM " + task.quote(BDNames::bid_table)
+                                       + " WHERE " + task.quote(BDNames::bid_table_id)
+                                       + " = " + task.quote(bid_id);
+            pqxx::result result = task.exec(participants);
+            if (!result[0][BDNames::bid_table_seller_id].is_null()
+                && !result[0][BDNames::bid_table_buyer_id].is_null()) {
+                std::string sql = "DELETE FROM " + task.quote(BDNames::bid_table)
+                                  + " WHERE " + task.quote(BDNames::bid_table_id)
+                                  + " = " + task.quote(bid_id);
                 task.exec(sql);
                 task.commit();
             } else {
@@ -150,8 +202,11 @@ namespace s21{
     void BidRepository::UpdateBidRate(const std::string &bid_id, const std::string &rate, const std::string &time)  {
         pqxx::work task(db_connection_);
         try{
-            std::string sql = "UPDATE bid_info SET rate = " + task.quote(rate)
-                    + " time = " + task.quote(time) + " WHERE id = " + task.quote(bid_id);
+            std::string sql = "UPDATE " + task.quote(BDNames::bid_table)
+                              + " SET " + task.quote(BDNames::bid_table_rate)
+                              + " = " + task.quote(rate) + " time = " + task.quote(time)
+                              + " WHERE " + task.quote(BDNames::bid_table_id)
+                              + " = " + task.quote(bid_id);
             if(!task.exec(sql).empty()) {
                 task.commit();
             }else{
@@ -166,8 +221,11 @@ namespace s21{
     void BidRepository::UpdateBidQuantity(const std::string &bid_id, const std::string &quantity, const std::string &time) {
         pqxx::work task(db_connection_);
         try{
-            std::string sql = "UPDATE bid_info SET quantity = " + task.quote(quantity)
-                    + " time = " + task.quote(time) + " WHERE id = " + task.quote(bid_id);
+            std::string sql = "UPDATE " + task.quote(BDNames::bid_table)
+                              + " SET " + task.quote(BDNames::bid_table_quantity)
+                              + " = " + task.quote(quantity) + " time = " + task.quote(time)
+                              + " WHERE " + task.quote(BDNames::bid_table_id)
+                              + " = " + task.quote(bid_id);
             if(!task.exec(sql).empty()) {
                 task.commit();
             }else{

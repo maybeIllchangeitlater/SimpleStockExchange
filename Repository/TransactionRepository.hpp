@@ -2,6 +2,7 @@
 #define SIMPLESTOCKEXCHANGE_TRANSACTIONREPOSITORY_HPP
 
 #include <pqxx/pqxx>
+#include "BdNames.hpp"
 #include "../3rdParty/json.hpp"
 #include "../Utility/ServerMessage.hpp"
 
