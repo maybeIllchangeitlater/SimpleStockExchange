@@ -3,6 +3,7 @@
 namespace s21{
     const std::unordered_map<ServerMessage::MessageType, const char*> ServerMessage::server_message{
             {MessageType::WELCOME, "Welcome to Stock Exchange"},
+            {MessageType::SERVER_FAILED_TO_START, "Server failed to start"},
             {MessageType::REGISTER_OK, "User registration successful"},
             {MessageType::REGISTER_BAD_NAME, "Username must be at least 4 symbols long"},
             {MessageType::REGISTER_NOT_UNIQUE_NAME, "Username already exists"},
@@ -22,10 +23,12 @@ namespace s21{
             {MessageType::REQUEST_BAD_CONTENT_TYPE, "Invalid or missing content type"},
             {MessageType::REQUEST_BAD_HOST, "Invalid or missing request host"},
             {MessageType::REQUEST_BAD_METHOD, "Invalid request method"},
+            {MessageType::REQUEST_BAD_LENGTH, "Content-Length is required"},
             {MessageType::ERROR, "Internal Error"},
     };
     const std::unordered_map<const char *, ServerMessage::ResponseCode> ServerMessage::response_code{
             {"Welcome to Stock Exchange", ResponseCode::OK},
+            {"Server failed to start", ResponseCode::INTERNAL_SERVER_ERROR},
             {"User registration successful", ResponseCode::OK},
             {"Username must be at least 4 symbols long", ResponseCode::BAD_REQUEST},
             {"Username already exists", ResponseCode::BAD_REQUEST},
@@ -44,6 +47,7 @@ namespace s21{
             {"Invalid or missing content type", ResponseCode::BAD_REQUEST},
             {"Invalid or missing request host", ResponseCode::BAD_REQUEST},
             {"Invalid request method", ResponseCode::BAD_REQUEST},
+            {"Content-Length is required", ResponseCode::BAD_REQUEST},
             {"Internal Error", ResponseCode::BAD_REQUEST}
     };
 }

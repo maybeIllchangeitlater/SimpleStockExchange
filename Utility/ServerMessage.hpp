@@ -8,6 +8,7 @@ namespace s21 {
     struct ServerMessage {
         enum MessageType {
             WELCOME,
+            SERVER_FAILED_TO_START,
             REGISTER_OK,
             REGISTER_BAD_NAME,
             REGISTER_NOT_UNIQUE_NAME,
@@ -26,6 +27,7 @@ namespace s21 {
             REQUEST_BAD_CONTENT_TYPE,
             REQUEST_BAD_CONTENT_BODY,
             REQUEST_BAD_METHOD,
+            REQUEST_BAD_LENGTH,
             ERROR,
         };
         enum ResponseCode {

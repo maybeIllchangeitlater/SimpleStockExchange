@@ -10,13 +10,14 @@
 namespace s21 {
     struct Request {
 
+        size_t content_length;
         std::string method;
         std::string path;
         nlohmann::json body;
 
-        static Request Parse(const std::string &raw_request){
+        static Request ParseHeader(const std::string &raw_request_header){
             Request request;
-            std::istringstream request_stream(raw_request);
+            std::istringstream request_stream(raw_request_header);
             std::string line;
             std::string checker;
             if (std::getline(request_stream, line)) {
@@ -46,16 +47,29 @@ namespace s21 {
             }else{
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
+            if(std::getline(request_stream, line)){
+                std::istringstream line_stream(line);
+                line_stream >> line >> checker;
+                if(line != "Content-Length" || checker.empty())
+                    throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::REQUEST_BAD_LENGTH));
+            }else{
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
+            }
             if (std::getline(request_stream, line) || !line.empty()) {
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
+            return request;
+        }
+
+        void ParseBody(const std::string &raw_request_body){
+            std::istringstream request_stream(raw_request_body);
+            std::string line;
             while (std::getline(request_stream, line)) {
-                request.body += nlohmann::json::parse(line);
+                body += nlohmann::json::parse(line);
             }
-            if(request.body.empty() && request.method != "GET" || request.method != "DELETE"){
+            if(body.empty() && method != "GET" || method != "DELETE"){
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::REQUEST_BAD_CONTENT_BODY));
             }
-            return request;
         }
 
     };
