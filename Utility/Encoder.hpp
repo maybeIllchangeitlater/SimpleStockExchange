@@ -2,9 +2,9 @@
 #define SIMPLESTOCKEXCHANGE_ENCODER_HPP_
 
 #include <string>
-#include <cryptopp/sha.h>
-#include <cryptopp/hex.h>
-#include <cryptopp/filters.h>
+#include "../3rdParty/cryptopp890/sha.h"
+#include "../3rdParty/cryptopp890/hex.h"
+#include "../3rdParty/cryptopp890/filters.h"
 
 namespace s21 {
     struct Encoder {

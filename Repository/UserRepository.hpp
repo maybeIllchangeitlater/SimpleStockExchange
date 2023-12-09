@@ -1,7 +1,7 @@
 #ifndef SIMPLESTOCKEXCHANGE_CONTROLLERS_CRUDCONTROLLER_HPP_
 #define SIMPLESTOCKEXCHANGE_CONTROLLERS_CRUDCONTROLLER_HPP_
 
-#include <pqxx/pqxx>
+#include "../3rdParty/libpqxx/include/pqxx/pqxx"
 #include <string>
 #include "BdNames.hpp"
 #include "../Utility/Encoder.hpp"

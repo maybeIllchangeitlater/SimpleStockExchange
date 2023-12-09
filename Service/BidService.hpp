@@ -1,5 +1,5 @@
-#ifndef SIMPLESTOCKEXCHANGE_TRANSACTIONSERVICE_HPP
-#define SIMPLESTOCKEXCHANGE_TRANSACTIONSERVICE_HPP
+#ifndef SIMPLESTOCKEXCHANGE_BIDSERVICE_HPP
+#define SIMPLESTOCKEXCHANGE_BIDSERVICE_HPP
 
 #include "../Repository/BidRepository.hpp"
 #include "../3rdParty/json.hpp"
@@ -13,8 +13,8 @@ namespace s21{
     class BidService{
     public:
         enum BidType{
-            kBuying,
-            kSelling,
+            BUYING,
+            SELLING,
         };
         BidService(BidRepository &repository) : repository_(repository){}
         void CreateBid(const std::string &user_id, const std::string& rate,
@@ -25,9 +25,9 @@ namespace s21{
             if(!ValidateQuantity(quantity)){
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::BID_BAD_QUANTITY));
             }
-            if(bid_type == kBuying){
+            if(bid_type == BUYING){
                 repository_.CreateBuyBid(UUIDGenerator::Generate(), user_id, rate, quantity, Timestamper::GetTimestamp());
-            }else if(bid_type == kSelling){
+            }else if(bid_type == SELLING){
                 repository_.CreateSellBid(UUIDGenerator::Generate(), user_id, rate, quantity, Timestamper::GetTimestamp());
             }
         }
@@ -56,19 +56,17 @@ namespace s21{
             return(GenerateBidInfo(repository_.ReadBid(bid_id)[0]));
 
         }
-        std::vector<nlohmann::json> ReadAllUserSellBids(const std::string &user_id){
+        nlohmann::json ReadAllUserSellBids(const std::string &user_id){
             auto transactions_info = repository_.ReadAllUserSellBids(user_id);
-            std::vector<nlohmann::json> res;
-            res.reserve(transactions_info.size());
+            nlohmann::json res;
             for(const auto& v: transactions_info){
                 res.emplace_back(GenerateBidInfo(v));
             }
             return res;
         }
-        std::vector<nlohmann::json> ReadAllUserBuyBids(const std::string &user_id){
+        nlohmann::json ReadAllUserBuyBids(const std::string &user_id){
             auto transactions_info = repository_.ReadAllUserBuyBids(user_id);
-            std::vector<nlohmann::json> res;
-            res.reserve(transactions_info.size());
+            nlohmann::json res;
             for(const auto& v: transactions_info){
                 res.emplace_back(GenerateBidInfo(v));
             }
@@ -103,4 +101,4 @@ namespace s21{
     };
 } //s21
 
-#endif //SIMPLESTOCKEXCHANGE_TRANSACTIONSERVICE_HPP
+#endif //SIMPLESTOCKEXCHANGE_BIDSERVICE_HPP

@@ -9,7 +9,7 @@
 namespace s21 {
     template<typename T>
     class ThreadSafeQ  : boost::noncopyable {
-        using scoped_lock = boost::recursive_mutex::scoped_lock;
+        using scoped_lock = boost::mutex::scoped_lock;
     public:
         ThreadSafeQ() = default;
         ~ThreadSafeQ() {
@@ -46,7 +46,7 @@ namespace s21 {
             scoped_lock lock(q_mutex_);
             message_que_.emplace_back(std::forward<Args>(args)...);
 
-            boost::unique_lock<boost::recursive_mutex> unique_lock(blocking_mutex_);
+            boost::unique_lock<boost::mutex> unique_lock(blocking_mutex_);
             cv_block_.notify_one();
         }
 
@@ -55,7 +55,7 @@ namespace s21 {
             scoped_lock lock(q_mutex_);
             message_que_.emplace_front(std::forward<Args>(args)...);
 
-            boost::unique_lock<boost::recursive_mutex> unique_lock(blocking_mutex_);
+            boost::unique_lock<boost::mutex> unique_lock(blocking_mutex_);
             cv_block_.notify_one();
         }
 
@@ -76,15 +76,16 @@ namespace s21 {
 
         void Wait(){
             while(Empty()){
-                boost::unique_lock<boost::recursive_mutex> unique_lock(blocking_mutex_);
+                boost::unique_lock<boost::mutex> unique_lock(blocking_mutex_);
                 cv_block_.wait(unique_lock);
             }
         }
+
     private:
         std::deque<T> message_que_;
-        std::condition_variable cv_block_;
-        boost::recursive_mutex q_mutex_;
-        boost::recursive_mutex blocking_mutex_;
+        boost::condition_variable cv_block_;
+        boost::mutex q_mutex_;
+        boost::mutex blocking_mutex_;
 
     };
 }

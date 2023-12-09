@@ -1,7 +1,7 @@
 #ifndef SIMPLESTOCKEXCHANGE_BIDREPOSITORY_HPP
 #define SIMPLESTOCKEXCHANGE_BIDREPOSITORY_HPP
 
-#include <pqxx/pqxx>
+#include "../3rdParty/libpqxx/include/pqxx/pqxx"
 #include "BdNames.hpp"
 #include "../Utility/UUIDGenerator.hpp"
 #include "../Utility/ServerMessage.hpp"

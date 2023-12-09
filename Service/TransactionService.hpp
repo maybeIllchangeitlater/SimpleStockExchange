@@ -17,19 +17,17 @@ namespace s21{
         nlohmann::json ReadTransaction(const std::string &transaction_id){
             return GenerateTransactionInfo(repository_.ReadTransaction(transaction_id)[0]);
         }
-        std::vector<nlohmann::json> ReadAllUserSellTransactions(const std::string &user_id){
+        nlohmann::json ReadAllUserSellTransactions(const std::string &user_id){
             auto transactions_info = repository_.ReadAllUserSellTransactions(user_id);
-            std::vector<nlohmann::json> res;
-            res.reserve(transactions_info.size());
+            nlohmann::json res;
             for(const auto& v: transactions_info){
                 res.emplace_back(GenerateTransactionInfo(v));
             }
             return res;
         }
-        std::vector<nlohmann::json> ReadAllUserBuyTransactions(const std::string &user_id){
+        nlohmann::json ReadAllUserBuyTransactions(const std::string &user_id){
             auto transactions_info = repository_.ReadAllUserBuyTransactions(user_id);
-            std::vector<nlohmann::json> res;
-            res.reserve(transactions_info.size());
+            nlohmann::json res;
             for(const auto& v: transactions_info){
                 res.emplace_back(GenerateTransactionInfo(v));
             }
@@ -37,12 +35,12 @@ namespace s21{
         }
     private:
         nlohmann::json GenerateTransactionInfo(const pqxx::row & transaction_info){
-            std::string id = transaction_info["id"].as<std::string>();
-            std::string buyer = transaction_info["buyer name"].as<std::string>();
-            std::string seller = transaction_info["seller name"].as<std::string>();
-            std::string rate = transaction_info["rate"].as<std::string>();
-            std::string quantity = transaction_info["quantity"].as<std::string>();
-            std::string time = transaction_info["time"].as<std::string>();
+            auto id = transaction_info["id"].as<std::string>();
+            auto buyer = transaction_info["buyer name"].as<std::string>();
+            auto seller = transaction_info["seller name"].as<std::string>();
+            auto rate = transaction_info["rate"].as<std::string>();
+            auto quantity = transaction_info["quantity"].as<std::string>();
+            auto time = transaction_info["time"].as<std::string>();
             nlohmann::json transaction_json;
             transaction_json["id"] = id;
             transaction_json["buyer"] = buyer;

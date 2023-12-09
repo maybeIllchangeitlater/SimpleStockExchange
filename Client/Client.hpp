@@ -3,50 +3,33 @@
 
 #include <boost/asio.hpp>
 #include <boost/shared_ptr.hpp>
-//#include <boost/enable_shared_from_this.hpp>
 #include <boost/thread.hpp>
 #include <string>
 #include <memory> //for unique ptr
 #include <boost/make_unique.hpp>
 #include "../Utility/ThreadSafeQ.hpp"
 #include <iostream>
+#include "../Connection/Connection.hpp"
 
 namespace s21 {
-    class Connection;
     class Client{
         using tcp = boost::asio::ip::tcp;
+        using connection_ptr = boost::shared_ptr<Connection>;
+
 public:
+
         Client() = default;
+
         ~Client(){
             Disconnect();
         }
-        bool Connect(const std::string &host, const short port){
-            try{
-                tcp::resolver resolver(context_);
-                tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(port));
-                connection_ = boost::make_unique<Connection>(Connection::owner::client, context_,
-                                                             std::move(tcp::socket(context_)), message_in_q_);
-                connection_->ConnectToServer(endpoints);
-                thread_context_ = boost::thread([this](){ context_.run(); });
-                return true;
-            }catch(const std::exception &e){
-                std::cout << e.what();
-                return false;
-            }
-        }
-        void Disconnect(){
-            if(Connected()){
-                connection_->Disconnect();
-            }
-            context_.stop();
-            if(thread_context_.joinable()){
-                thread_context_.join();
-            }
-            connection_.release();
-        }
+
+        bool Connect(const std::string &host, const short port);
+
+        void Disconnect();
 
         bool Connected(){
-            connection_ ? connection_->Connected() : false;
+            connection_ && connection_->Connected();
         }
 
         void Send(const std::string &message){
@@ -55,16 +38,15 @@ public:
             }
         }
 
-        ThreadSafeQ<std::string> Incoming(){
+        ThreadSafeQ<std::pair<connection_ptr, std::string>> &Incoming(){
             return message_in_q_;
         }
 
 private:
-    const std::string user_id_;
-        boost::asio::io_context context_;
+    boost::asio::io_context context_;
     boost::thread thread_context_;
     std::unique_ptr<Connection> connection_;
-    ThreadSafeQ<std::string> message_in_q_;
+    ThreadSafeQ<std::pair<connection_ptr, std::string>> message_in_q_;
     };
 }
 

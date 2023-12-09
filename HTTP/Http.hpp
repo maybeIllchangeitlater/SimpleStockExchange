@@ -15,7 +15,7 @@ namespace s21 {
         std::string path;
         nlohmann::json body;
 
-        static Request ParseHeader(const std::string &raw_request_header){
+        static Request Parse(const std::string &raw_request_header){
             Request request;
             std::istringstream request_stream(raw_request_header);
             std::string line;
@@ -58,29 +58,24 @@ namespace s21 {
             if (std::getline(request_stream, line) || !line.empty()) {
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
-            return request;
-        }
-
-        void ParseBody(const std::string &raw_request_body){
-            std::istringstream request_stream(raw_request_body);
-            std::string line;
             while (std::getline(request_stream, line)) {
-                body += nlohmann::json::parse(line);
+                request.body += nlohmann::json::parse(line);
             }
-            if(body.empty() && method != "GET" || method != "DELETE"){
+            if(request.body.empty()){
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::REQUEST_BAD_CONTENT_BODY));
             }
+            return request;
         }
 
     };
 
     struct Response{
-        std::string body;
-        short status;
+        nlohmann::json body;
+        ServerMessage::ResponseCode status;
 
         std::string ToString() const {
-            return "HTTP/1.1 " + std::to_string(status) + "\r\nContent-Length: " +
-            std::to_string(body.size()) + "\r\n\r\n";
+            return "HTTP/1.1 " + std::to_string(status) + " " + ServerMessage::status_message.at(status) +
+            + "\r\nContent-Length: " + std::to_string(body.dump().size()) + "\r\n\r\n" + body.dump();
         }
     };
 }

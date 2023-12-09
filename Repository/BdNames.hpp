@@ -16,6 +16,7 @@ namespace s21 {
         constexpr static const char * bid_table_rate = "rate";
         constexpr static const char * bid_table_quantity = "quantity";
         constexpr static const char * bid_table_create_update_time = "time";
+        constexpr static const char * bid_table_type = "type";
 
         constexpr static const char * transaction_table = "transaction_info";
         constexpr static const char * transaction_table_id = "id";

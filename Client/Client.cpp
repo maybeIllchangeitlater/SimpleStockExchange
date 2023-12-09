@@ -1,5 +1,29 @@
-//
-// Created by Paul Butorin on 04.12.2023.
-//
-
 #include "Client.hpp"
+
+namespace s21{
+    bool Client::Connect(const std::string &host, const short port) {
+        try{
+            tcp::resolver resolver(context_);
+            tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(port));
+            connection_ = boost::make_unique<Connection>(Connection::Owner::CLIENT, context_,
+                                                         std::move(tcp::socket(context_)), message_in_q_);
+            connection_->ConnectToServer(endpoints);
+            thread_context_ = boost::thread([this](){ context_.run(); });
+            return true;
+        }catch(const std::exception &e){
+            std::cout << e.what();
+            return false;
+        }
+    }
+
+    void Client::Disconnect() {
+        if(Connected()){
+            connection_->Disconnect();
+        }
+        context_.stop();
+        if(thread_context_.joinable()){
+            thread_context_.join();
+        }
+        connection_.release();
+    }
+}

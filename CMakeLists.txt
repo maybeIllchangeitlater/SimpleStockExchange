@@ -1,51 +1,41 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.21)
 PROJECT(SimpleStockExchange)
 
-include(SelectLibraryConfigurations)
+ADD_SUBDIRECTORY(3rdParty/libpqxx build-pqxx)
 
-find_path(libpqxx_INCLUDE_DIR /pqxx/pqxx)
-find_library(libpqxx_LIBRARY_RELEASE NAMES libpqxx)
-find_library(libpqxx_LIBRARY_DEBUG NAMES libpqxxd)
-select_library_configurations(libpqxx)
-
-FIND_PACKAGE(Boost 1.40 COMPONENTS system REQUIRED)
+FIND_PACKAGE(Boost 1.40 COMPONENTS thread system REQUIRED)
 FIND_PACKAGE(Threads REQUIRED)
-#FIND_PACKAGE(PQXX REQUIRED)
 
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${PQXX_INCLUDE_DIRECTORIES})
+
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${PQXX_INCLUDE_DIRECTORIES} 3rdParty/cryptopp890)
 
 SET(CMAKE_CXX_STANDARD 17)
 
 
 
 ADD_EXECUTABLE(ServerR
-        main.cpp
-        Controller/UserController.hpp
-        Controller/BidController.hpp
+        Repository/BdNames.hpp
+        Repository/UserRepository.cpp
         Repository/BidRepository.cpp
         Repository/TransactionRepository.cpp
-        Repository/UserRepository.cpp
+        Service/UserService.hpp
         Service/BidService.hpp
         Service/TransactionService.hpp
-        Utility/Binder.hpp
-        Utility/Timestamper.hpp
-        HTTP/Http.hpp
-        Utility/ServerMessage.hpp
-        Utility/ServerMessage.cpp
-        Controller/TransactionController.hpp
-        Service/UserService.hpp
-        Repository/BdNames.hpp
-        Server/Server.cpp
-        Server/Server.hpp
-        Utility/ThreadSafeQ.hpp
-        Client/Client.hpp
-        Connection/Connection.hpp
-        Controller/ControllerMapping.hpp
         Controller/ControllerMapping.cpp
+        Controller/UserController.cpp
+        Controller/BidController.cpp
+        Controller/TransactionController.cpp
+        HTTP/Http.hpp
+        Connection/Connection.cpp
+        Server/Server.cpp
+        Utility/Encoder.hpp
+        Utility/RequestBuilder.hpp
+        Utility/ServerMessage.cpp
+        Utility/ThreadSafeQ.hpp
+        Utility/Timestamper.hpp
+        Utility/UUIDGenerator.hpp
+        3rdParty/json.hpp
+        main.cpp
 )
-#target_compile_options(ServerR PRIVATE -lboost_thread)
-TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} ${PQ_LIBRARIES} ${PQXX_LIBRARIES})
-
-
-#ADD_EXECUTABLE(ClientR Session/main.cc)
-#TARGET_LINK_LIBRARIES(ClientR PRIVATE Threads::Threads ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx ${PQ_LIBRARIES} ${PQXX_LIBRARIES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/cryptopp890/libcryptopp.a)

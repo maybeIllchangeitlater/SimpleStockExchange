@@ -9,6 +9,7 @@ namespace s21 {
         enum MessageType {
             WELCOME,
             SERVER_FAILED_TO_START,
+            NOT_LOGGED_IN,
             REGISTER_OK,
             REGISTER_BAD_NAME,
             REGISTER_NOT_UNIQUE_NAME,
@@ -38,6 +39,7 @@ namespace s21 {
         };
         static const std::unordered_map<ServerMessage::MessageType, const char*> server_message;
         static const std::unordered_map<const char *, ServerMessage::ResponseCode> response_code;
+        static const std::unordered_map<ResponseCode, const char *> status_message;
     };
 } //s21
 
