@@ -1,4 +1,4 @@
-all:
+all: clean
 	mkdir build && cd build && cmake .. && make
 
 serv:

@@ -35,6 +35,8 @@ ADD_EXECUTABLE(ServerR
         Utility/UUIDGenerator.hpp
         3rdParty/json.hpp
         main.cpp
+        Connection/Connection.cpp
+        Connection/Connection.hpp
 )
 TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx
         ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/cryptopp890/libcryptopp.a)
@@ -42,9 +44,13 @@ TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx
 
 ADD_EXECUTABLE(ClientR
         Controller/ClientController.cpp
-        Connection/Connection.cpp
         Client/Client.cpp
         Utility/ThreadSafeQ.hpp
         main_client.cpp
-        Utility/RequestBuilder.cpp)
+        Utility/RequestBuilder.cpp
+        Connection/Connection.cpp
+        Connection/Connection.hpp
+        Client/Client.cpp
+        Client/Client.hpp
+)
 TARGET_LINK_LIBRARIES(ClientR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx)

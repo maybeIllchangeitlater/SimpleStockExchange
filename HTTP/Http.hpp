@@ -48,20 +48,12 @@ namespace s21 {
             }else{
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
-            if(std::getline(request_stream, line)){
-                std::istringstream line_stream(line);
-                line_stream >> line >> checker;
-                if(line != "Content-Length" || checker.empty())
-                    throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::REQUEST_BAD_LENGTH));
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
-            }
             if (std::getline(request_stream, line) || !line.empty()) {
-                std::cout << "line wasn't empty" << std::endl;
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
             while (std::getline(request_stream, line)) {
-                request.body += nlohmann::json::parse(line);
+                if(line != "FINISH")
+                    request.body += nlohmann::json::parse(line);
             }
             if(request.body.empty()){
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::REQUEST_BAD_CONTENT_BODY));
@@ -76,8 +68,8 @@ namespace s21 {
         ServerMessage::ResponseCode status;
 
         std::string ToString() const {
-            return "HTTP/1.1 " + std::to_string(status) + " " + ServerMessage::status_message.at(status) +
-            + "\r\nContent-Length: " + std::to_string(body.dump().size()) + "\r\n\r\n" + body.dump();
+            return "HTTP/1.1 " + std::to_string(status) + " " + ServerMessage::status_message.at(status)
+            + "\r\n\r\n" + body.dump() + "FINISH";
         }
     };
 }
