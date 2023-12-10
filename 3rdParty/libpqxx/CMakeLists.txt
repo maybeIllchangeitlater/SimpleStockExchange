@@ -19,7 +19,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 option(BUILD_DOC "Build documentation" OFF)
 
 if(NOT SKIP_BUILD_TEST)
-    option(BUILD_TEST "Build all test cases" ON)
+    option(BUILD_TEST "Build all test cases" OFF)
 endif()
 
 include(GNUInstallDirs)

@@ -7,7 +7,7 @@ FIND_PACKAGE(Boost 1.40 COMPONENTS thread system REQUIRED)
 FIND_PACKAGE(Threads REQUIRED)
 
 
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${PQXX_INCLUDE_DIRECTORIES} 3rdParty/cryptopp890)
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} 3rdParty/cryptopp890)
 
 SET(CMAKE_CXX_STANDARD 17)
 
@@ -29,7 +29,6 @@ ADD_EXECUTABLE(ServerR
         Connection/Connection.cpp
         Server/Server.cpp
         Utility/Encoder.hpp
-        Utility/RequestBuilder.hpp
         Utility/ServerMessage.cpp
         Utility/ThreadSafeQ.hpp
         Utility/Timestamper.hpp
@@ -37,5 +36,15 @@ ADD_EXECUTABLE(ServerR
         3rdParty/json.hpp
         main.cpp
 )
-TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx ${PQ_LIBRARIES} ${PQXX_LIBRARIES}
+TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx
         ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/cryptopp890/libcryptopp.a)
+
+
+ADD_EXECUTABLE(ClientR
+        Controller/ClientController.cpp
+        Connection/Connection.cpp
+        Client/Client.cpp
+        Utility/ThreadSafeQ.hpp
+        main_client.cpp
+        Utility/RequestBuilder.cpp)
+TARGET_LINK_LIBRARIES(ClientR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx)

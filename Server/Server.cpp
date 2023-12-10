@@ -30,6 +30,7 @@ namespace s21{
                 if(OnClientConnect(new_connection)){
                     connections_q_.EmplaceBack(std::move(new_connection));
                     connections_q_.Back()->ConnectToClient();
+
                     ///get id to cout conenction
                 }else{
                     std::cout << "Connection denied by server"; //send as actual message
@@ -42,6 +43,7 @@ namespace s21{
     }
 
     void Server::MessageClient(connection_ptr client, const std::string &message) {
+        std::cout << "trying to message client\n";
         if(client && client->Connected()){
             client->Send(message);
         }else{
@@ -52,6 +54,7 @@ namespace s21{
     }
 
     void Server::Update(size_t max_messages, bool wait) {
+        std::cout << "here in update\n";
         if(wait)
             message_in_q_.Wait();
         size_t message_count = 0;
@@ -64,19 +67,23 @@ namespace s21{
     }
 
     bool Server::OnClientConnect(connection_ptr client) {
+        std::cout << "here in client connected\n";
         if(!client->Connected())
             return false;
         Response response;
         response.body = ServerMessage::server_message.at(ServerMessage::WELCOME);
+//        std::cout << "welcome message is : " << response.body.dump();
         response.status = ServerMessage::response_code.at(ServerMessage::server_message.at(ServerMessage::WELCOME));
+//        std::cout << "\nresponse code is : " << response.status;
         client->Send(response.ToString());
         return true;
     }
 
     void Server::OnMessage(s21::connection_ptr client, const std::string &message) {
+        std::cout << "here at readmsg start\n";
         Response response;
         nlohmann::json result;
-        if(client->Authorized() || LoginAttempt(message)) {
+        if(client->Authorized() || LoginRegisterAttempt(message)) {
             auto request = Request::Parse(message);
             if (request.path[0] == 'U') {
                 result = ControllerMapping::method_mapping_user.at(request.path.substr(1))(user_controller_,
@@ -89,12 +96,13 @@ namespace s21{
                         transaction_controller_, request.body);
             }
             response.status = result["status"];
-            if(LoginAttempt(message) && response.status == ServerMessage::ResponseCode::OK){
+            if(LoginRegisterAttempt(message) && response.status == ServerMessage::ResponseCode::OK){
                 client->Authorize(result[BDNames::user_table_id]);
             }
             result.erase("status");
             response.body = result;
         }else{
+            std::cout << "here at readmsg error\n";
             response.status = ServerMessage::ResponseCode::BAD_REQUEST;
             response.body = ServerMessage::server_message.at(ServerMessage::NOT_LOGGED_IN);
         }

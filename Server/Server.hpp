@@ -52,8 +52,8 @@ namespace s21 {
 
         void OnMessage(connection_ptr client, const std::string &message);
 
-        bool LoginAttempt(const std::string &message){
-            return message.find("Login: ") != std::string::npos;
+        bool LoginRegisterAttempt(const std::string &message){
+            return message.find("Login: ") != std::string::npos || message.find("Register: ") != std::string::npos;
         }
 
         boost::asio::io_context context_;

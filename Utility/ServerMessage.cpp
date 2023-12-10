@@ -2,7 +2,7 @@
 
 namespace s21{
     const std::unordered_map<ServerMessage::MessageType, const char*> ServerMessage::server_message{
-            {MessageType::WELCOME, "Welcome to Stock Exchange"},
+            {MessageType::WELCOME, "Welcome to Stock Exchange. Please Register or Sign In to continue"},
             {MessageType::NOT_LOGGED_IN, "Operation requires you to be logged in"},
             {MessageType::SERVER_FAILED_TO_START, "Server failed to start"},
             {MessageType::REGISTER_OK, "User registration successful"},

@@ -8,7 +8,9 @@ namespace s21{
             connection_ = boost::make_unique<Connection>(Connection::Owner::CLIENT, context_,
                                                          std::move(tcp::socket(context_)), message_in_q_);
             connection_->ConnectToServer(endpoints);
+            boost::asio::io_context::work work(context_);
             thread_context_ = boost::thread([this](){ context_.run(); });
+            std::cout << "Im in\n" << std::endl;
             return true;
         }catch(const std::exception &e){
             std::cout << e.what();
@@ -24,6 +26,6 @@ namespace s21{
         if(thread_context_.joinable()){
             thread_context_.join();
         }
-        connection_.release();
+        connection_.reset();
     }
 }

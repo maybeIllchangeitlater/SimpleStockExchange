@@ -34,6 +34,7 @@ namespace s21 {
         }
 
         void ConnectToClient(){
+            std::cout << Connected();
             if(owner_ == SERVER && Connected()){
                 ReadHeader();
             }
@@ -43,6 +44,7 @@ namespace s21 {
             if(owner_ == CLIENT){
                 boost::asio::async_connect(socket_, endpoints, [this](error_code ec, tcp::endpoint endpoint){
                     if(!ec){
+                        std::cout << "Me reading\n";
                         ReadHeader();
                     }
                 });
@@ -74,28 +76,44 @@ namespace s21 {
 
         void Send(const std::string & message);
 
+        ThreadSafeQ<std::pair<connection_ptr, std::string>> &Incoming(){
+            return message_out_q_;
+        }
+
 
     private:
         void Write();
 
         void ReadHeader();
 
-        std::string ReadBody(size_t body_length);
+        void ReadBody(size_t body_length, std::function<void(std::string)> callback);
 
         void AddToInQueue(){
+            std::cout << "Adding to Q\nMessage: " << unfinished_message_ << std::endl;
             message_in_q_.EmplaceBack(std::make_pair(shared_from_this(), unfinished_message_));
             ReadHeader();
         }
 
         size_t FindContentLength(const std::string &headers){
-            std::string cl("Context-Length: ");
+            std::cout << "calculating contents len\nmessage is: " << headers << std::endl;
+            std::string cl("Content-Length:");
             size_t pos = headers.find(cl);
-            return pos != std::string::npos ? std::stoul(headers.substr(pos + cl.length())) : 0;
+            if (pos != std::string::npos) {
+                // Skip any leading whitespaces after the header name
+                pos += cl.length();
+                while (pos < headers.size() && std::isspace(headers[pos])) {
+                    ++pos;
+                }
+                // Extract the content length value
+                return std::stoul(headers.substr(pos));
+            } else {
+                return 0;
+            }
         }
 
         tcp::socket socket_;
         boost::asio::io_context &context_;
-        ThreadSafeQ<std::pair<connection_ptr, std::string>> message_out_q_;
+        ThreadSafeQ<std::pair<connection_ptr, std::string>> message_out_q_; ///connection ptr not needed
         ThreadSafeQ<std::pair<connection_ptr, std::string>> &message_in_q_;
         std::string input_buffer_;
         std::string unfinished_message_;

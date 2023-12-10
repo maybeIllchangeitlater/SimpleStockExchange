@@ -28,7 +28,9 @@ namespace s21{
             service_.CreateUser(request_body.at(BDNames::user_table_user_name),
                                 request_body.at(BDNames::user_table_password),
                                 request_body.at(BDNames::user_table_balance));
+            auto user = service_.GetUserByName(request_body.at(BDNames::user_table_user_name));
             response["status"] = ServerMessage::ResponseCode::OK;
+            response[BDNames::user_table_id] = user.at(BDNames::user_table_id);
             return response;
         }catch(const std::exception &e){
             response["status"] = ServerMessage::response_code.find(e.what()) != ServerMessage::response_code.end()

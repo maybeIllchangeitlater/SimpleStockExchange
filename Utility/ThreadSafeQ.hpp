@@ -4,6 +4,7 @@
 #include <boost/thread.hpp>
 #include <boost/noncopyable.hpp>
 #include <queue>
+#include <iostream>
 
 
 namespace s21 {
@@ -43,12 +44,16 @@ namespace s21 {
 
         template<typename ... Args>
         void EmplaceBack(Args&& ... args){
+            std::cout << "starting to emplace\n";
             scoped_lock lock(q_mutex_);
+            std::cout << "locked\n";
             message_que_.emplace_back(std::forward<Args>(args)...);
+            std::cout << "data is in \n";
 
             boost::unique_lock<boost::mutex> unique_lock(blocking_mutex_);
             cv_block_.notify_one();
         }
+
 
         template<typename ... Args>
         void EmplaceFront(Args&& ... args){

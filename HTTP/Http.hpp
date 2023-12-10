@@ -6,6 +6,7 @@
 #include <boost/asio.hpp>
 #include "../3rdParty/json.hpp"
 #include "../Utility/ServerMessage.hpp"
+#include <iostream>
 
 namespace s21 {
     struct Request {
@@ -56,6 +57,7 @@ namespace s21 {
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
             if (std::getline(request_stream, line) || !line.empty()) {
+                std::cout << "line wasn't empty" << std::endl;
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
             while (std::getline(request_stream, line)) {
