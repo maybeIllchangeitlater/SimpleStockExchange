@@ -23,7 +23,11 @@ namespace s21{
     }
 
     nlohmann::json UserController::RegisterUser(const nlohmann::json &request_body){
+        std::cout << "REGISTRING\n";
         nlohmann::json response;
+        std::cout << "trying to register user with username: " << request_body.at(BDNames::user_table_user_name) <<
+        " user password: " << request_body.at(BDNames::user_table_password) << " and balance: "
+        << request_body.at(BDNames::user_table_balance);
         try {
             service_.CreateUser(request_body.at(BDNames::user_table_user_name),
                                 request_body.at(BDNames::user_table_password),
@@ -33,6 +37,7 @@ namespace s21{
             response[BDNames::user_table_id] = user.at(BDNames::user_table_id);
             return response;
         }catch(const std::exception &e){
+            std::cout << e.what() << "\n";
             response["status"] = ServerMessage::response_code.find(e.what()) != ServerMessage::response_code.end()
                                  ? ServerMessage::response_code.at(e.what())
                                  : ServerMessage::ResponseCode::BAD_REQUEST;

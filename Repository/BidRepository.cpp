@@ -1,4 +1,5 @@
 #include "BidRepository.hpp"
+#include <iostream>
 
 namespace s21{
 
@@ -6,15 +7,16 @@ namespace s21{
                                       const std::string &quantity, const std::string &timestamp) {
         pqxx::work task(db_connection_);
         try{
-            std::string sql = "INSERT INTO " + task.quote(BDNames::bid_table)
-                    + "(" + task.quote(BDNames::bid_table_id)
-                    + ", " + task.quote(BDNames::bid_table_seller_id)
-                    + ", " + task.quote(BDNames::bid_table_rate)
-                    + ", " + task.quote(BDNames::bid_table_quantity)
-                    + ", " + task.quote(BDNames::bid_table_create_update_time)
-                    + " VALUE (" + task.quote(bid_id) + ", "
-                    + task.quote(seller_id) + ", " + task.quote(rate) + ", "
-                    + task.quote(quantity) + ", " + task.quote(timestamp) + ")";
+            std::string sql = "INSERT INTO " + std::string(BDNames::bid_table)
+                    + "(" + std::string(BDNames::bid_table_id)
+                    + ", " + std::string(BDNames::bid_table_seller_id)
+                    + ", " + std::string(BDNames::bid_table_rate)
+                    + ", " + std::string(BDNames::bid_table_quantity)
+                    + ", " + std::string(BDNames::bid_table_create_update_time)
+                    + " VALUE (" + bid_id + ", "
+                    + seller_id + ", " + rate + ", "
+                    + quantity + ", " + timestamp + ")";
+            std::cout << "\nSQL REQUEST :\n" << sql;
             if(!task.exec(sql).empty()) {
                 task.commit();
             }else{

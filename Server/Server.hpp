@@ -18,8 +18,8 @@ namespace s21 {
         using error_code = boost::system::error_code;
     public:
         Server(short port, UserController &uc, BidController &bc, TransactionController &tc)
-        : acceptor_(context_, tcp::endpoint(tcp::v4(), port)),
-        user_controller_(uc), bid_controller_(bc), transaction_controller_(tc){}
+                : acceptor_(context_, tcp::endpoint(tcp::v4(), port)),
+                  user_controller_(uc), bid_controller_(bc), transaction_controller_(tc){}
         ~Server() { Stop(); }
 
         bool Start();
@@ -30,16 +30,16 @@ namespace s21 {
         void Update();
 
     private:
-        bool LoginRegisterAttempt(const std::string &message){
-            return message.find("Login: ") != std::string::npos || message.find("Register: ") != std::string::npos;
-        }
+//        bool LoginRegisterAttempt(const std::string &message){
+//            return message.find("Login: ") != std::string::npos || message.find("Register: ") != std::string::npos;
+//        }
         void OnConnect(connection_ptr);
         void OnDisconnect(connection_ptr);
         void OnMessage(connection_ptr, const std::string &message);
         // Thread Safe Queue for incoming message packets
         ThreadSafeQ<std::pair<connection_ptr, std::string>> in_;
         // Container of active validated connections
-        std::deque<connection_ptr> connections_;
+        std::vector<connection_ptr> connections_;
 
         // Order of declaration is important - it is also the order of initialisation
         boost::asio::io_context context_;

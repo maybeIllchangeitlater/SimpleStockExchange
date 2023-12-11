@@ -17,7 +17,8 @@ class Connection : public boost::enable_shared_from_this<Connection>{
 
     Connection(Owner owner, boost::asio::io_context &context, tcp::socket &&socket, ///on tsq type?
                ThreadSafeQ<std::pair<connection_ptr, std::string>> &inc) :
-               owner_(owner), context_(context), socket_(std::move(socket)), in_(inc){
+               owner_(owner), context_(context), socket_(std::move(socket)), in_(inc),
+               read_strand_(context_.get_executor()){
     }
 
     void ConnectToClient();
@@ -37,7 +38,9 @@ class Connection : public boost::enable_shared_from_this<Connection>{
 
     void Write();
 
-    void Read();
+    void ReadHeader();
+
+    void ReadBody(size_t body_length);
 
 
     const std::string &GetUserId(){
@@ -46,6 +49,8 @@ class Connection : public boost::enable_shared_from_this<Connection>{
 
 
 private:
+
+    size_t FindBodyLength(const std::string &header);
 
     void AddToIncomingQueue();
 
@@ -57,10 +62,12 @@ private:
     ThreadSafeQ<std::pair<connection_ptr, std::string>> &in_;
     std::string unfinished_message_;
     std::string user_id_;
+    boost::thread reader_;
     bool authorized_;
+    boost::asio::strand<boost::asio::io_context::executor_type> read_strand_;
 
 
-    };
+};
 } //s21
 
 #endif //SIMPLESTOCKEXCHANGE_CONNECTION_HPP

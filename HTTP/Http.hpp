@@ -43,17 +43,26 @@ namespace s21 {
             if (std::getline(request_stream, line)) {
                 std::istringstream line_stream(line);
                 line_stream >> line >> checker;
-                if(line != "Content-Type" || checker != "application/json")
+                if(line != "Content-Type:" || checker != "application/json")
                     throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::REQUEST_BAD_CONTENT_TYPE));
             }else{
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
-            if (std::getline(request_stream, line) || !line.empty()) {
+            if (std::getline(request_stream, line)) {
+                std::istringstream line_stream(line);
+                line_stream >> line >> checker;
+                if(line != "Content-Length:" || checker.empty()){
+                    throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::REQUEST_BAD_LENGTH));
+                }
+            }else{
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
-            while (std::getline(request_stream, line)) {
-                if(line != "FINISH")
-                    request.body += nlohmann::json::parse(line);
+            if(!std::getline(request_stream, line))
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
+            if(std::getline(request_stream, line)) {
+                    request.body = nlohmann::json::parse(line);
+            }else{
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
             if(request.body.empty()){
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::REQUEST_BAD_CONTENT_BODY));
@@ -68,8 +77,8 @@ namespace s21 {
         ServerMessage::ResponseCode status;
 
         std::string ToString() const {
-            return "HTTP/1.1 " + std::to_string(status) + " " + ServerMessage::status_message.at(status)
-            + "\r\n\r\n" + body.dump() + "FINISH";
+            return "HTTP/1.1 " + std::to_string(status) + " " + ServerMessage::status_message.at(status) + "\nContent-Length: "
+            + std::to_string(body.dump().size()) + "\r\n\r\n" + body.dump();
         }
     };
 }

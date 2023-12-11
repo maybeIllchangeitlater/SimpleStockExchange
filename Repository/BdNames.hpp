@@ -1,6 +1,6 @@
 #ifndef SIMPLESTOCKEXCHANGE_BDNAMES_HPP
 #define SIMPLESTOCKEXCHANGE_BDNAMES_HPP
-
+#include <string>
 namespace s21 {
     struct BDNames {
         constexpr static const char * user_table = "user_info";

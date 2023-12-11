@@ -69,13 +69,15 @@ namespace s21{
     }
 
     void Server::OnMessage(s21::Server::connection_ptr client, const std::string &message) {
-        std::cout << "here at onms start\n";
+        std::cout << "here at onmsg start\nMessage is:\n" << message << "\n";
+        ///try catch block for request parse
         Response response;
         nlohmann::json result;
 //        if(client->Authorized() || LoginRegisterAttempt(message)) {
             auto request = Request::Parse(message);
             if (request.path[0] == 'U') {
-                result = ControllerMapping::method_mapping_user.at(request.path.substr(1))(user_controller_,
+                std::cout << "parsing user request\n" << request.path.substr(1) << "\n";
+                result = (ControllerMapping::method_mapping_user.at(request.path.substr(1)))(user_controller_,
                                                                                            request.body);
             } else if (request.path[0] == 'B') {
                 result = ControllerMapping::method_mapping_bid.at(request.path.substr(1))(bid_controller_,

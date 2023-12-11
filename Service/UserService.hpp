@@ -6,6 +6,7 @@
 #include "../Utility/Encoder.hpp"
 #include "../Utility/ServerMessage.hpp"
 #include "../3rdParty/json.hpp"
+#include <iostream>
 
 namespace s21 {
     class UserService {
@@ -18,6 +19,7 @@ namespace s21 {
             if(!ValidatePassword(password)){
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_BAD_PASSWORD));
             }
+            std::cout << "User Validated\n";
             repository_.CreateUser(UUIDGenerator::Generate(), user_name, Encoder::Encode(password), user_balance);
         }
         nlohmann::json GetUserByName(const std::string &user_name){

@@ -1,4 +1,5 @@
 #include "UserRepository.hpp"
+#include <iostream>
 
 namespace s21 {
 
@@ -7,22 +8,21 @@ namespace s21 {
         pqxx::work task(db_connection_);
         try{
 
-            std::string sql = "INSERT INTO " + task.quote(BDNames::user_table)
-                    + " ( "+ task.quote(BDNames::user_table_id)
-                    + ", " + task.quote(BDNames::user_table_user_name)
-                    + ", " + task.quote(BDNames::user_table_password)
-                    + ", " + task.quote(BDNames::user_table_balance)
+            std::string sql = "INSERT INTO " + std::string(BDNames::user_table)
+                    + " ("+ std::string(BDNames::user_table_id)
+                    + ", " + std::string(BDNames::user_table_user_name)
+                    + ", " + std::string(BDNames::user_table_password)
+                    + ", " + std::string(BDNames::user_table_balance)
                     + ") VALUES ("
-                    + task.quote(UUIDGenerator::Generate()) + ", "
+                    + task.quote(user_id) + ", "
                     + task.quote(username) + ", " + task.quote(password) + ", "
-                    + task.quote(user_balance) + ")";
-            if(!task.exec(sql).empty()) {
-                task.commit();
-            }
-            else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
-            }
-        }catch(...){
+                    + user_balance + ");";
+            std::cout << sql << "\n";
+            auto result = task.exec(sql);
+            std::cout << "task.exec username is " << result[0]["username"].as<std::string>();
+            task.commit();
+        }catch(const std::exception &e){
+            std::cout << "aboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }
@@ -54,12 +54,12 @@ namespace s21 {
         pqxx::work task(db_connection_);
         pqxx::result res;
         try{
-            std::string sql = "SELECT " + task.quote(BDNames::user_table_id)
-                    + ", " + task.quote(BDNames::user_table_user_name)
-                    + ", " + task.quote(BDNames::user_table_password)
-                    + ", " + task.quote(BDNames::user_table_balance)
-                    + " FROM " + task.quote(BDNames::user_table)
-                    + " WHERE " + task.quote(BDNames::user_table_user_name)
+            std::string sql = "SELECT " + std::string(BDNames::user_table_id)
+                    + ", " + std::string(BDNames::user_table_user_name)
+                    + ", " + std::string(BDNames::user_table_password)
+                    + ", " + std::string(BDNames::user_table_balance)
+                    + " FROM " + std::string(BDNames::user_table)
+                    + " WHERE " + std::string(BDNames::user_table_user_name)
                     + " = " + task.quote(user_name);
             res = task.exec(sql);
             if(!res.empty()) {

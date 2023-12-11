@@ -31,6 +31,7 @@ namespace s21{
         if(Connected()){
             std::cout << "Sending out " << message << std::endl;
             connection_->Send(message);
+//            Inbox().EmplaceBack(std::make_pair(nullptr, message);
         }
     }
 }
