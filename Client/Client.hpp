@@ -46,31 +46,33 @@ namespace s21 {
             std::string quantity;
             std::string rate;
             std::cout << "Please Enter Quantity and Rate\n";
-            Send(ClientController::CreateBid(quantity, rate, BidService::SELLING));
+            std::cin >> quantity >> rate;
+            Send(ClientController::CreateBid(GetUserId(), quantity, rate, BidService::SELLING));
         }
 
         void CreateBuyBid(){
             std::string quantity;
             std::string rate;
             std::cout << "Please Enter Quantity and Rate\n";
-            Send(ClientController::CreateBid(quantity, rate, BidService::BUYING));
+            std::cin >> quantity >> rate;
+            Send(ClientController::CreateBid(GetUserId(), quantity, rate, BidService::BUYING));
         }
 
 
         void GetMySellBids(){
-            Send(ClientController::GetMySellBids(connection_->GetUserId()));
+            Send(ClientController::GetMySellBids(GetUserId()));
         }
 
         void GetMyBuyBids(){
-            Send(ClientController::GetMyBuyBids(connection_->GetUserId()));
+            Send(ClientController::GetMyBuyBids(GetUserId()));
         }
 
         void GetMySellTransactions(){
-            Send(ClientController::GetMySellTransactions(connection_->GetUserId()));
+            Send(ClientController::GetMySellTransactions(GetUserId()));
         }
 
         void GetMyBuyTransactions(){
-            Send(ClientController::GetMyBuyTransactions(connection_->GetUserId()));
+            Send(ClientController::GetMyBuyTransactions(GetUserId()));
         }
 
         void CancelBid(){
@@ -80,12 +82,51 @@ namespace s21 {
             Send(ClientController::CancelBid(bid_id));
         }
 
+        const std::string &GetUserId(){
+            if(user_id_.empty()) {
+                Send(ClientController::GetMyId());
+                while (from_server_.Empty()) {}
+                user_id_ = from_server_.PopFront().second;
+            }
+            return user_id_;
+        }
+
+        std:: string GetIdFromHTTP(){
+            auto msg = from_server_.PopFront().second;
+            size_t jsonStart = msg.find('{');
+            size_t jsonEnd = msg.rfind('}');
+            //  // Find the start and end positions of the JSON part
+            //    size_t jsonStart = input.find('{');
+            //    size_t jsonEnd = input.rfind('}');
+            //
+            //    if (jsonStart != std::string::npos && jsonEnd != std::string::npos && jsonStart < jsonEnd) {
+            //        // Extract the JSON part
+            //        std::string jsonStr = input.substr(jsonStart, jsonEnd - jsonStart + 1);
+            //
+            //        try {
+            //            // Parse the JSON string
+            //            json j = json::parse(jsonStr);
+            //
+            //            // Extract the ID as a string
+            //            std::string id = j["id"];
+            //
+            //            // Output the result
+            //            std::cout << "Extracted ID: " << id << std::endl;
+            //        } catch (const std::exception& e) {
+            //            std::cerr << "Error parsing JSON: " << e.what() << std::endl;
+            //        }
+            //    } else {
+            //        std::cerr << "No valid JSON found in the input string." << std::endl;
+            //    }
+        }
+
 
     private:
         boost::asio::io_context context_;
         boost::thread thread_context_;
         std::unique_ptr<Connection> connection_;
         ThreadSafeQ<std::pair<connection_ptr, std::string>> from_server_;
+        std::string user_id_;
     };
 }
 

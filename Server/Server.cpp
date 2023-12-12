@@ -70,33 +70,38 @@ namespace s21{
 
     void Server::OnMessage(s21::Server::connection_ptr client, const std::string &message) {
         std::cout << "here at onmsg start\nMessage is:\n" << message << "\n";
-        ///try catch block for request parse
         Response response;
         nlohmann::json result;
-//        if(client->Authorized() || LoginRegisterAttempt(message)) {
+        if(client->Authorized() || (LoginRegisterAttempt(message) && !client->Authorized())) {
             auto request = Request::Parse(message);
+            std::cout << "parse successful\n";
             if (request.path[0] == 'U') {
                 std::cout << "parsing user request\n" << request.path.substr(1) << "\n";
                 result = (ControllerMapping::method_mapping_user.at(request.path.substr(1)))(user_controller_,
                                                                                            request.body);
             } else if (request.path[0] == 'B') {
+                std::cout << "parsing bid request\n" << request.path.substr(1) << "\nbody is :\n"
+                << request.body.dump() << "\n";
                 result = ControllerMapping::method_mapping_bid.at(request.path.substr(1))(bid_controller_,
-                                                                                          request.body);
+                                                                                              request.body);
             } else if (request.path[0] == 'T') {
                 result = ControllerMapping::method_mapping_transaction.at(request.path.substr(1))(
                         transaction_controller_, request.body);
+            } else if (request.path[0] == 'G'){
+                client->Send(client->GetUserId());
+                return;
             }
             response.status = result["status"];
-//            if(LoginRegisterAttempt(message) && response.status == ServerMessage::ResponseCode::OK){
-//                client->Authorize(result[BDNames::user_table_id]);
-//            }
+            if(LoginRegisterAttempt(message) && response.status == ServerMessage::ResponseCode::OK){
+                client->Authorize(result[BDNames::user_table_id]);
+            }
             result.erase("status");
             response.body = result;
-//        }else{
-//            std::cout << "here at readmsg error\n";
-//            response.status = ServerMessage::ResponseCode::BAD_REQUEST;
-//            response.body = ServerMessage::server_message.at(ServerMessage::NOT_LOGGED_IN);
-//        }
+        }else{
+            std::cout << "here at readmsg error\n";
+            response.status = ServerMessage::ResponseCode::BAD_REQUEST;
+            response.body = ServerMessage::server_message.at(ServerMessage::NOT_LOGGED_IN);
+        }
         client->Send(response.ToString());
     }
 

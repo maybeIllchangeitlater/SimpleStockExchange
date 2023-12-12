@@ -61,11 +61,6 @@ namespace s21 {
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             if(std::getline(request_stream, line)) {
                     request.body = nlohmann::json::parse(line);
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
-            }
-            if(request.body.empty()){
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::REQUEST_BAD_CONTENT_BODY));
             }
             return request;
         }

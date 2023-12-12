@@ -6,6 +6,7 @@ namespace s21{
             {LOGIN, std::make_pair("GET", "UAuthenticateUser")},
             {GET_USER_BY_ID, std::make_pair("GET", "UGetUserById")},
             {GET_USER_BY_NAME, std::make_pair("GET", "UGetUserByName")},
+            {GET_MY_ID, std::make_pair("GET", "GReturnId")},
             {UPDATE_USER_NAME, std::make_pair("PUT", "UUpdateUserName")},
             {UPDATE_USER_PASSWORD, std::make_pair("PUT", "UUpdateUserPassword")},
             {UPDATE_USER_BALANCE, std::make_pair("PUT", "UUpdateUserBalance")},

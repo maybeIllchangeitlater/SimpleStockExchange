@@ -3,7 +3,6 @@
 
 #include "../Repository/BidRepository.hpp"
 #include "../3rdParty/json.hpp"
-#include "../Utility/UUIDGenerator.hpp"
 #include "../Utility/Timestamper.hpp"
 #include "../Utility/ServerMessage.hpp"
 
@@ -20,15 +19,18 @@ namespace s21{
         void CreateBid(const std::string &user_id, const std::string& rate,
                                const std::string &quantity, BidType bid_type){
             if(!ValidateRate(rate)){
+                std::cout << "non-valid bid rate\n";
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::BID_BAD_RATE));
             }
             if(!ValidateQuantity(quantity)){
+                std::cout << "non-valid bid count\n";
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::BID_BAD_QUANTITY));
             }
+            std::cout << "Bid validated, trying to create\n";
             if(bid_type == BUYING){
-                repository_.CreateBuyBid(UUIDGenerator::Generate(), user_id, rate, quantity, Timestamper::GetTimestamp());
+                repository_.CreateBuyBid(user_id, rate, quantity, Timestamper::GetTimestamp());
             }else if(bid_type == SELLING){
-                repository_.CreateSellBid(UUIDGenerator::Generate(), user_id, rate, quantity, Timestamper::GetTimestamp());
+                repository_.CreateSellBid(user_id, rate, quantity, Timestamper::GetTimestamp());
             }
         }
         void UpdateBidRate(const std::string &bid_id, const std::string &rate){

@@ -11,10 +11,10 @@ namespace s21 {
     public:
         explicit BidRepository(pqxx::connection &db_conn) : db_connection_(db_conn) {}
 
-        void CreateSellBid(const std::string &bid_id, const std::string &seller_id,
+        void CreateSellBid(const std::string &seller_id,
                                    const std::string& rate, const std::string &quantity,
                                    const std::string& timestamp);
-        void CreateBuyBid(const std::string &bid_id, const std::string &buyer_id,
+        void CreateBuyBid(const std::string &buyer_id,
                                   const std::string& rate, const std::string &quantity,
                                     const std::string& timestamp);
 

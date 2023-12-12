@@ -1,8 +1,10 @@
 #ifndef SIMPLESTOCKEXCHANGE_CONNECTION_HPP
 #define SIMPLESTOCKEXCHANGE_CONNECTION_HPP
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
+#include <boost/make_unique.hpp>
 #include "../Utility/ThreadSafeQ.hpp"
 namespace s21 {
 class Connection : public boost::enable_shared_from_this<Connection>{
@@ -17,8 +19,7 @@ class Connection : public boost::enable_shared_from_this<Connection>{
 
     Connection(Owner owner, boost::asio::io_context &context, tcp::socket &&socket, ///on tsq type?
                ThreadSafeQ<std::pair<connection_ptr, std::string>> &inc) :
-               owner_(owner), context_(context), socket_(std::move(socket)), in_(inc),
-               read_strand_(context_.get_executor()){
+               owner_(owner), context_(context), socket_(std::move(socket)), in_(inc){
     }
 
     void ConnectToClient();
@@ -38,19 +39,24 @@ class Connection : public boost::enable_shared_from_this<Connection>{
 
     void Write();
 
-    void ReadHeader();
+    void Read();
 
-    void ReadBody(size_t body_length);
+    bool Authorized(){
+          return authorized_;
+    }
 
+    void Authorize(const std::string &user_id){
+        user_id_ = user_id;
+        authorized_ = true;
+    }
 
     const std::string &GetUserId(){
-        return user_id_;
+            return user_id_;
     }
 
 
 private:
 
-    size_t FindBodyLength(const std::string &header);
 
     void AddToIncomingQueue();
 
@@ -63,8 +69,7 @@ private:
     std::string unfinished_message_;
     std::string user_id_;
     boost::thread reader_;
-    bool authorized_;
-    boost::asio::strand<boost::asio::io_context::executor_type> read_strand_;
+    bool authorized_ = false;
 
 
 };

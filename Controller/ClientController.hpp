@@ -22,8 +22,9 @@ namespace s21 {
             body[BDNames::user_table_password] = password;
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::LOGIN, body);
         }
-        static std::string CreateBid(const std::string &quantity, const std::string &rate, BidService::BidType type){
+        static std::string CreateBid(const std::string &user_id, const std::string &quantity, const std::string &rate, BidService::BidType type){
             nlohmann::json body;
+            body[type == BidService::BUYING ? BDNames::bid_table_buyer_id : BDNames::bid_table_seller_id] = user_id;
             body[BDNames::bid_table_quantity] = quantity;
             body[BDNames::bid_table_rate] = rate;
             body[BDNames::bid_table_type] = type;
@@ -60,6 +61,10 @@ namespace s21 {
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::GET_USER_BUY_TRANSACTIONS, body);
         }
 
+        static std::string GetMyId(){
+            nlohmann::json body;
+            return RequestStringBuilder::BuildRequest(RequestStringBuilder::GET_MY_ID, body);
+        }
     };
 }
 

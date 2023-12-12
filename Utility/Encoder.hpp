@@ -12,7 +12,7 @@ namespace s21 {
             if(!str.empty()) {
                 CryptoPP::SHA512 hash;
                 std::string hashed_password;
-                CryptoPP::StringSource(hashed_password, true, new CryptoPP::HashFilter(hash, new CryptoPP::HexEncoder(
+                CryptoPP::StringSource(str, true, new CryptoPP::HashFilter(hash, new CryptoPP::HexEncoder(
                         new CryptoPP::StringSink(hashed_password), false)));
                 return hashed_password;
             }else{

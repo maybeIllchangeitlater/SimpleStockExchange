@@ -12,7 +12,7 @@ int main(){
                 std::cout << client.Inbox().PopFront().second;
             }
             std::cout
-                    << "Enter command:\n1 - LogIn\n2 - Register\n3 - Create Sell Bid\n4 - Create Buy Bid\n5 - CancelBid\n6 - View Bid"
+                    << "Enter command:\n1 - LogIn\n2 - Register\n3 - Create Sell Bid\n4 - Create Buy Bid\n5 - CancelBid\n6 - User Id"
                        "\n7 - View All Sell Bids\n8 - View All Buy Bids\n";
             std::cin >> command;
             switch (command) {
@@ -32,7 +32,7 @@ int main(){
                     client.CancelBid();
                     break;
                 case 6:
-                    client.CancelBid();
+                    std::cout << client.GetUserId();
                     break;
                 case 7:
                     client.GetMySellBids();

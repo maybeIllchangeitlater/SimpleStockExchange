@@ -30,23 +30,19 @@ namespace s21 {
         void Update();
 
     private:
-//        bool LoginRegisterAttempt(const std::string &message){
-//            return message.find("Login: ") != std::string::npos || message.find("Register: ") != std::string::npos;
-//        }
+        bool LoginRegisterAttempt(const std::string &message){
+            return message.find("Authenticate") != std::string::npos || message.find("Register") != std::string::npos;
+        }
         void OnConnect(connection_ptr);
         void OnDisconnect(connection_ptr);
         void OnMessage(connection_ptr, const std::string &message);
-        // Thread Safe Queue for incoming message packets
         ThreadSafeQ<std::pair<connection_ptr, std::string>> in_;
-        // Container of active validated connections
         std::vector<connection_ptr> connections_;
 
-        // Order of declaration is important - it is also the order of initialisation
         boost::asio::io_context context_;
         boost::thread thread_context_;
+        tcp::acceptor acceptor_;
 
-        // These things need an asio context
-        tcp::acceptor acceptor_; // Handles new incoming connection attempts...
         UserController &user_controller_;
         BidController &bid_controller_;
         TransactionController &transaction_controller_;

@@ -3,50 +3,45 @@
 
 namespace s21{
 
-    void BidRepository::CreateSellBid(const std::string &bid_id, const std::string &seller_id, const std::string &rate,
+    void BidRepository::CreateSellBid(const std::string &seller_id, const std::string &rate,
                                       const std::string &quantity, const std::string &timestamp) {
         pqxx::work task(db_connection_);
+        std::cout << "trying to create sell bid\n";
         try{
             std::string sql = "INSERT INTO " + std::string(BDNames::bid_table)
-                    + "(" + std::string(BDNames::bid_table_id)
-                    + ", " + std::string(BDNames::bid_table_seller_id)
+                    + "(" + std::string(BDNames::bid_table_seller_id)
                     + ", " + std::string(BDNames::bid_table_rate)
                     + ", " + std::string(BDNames::bid_table_quantity)
                     + ", " + std::string(BDNames::bid_table_create_update_time)
-                    + " VALUE (" + bid_id + ", "
-                    + seller_id + ", " + rate + ", "
+                    + " VALUE (" + seller_id + ", " + rate + ", "
                     + quantity + ", " + timestamp + ")";
             std::cout << "\nSQL REQUEST :\n" << sql;
-            if(!task.exec(sql).empty()) {
-                task.commit();
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
-            }
-        }catch(...){
+            auto result = task.exec(sql);
+            task.commit();
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
-            throw;
+        throw;
         }
     }
 
-    void BidRepository::CreateBuyBid(const std::string &bid_id, const std::string &buyer_id, const std::string &rate,
+    void BidRepository::CreateBuyBid(const std::string &buyer_id, const std::string &rate,
                                      const std::string &quantity, const std::string &timestamp) {
         pqxx::work task(db_connection_);
         try{
             std::string sql = "INSERT INTO " + task.quote(BDNames::bid_table)
-                              + "(" + task.quote(BDNames::bid_table_id)
-                              + ", " + task.quote(BDNames::bid_table_buyer_id)
+                              + "(" + task.quote(BDNames::bid_table_buyer_id)
                               + ", " + task.quote(BDNames::bid_table_rate)
                               + ", " + task.quote(BDNames::bid_table_quantity)
                               + ", " + task.quote(BDNames::bid_table_create_update_time)
-                              + " VALUE (" + task.quote(bid_id) + ", "
-                              + task.quote(buyer_id) + ", " + task.quote(rate) + ", "
+                              + " VALUE (" + task.quote(buyer_id)
+                              + ", " + task.quote(rate) + ", "
                               + task.quote(quantity) +  ", " + task.quote(timestamp) + ")";
-            if(!task.exec(sql).empty()) {
-                task.commit();
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
-            }
-        }catch(...){
+            std::cout << "\nSQL REQUEST :\n" << sql;
+            auto result = task.exec(sql);
+            task.commit();
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }

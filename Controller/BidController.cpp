@@ -4,7 +4,9 @@ namespace s21{
     nlohmann::json BidController::CreateBid(const nlohmann::json &request_body){
         nlohmann::json response;
         try {
-            service_.CreateBid(request_body.at(BDNames::bid_table_id),
+            service_.CreateBid(request_body.at(BDNames::bid_table_type) == "1"
+                                ? request_body.at(BDNames::bid_table_seller_id)
+                                : request_body.at(BDNames::bid_table_buyer_id),
                                request_body.at(BDNames::bid_table_rate),
                                request_body.at(BDNames::bid_table_quantity),
                                request_body.at(BDNames::bid_table_type));
