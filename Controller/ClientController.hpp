@@ -16,11 +16,10 @@ namespace s21 {
             body[BDNames::user_table_balance] = balance;
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::REGISTER, body);
         }
-        static std::string Login(const std::string &username, const std::string &password, const std::string &balance){
+        static std::string Login(const std::string &username, const std::string &password){
             nlohmann::json body;
             body[BDNames::user_table_user_name] = username;
             body[BDNames::user_table_password] = password;
-            body[BDNames::user_table_balance] = balance;
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::LOGIN, body);
         }
         static std::string CreateBid(const std::string &quantity, const std::string &rate, BidService::BidType type){

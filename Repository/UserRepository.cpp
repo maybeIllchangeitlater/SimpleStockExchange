@@ -3,26 +3,23 @@
 
 namespace s21 {
 
-    void UserRepository::CreateUser(const std::string &user_id, const std::string &username,
+    void UserRepository::CreateUser(const std::string &username,
                                     const std::string &password, const std::string &user_balance) {
         pqxx::work task(db_connection_);
         try{
 
-            std::string sql = "INSERT INTO " + std::string(BDNames::user_table)
-                    + " ("+ std::string(BDNames::user_table_id)
-                    + ", " + std::string(BDNames::user_table_user_name)
-                    + ", " + std::string(BDNames::user_table_password)
-                    + ", " + std::string(BDNames::user_table_balance)
-                    + ") VALUES ("
-                    + task.quote(user_id) + ", "
-                    + task.quote(username) + ", " + task.quote(password) + ", "
-                    + user_balance + ");";
+            std::string sql = "INSERT INTO " +  std::string(BDNames::user_table) +
+                    "(" + std::string(BDNames::user_table_user_name) + ", "
+                    + std::string(BDNames::user_table_password) +", "
+                    + std::string(BDNames::user_table_balance)
+                    + ") VALUES (" +
+                     task.quote(username) + ", " + task.quote(password) + ", " +
+                     user_balance + ");";
             std::cout << sql << "\n";
             auto result = task.exec(sql);
-            std::cout << "task.exec username is " << result[0]["username"].as<std::string>();
             task.commit();
         }catch(const std::exception &e){
-            std::cout << "aboorting task because " << e.what() << "\n";
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }

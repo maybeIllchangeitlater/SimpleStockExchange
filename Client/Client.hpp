@@ -37,10 +37,9 @@ namespace s21 {
         void LogIn(){
             std::string username;
             std::string password;
-            std::string balance;
-            std::cout << "Please Enter Username, Password and Balance\n";
-            std::cin >> username >> password >> balance;
-            Send(ClientController::Login(username, password, balance));
+            std::cout << "Please Enter Username and Password\n";
+            std::cin >> username >> password;
+            Send(ClientController::Login(username, password));
         }
 
         void CreateSellBid(){
