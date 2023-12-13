@@ -42,14 +42,19 @@ int main(){
                     break;
                 case 9:
                     client.ChangeName();
+                    break;
                 case 10:
                     client.DeleteMe();
+                    break;
                 default:
                     std::cout << "invalid input\n";
             }
 
         }
     }
-///fix ques. Client get responses, Server get request. Client has response q and reference to output q(should it? probably no)
 
 }
+
+///login, register, created bid(sell/buy), delete user, change name, change password, get all sell/buy bids
+
+///fix occasional null at request start read by server

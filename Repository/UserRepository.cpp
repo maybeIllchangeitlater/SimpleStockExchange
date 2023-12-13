@@ -41,7 +41,7 @@ namespace s21 {
             }else{
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::USER_NOT_FOUND));
             }
-        }catch(...){
+        }catch(const std::exception &e){
             task.abort();
             throw;
         }
@@ -79,12 +79,11 @@ namespace s21 {
                     + " = " + task.quote(new_username)
                     + " WHERE " + std::string(BDNames::user_table_id)
                     + " = " + task.quote(user_id);
-            if(!task.exec(sql).empty()) {
-                task.commit();
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
-            }
-        }catch(...){
+            std::cout << sql << "\n";
+            auto res = task.exec(sql);
+            task.commit();
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }
@@ -98,12 +97,11 @@ namespace s21 {
                     + " = " + task.quote(new_password)
                     + " WHERE " + std::string(BDNames::user_table_id)
                     + " = " + task.quote(user_id);
-            if(!task.exec(sql).empty()) {
-                task.commit();
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
-            }
-        }catch(...){
+            std::cout << sql << "\n";
+            auto res = task.exec(sql);
+            task.commit();
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }
@@ -117,12 +115,11 @@ namespace s21 {
                     + " = " + task.quote(new_balance)
                     + " WHERE " + std::string(BDNames::user_table_id)
                     + " = " + task.quote(user_id);
-            if(!task.exec(sql).empty()) {
-                task.commit();
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
-            }
-        }catch(...){
+            std::cout << sql << "\n";
+            auto res = task.exec(sql);
+            task.commit();
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }

@@ -91,11 +91,19 @@ namespace s21{
                 client->Send(client->GetUserId());
                 return;
             }
-            response.status = result["status"];
+            if(result.is_array()) {
+                response.status = result.back()["status"];
+            }else{
+                response.status = result["status"];
+            }
             if(LoginRegisterAttempt(message) && response.status == ServerMessage::ResponseCode::OK){
                 client->Authorize(result[BDNames::user_table_id]);
             }
-            result.erase("status");
+            if(result.is_array()) {
+                result.erase(--result.end());
+            }else{
+                result.erase("status");
+            }
             response.body = result;
         }else{
             std::cout << "here at readmsg error\n";

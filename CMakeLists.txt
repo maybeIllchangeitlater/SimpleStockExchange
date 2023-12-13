@@ -11,7 +11,7 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} 3rdParty/cryptopp890)
 
 SET(CMAKE_CXX_STANDARD 17)
 
-
+ADD_COMPILE_OPTIONS(-Wall -Werror -Wextra -pedantic)
 
 ADD_EXECUTABLE(ServerR
         Repository/BdNames.hpp

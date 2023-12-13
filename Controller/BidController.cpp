@@ -40,7 +40,9 @@ namespace s21{
         nlohmann::json response;
         try {
             response = service_.ReadAllUserBuyBids(request_body.at(BDNames::bid_table_id));
-            response["status"] = ServerMessage::ResponseCode::OK;
+            nlohmann::json kostyl;
+            kostyl["status"] = ServerMessage::OK;
+            response.emplace_back(kostyl);
             return response;
         }catch(const std::exception &e){
             response["status"] = ServerMessage::response_code.find(e.what()) != ServerMessage::response_code.end()
@@ -54,7 +56,10 @@ namespace s21{
         nlohmann::json response;
         try {
             response = service_.ReadAllUserSellBids(request_body.at(BDNames::bid_table_id));
-            response["status"] = ServerMessage::ResponseCode::OK;
+            nlohmann::json kostyl;
+            kostyl["status"] = ServerMessage::OK;
+            response.emplace_back(kostyl);
+            std::cout << "FUCK ME ASS AND CALL ME SALLY\n" << response.dump() << "\n";
             return response;
         }catch(const std::exception &e){
             response["status"] = ServerMessage::response_code.find(e.what()) != ServerMessage::response_code.end()

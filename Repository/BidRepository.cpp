@@ -58,10 +58,10 @@ namespace s21{
                               + " b." + task.quote(BDNames::bid_table_quantity)
                               + " b." + task.quote(BDNames::bid_table_create_update_time)
                               + " FROM " + task.quote(BDNames::bid_table)
-                              + " b JOIN " + task.quote(BDNames::user_table) + " seller ON b."
+                              + " b LEFT JOIN " + task.quote(BDNames::user_table) + " seller ON b."
                               + task.quote(BDNames::bid_table_seller_id)
                               + " = seller." + task.quote(BDNames::user_table_id)
-                              + " JOIN "  + task.quote(BDNames::user_table) + " buyer ON b."
+                              + " LEFT JOIN "  + task.quote(BDNames::user_table) + " buyer ON b."
                               + task.quote(BDNames::bid_table_buyer_id)
                               + " = buyer." + task.quote(BDNames::user_table_id)
                               + " WHERE " + task.quote(BDNames::bid_table_id)
@@ -82,28 +82,28 @@ namespace s21{
         pqxx::work task(db_connection_);
         try{
 
-            std::string sql = "SELECT b." + std::string(BDNames::bid_table_id) + " AS bid id, seller."
-                              + std::string(BDNames::user_table_user_name) + " AS seller username, buyer."
-                              + std::string(BDNames::user_table_user_name) + " AS buyer username, b."
+            std::string sql = "SELECT b." + std::string(BDNames::bid_table_id) + " AS bid_id, seller."
+                              + std::string(BDNames::user_table_user_name) + " AS seller_username, buyer."
+                              + std::string(BDNames::user_table_user_name) + " AS buyer_username, b."
                               + std::string(BDNames::bid_table_rate)
-                              + " b." + std::string(BDNames::bid_table_quantity)
-                              + " b." + std::string(BDNames::bid_table_create_update_time)
+                              + ", b." + std::string(BDNames::bid_table_quantity)
+                              + ", b." + std::string(BDNames::bid_table_create_update_time)
                               + " FROM " + std::string(BDNames::bid_table)
                               + " b JOIN " + std::string(BDNames::user_table) + " seller ON b."
                               + std::string(BDNames::bid_table_seller_id)
                               + " = seller." + std::string(BDNames::user_table_id)
-                              + " JOIN "  + std::string(BDNames::user_table) + " buyer ON b."
+                              + " LEFT JOIN "  + std::string(BDNames::user_table) + " buyer ON b."
                               + std::string(BDNames::bid_table_buyer_id)
                               + " = buyer." + std::string(BDNames::user_table_id)
                               + " WHERE seller." + std::string(BDNames::user_table_id)
                               + " = " + task.quote(seller_id);
-            pqxx::result res = task.exec(sql);
-            if(!res.empty()) {
-                return res;
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::BID_NOT_FOUND));
-            }
-        }catch(...){
+            std::cout << sql << "\n";
+            auto res = task.exec(sql);
+            std::cout << "total bids = " << res.affected_rows() << "\n" << res[0]["rate"].as<std::string>();
+
+            return res;
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }
@@ -113,14 +113,14 @@ namespace s21{
         pqxx::work task(db_connection_);
         try{
 
-            std::string sql = "SELECT b." + std::string(BDNames::bid_table_id) + " AS bid id, seller."
-                              + std::string(BDNames::user_table_user_name) + " AS seller username, buyer."
-                              + std::string(BDNames::user_table_user_name) + " AS buyer username, b."
+            std::string sql = "SELECT b." + std::string(BDNames::bid_table_id) + " AS bid_id, seller."
+                              + std::string(BDNames::user_table_user_name) + " AS seller_username, buyer."
+                              + std::string(BDNames::user_table_user_name) + " AS buyer_username, b."
                               + std::string(BDNames::bid_table_rate)
-                              + " b." + std::string(BDNames::bid_table_quantity)
-                              + " b." + std::string(BDNames::bid_table_create_update_time)
+                              + ", b." + std::string(BDNames::bid_table_quantity)
+                              + ", b." + std::string(BDNames::bid_table_create_update_time)
                               + " FROM " + std::string(BDNames::bid_table)
-                              + " b JOIN " + std::string(BDNames::user_table) + " seller ON b."
+                              + " b LEFT JOIN " + std::string(BDNames::user_table) + " seller ON b."
                               + std::string(BDNames::bid_table_seller_id)
                               + " = seller." + std::string(BDNames::user_table_id)
                               + " JOIN "  + std::string(BDNames::user_table) + " buyer ON b."
@@ -128,13 +128,12 @@ namespace s21{
                               + " = buyer." + std::string(BDNames::user_table_id)
                               + " WHERE buyer." + std::string(BDNames::user_table_id)
                               + " = " + task.quote(buyer_id);
-            pqxx::result res = task.exec(sql);
-            if(!res.empty()) {
-                return res;
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::BID_NOT_FOUND));
-            }
-        }catch(...){
+            std::cout << sql << "\n";
+            auto res = task.exec(sql);
+            std::cout << "total bids = " << res.affected_rows() << "\n" << res[0]["rate"].as<std::string>();
+            return res;
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }

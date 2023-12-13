@@ -62,7 +62,7 @@ namespace s21{
             auto transactions_info = repository_.ReadAllUserSellBids(user_id);
             nlohmann::json res;
             for(const auto& v: transactions_info){
-                res.emplace_back(GenerateBidInfo(v));
+                res += GenerateBidInfo(v);
             }
             return res;
         }
@@ -70,7 +70,7 @@ namespace s21{
             auto transactions_info = repository_.ReadAllUserBuyBids(user_id);
             nlohmann::json res;
             for(const auto& v: transactions_info){
-                res.emplace_back(GenerateBidInfo(v));
+                res += GenerateBidInfo(v);
             }
             return res;
         }
@@ -84,16 +84,21 @@ namespace s21{
             return std::stoi(quantity) > 0;
         }
         nlohmann::json GenerateBidInfo(const pqxx::row & bid_info){
-            std::string bid_id = bid_info["bid_id"].as<std::string>();
-            std::string seller = bid_info["seller username"].as<std::string>();
-            std::string buyer = bid_info["buyer username"].as<std::string>();
-            std::string quantity = bid_info["quantity"].as<std::string>();
-            std::string rate = bid_info["rate"].as<std::string>();
-            std::string time = bid_info["time"].as<std::string>();
+            auto bid_id = bid_info["bid_id"].as<std::string>();
+            std::cout << bid_id << "\n";
+            auto seller = !bid_info["seller_username"].is_null()
+                    ? bid_info["seller_username"].as<std::string>()
+                    : "no seller yet";
+            auto buyer = !bid_info["buyer_username"].is_null()
+                    ? bid_info["buyer_username"].as<std::string>()
+                    : "no buyer yer";
+            auto quantity = bid_info["quantity"].as<std::string>();
+            auto rate = bid_info["rate"].as<std::string>();
+            auto time = bid_info["time"].as<std::string>();
             nlohmann::json bid_json;
-            bid_json["bid id"] = bid_id;
-            bid_json["seller username"] = seller;
-            bid_json["buyer username"] = buyer;
+            bid_json["bid_id"] = bid_id;
+            bid_json["seller_username"] = seller;
+            bid_json["buyer_username"] = buyer;
             bid_json["quantity"] = quantity;
             bid_json["rate"] = rate;
             bid_json["time"] = time;
