@@ -1,10 +1,11 @@
 #include "BidController.hpp"
+#include <iostream>
 
 namespace s21{
     nlohmann::json BidController::CreateBid(const nlohmann::json &request_body){
         nlohmann::json response;
         try {
-            service_.CreateBid(request_body.at(BDNames::bid_table_type) == "1"
+            service_.CreateBid(request_body.at(BDNames::bid_table_type) == 1
                                 ? request_body.at(BDNames::bid_table_seller_id)
                                 : request_body.at(BDNames::bid_table_buyer_id),
                                request_body.at(BDNames::bid_table_rate),
@@ -13,6 +14,7 @@ namespace s21{
             response["status"] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
+            std::cout << "Failed creating bid because:\n" << e.what() << "\n";
             response["status"] = ServerMessage::response_code.find(e.what()) != ServerMessage::response_code.end()
                                  ? ServerMessage::response_code.at(e.what())
                                  : ServerMessage::ResponseCode::BAD_REQUEST;

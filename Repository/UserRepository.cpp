@@ -28,12 +28,12 @@ namespace s21 {
         pqxx::work task(db_connection_);
         pqxx::result res;
         try{
-            std::string sql = "SELECT " + task.quote(BDNames::user_table_id)
-                    + ", " + task.quote(BDNames::user_table_user_name)
-                    + ", " + task.quote(BDNames::user_table_password)
-                    + ", " + task.quote(BDNames::user_table_balance)
-                    + " FROM " + task.quote(BDNames::user_table)
-                    + " WHERE " + task.quote(BDNames::user_table_id)
+            std::string sql = "SELECT " + std::string(BDNames::user_table_id)
+                    + ", " + std::string(BDNames::user_table_user_name)
+                    + ", " + std::string(BDNames::user_table_password)
+                    + ", " + std::string(BDNames::user_table_balance)
+                    + " FROM " + std::string(BDNames::user_table)
+                    + " WHERE " + std::string(BDNames::user_table_id)
                     + " = " + task.quote(user_id);
             res = task.exec(sql);
             if(!res.empty()) {
@@ -74,10 +74,10 @@ namespace s21 {
     void UserRepository::UpdateUserName(const std::string &user_id, const std::string &new_username) {
         pqxx::work task(db_connection_);
         try{
-            std::string sql = "UPDATE " + task.quote(BDNames::user_table_user_name)
-                    + " SET " + task.quote(BDNames::user_table_user_name)
+            std::string sql = "UPDATE " + std::string(BDNames::user_table)
+                    + " SET " + std::string(BDNames::user_table_user_name)
                     + " = " + task.quote(new_username)
-                    + " WHERE " + task.quote(BDNames::user_table_id)
+                    + " WHERE " + std::string(BDNames::user_table_id)
                     + " = " + task.quote(user_id);
             if(!task.exec(sql).empty()) {
                 task.commit();
@@ -93,10 +93,10 @@ namespace s21 {
     void UserRepository::UpdateUserPassword(const std::string &user_id, const std::string &new_password) {
         pqxx::work task(db_connection_);
         try{
-            std::string sql = "UPDATE " + task.quote(BDNames::user_table_user_name)
-                    + " SET " + task.quote(BDNames::user_table_password)
+            std::string sql = "UPDATE " + std::string(BDNames::user_table)
+                    + " SET " + std::string(BDNames::user_table_password)
                     + " = " + task.quote(new_password)
-                    + " WHERE " + task.quote(BDNames::user_table_id)
+                    + " WHERE " + std::string(BDNames::user_table_id)
                     + " = " + task.quote(user_id);
             if(!task.exec(sql).empty()) {
                 task.commit();
@@ -112,10 +112,10 @@ namespace s21 {
     void UserRepository::UpdateUserBalance(const std::string &user_id, const std::string &new_balance) {
         pqxx::work task(db_connection_);
         try{
-            std::string sql = "UPDATE " + task.quote(BDNames::user_table_user_name)
-                    + " SET " + task.quote(BDNames::user_table_balance)
+            std::string sql = "UPDATE " + std::string(BDNames::user_table)
+                    + " SET " + std::string(BDNames::user_table_balance)
                     + " = " + task.quote(new_balance)
-                    + " WHERE " + task.quote(BDNames::user_table_id)
+                    + " WHERE " + std::string(BDNames::user_table_id)
                     + " = " + task.quote(user_id);
             if(!task.exec(sql).empty()) {
                 task.commit();
@@ -131,15 +131,14 @@ namespace s21 {
     void UserRepository::DeleteUser(const std::string &user_id) {
         pqxx::work task(db_connection_);
         try {
-            std::string sql = "DELETE FROM " + task.quote(BDNames::user_table)
-                    + " WHERE " + task.quote(BDNames::user_table_id)
+            std::string sql = "DELETE FROM " + std::string(BDNames::user_table)
+                    + " WHERE " + std::string(BDNames::user_table_id)
                     + " = " + task.quote(user_id);
-            if (!task.exec(sql).empty()) {
-                task.commit();
-            } else {
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
-            }
-        } catch (...) {
+            std::cout << sql << "\n";
+            auto result = task.exec(sql);
+            task.commit();
+        } catch (const std::exception &e) {
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }

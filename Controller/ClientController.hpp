@@ -37,6 +37,20 @@ namespace s21 {
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::CANCEL_BID, body);
         }
 
+        static std::string UpdateBidRate(const std::string &bid_id, const std::string &new_rate){
+            nlohmann::json body;
+            body[BDNames::bid_table_id] = bid_id;
+            body[BDNames::bid_table_rate] = new_rate;
+            return RequestStringBuilder::BuildRequest(RequestStringBuilder::UPDATE_BID_RATE, body);
+        }
+
+        static std::string UpdateBidQuantity(const std::string &bid_id, const std::string &new_quantity){
+            nlohmann::json body;
+            body[BDNames::bid_table_id] = bid_id;
+            body[BDNames::bid_table_quantity] = new_quantity;
+            return RequestStringBuilder::BuildRequest(RequestStringBuilder::UPDATE_BID_QUANTITY, body);
+        }
+
         static std::string GetMySellBids(const std::string &user_id){
             nlohmann::json body;
             body[BDNames::user_table_id] = user_id;
@@ -64,6 +78,26 @@ namespace s21 {
         static std::string GetMyId(){
             nlohmann::json body;
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::GET_MY_ID, body);
+        }
+
+        static std::string ChangeUserName(const std::string &user_id, const std::string &new_username){
+            nlohmann::json body;
+            body[BDNames::user_table_user_name] = new_username;
+            body[BDNames::user_table_id] = user_id;
+            return RequestStringBuilder::BuildRequest(RequestStringBuilder::UPDATE_USER_NAME, body);
+        }
+
+        static std::string ChangePassword(const std::string &user_id, const std::string &new_password){
+            nlohmann::json body;
+            body[BDNames::user_table_password] = new_password;
+            body[BDNames::user_table_id] = user_id;
+            return RequestStringBuilder::BuildRequest(RequestStringBuilder::UPDATE_USER_PASSWORD, body);
+        }
+
+        static std::string DeleteMe(const std::string &user_id){
+            nlohmann::json body;
+            body[BDNames::user_table_id] = user_id;
+            return RequestStringBuilder::BuildRequest(RequestStringBuilder::DELETE_USER, body);
         }
     };
 }

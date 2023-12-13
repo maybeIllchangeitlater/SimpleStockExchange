@@ -12,8 +12,8 @@ int main(){
                 std::cout << client.Inbox().PopFront().second;
             }
             std::cout
-                    << "Enter command:\n1 - LogIn\n2 - Register\n3 - Create Sell Bid\n4 - Create Buy Bid\n5 - CancelBid\n6 - User Id"
-                       "\n7 - View All Sell Bids\n8 - View All Buy Bids\n";
+                    << "Enter command:\n1 - LogIn\n2 - Register\n3 - Create Sell Bid\n4 - Create Buy Bid\n5 - CancelBid\n6 - ChangePassword"
+                       "\n7 - View All Sell Bids\n8 - View All Buy Bids\n9 - ChangeUsername\n10 - DeleteMe\n";
             std::cin >> command;
             switch (command) {
                 case 1:
@@ -32,7 +32,7 @@ int main(){
                     client.CancelBid();
                     break;
                 case 6:
-                    std::cout << client.GetUserId();
+                    client.ChangePassword();
                     break;
                 case 7:
                     client.GetMySellBids();
@@ -40,6 +40,10 @@ int main(){
                 case 8:
                     client.GetMyBuyBids();
                     break;
+                case 9:
+                    client.ChangeName();
+                case 10:
+                    client.DeleteMe();
                 default:
                     std::cout << "invalid input\n";
             }

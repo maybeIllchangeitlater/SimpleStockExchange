@@ -82,46 +82,54 @@ namespace s21 {
             Send(ClientController::CancelBid(bid_id));
         }
 
+        void ChangeName(){
+            std::string name;
+            std::cout << "Please enter your new username\n";
+            std::cin >> name;
+            Send(ClientController::ChangeUserName(GetUserId(), name));
+        }
+
+        void ChangePassword(){
+            std::string password;
+            std::cout << "Please enter your new password\n";
+            std::cin >> password;
+            Send(ClientController::ChangePassword(GetUserId(), password));
+        }
+
+        void DeleteMe(){
+            Send(ClientController::DeleteMe(GetUserId()));
+            while (from_server_.Empty()) {}
+            Disconnect();
+        }
+
+//        void UpdateBidRate(){
+//            std::string bid_id;
+//            std::string new_rate;
+//            std::cout << "Please enter bid_id and new rate";
+//            std::cin >> bid_id, new_rate;
+//        }
+
+
+
+    private:
         const std::string &GetUserId(){
             if(user_id_.empty()) {
                 Send(ClientController::GetMyId());
                 while (from_server_.Empty()) {}
-                user_id_ = from_server_.PopFront().second;
+                user_id_ = GetIdFromHTTP();
             }
             return user_id_;
         }
 
         std:: string GetIdFromHTTP(){
             auto msg = from_server_.PopFront().second;
-            size_t jsonStart = msg.find('{');
-            size_t jsonEnd = msg.rfind('}');
-            //  // Find the start and end positions of the JSON part
-            //    size_t jsonStart = input.find('{');
-            //    size_t jsonEnd = input.rfind('}');
-            //
-            //    if (jsonStart != std::string::npos && jsonEnd != std::string::npos && jsonStart < jsonEnd) {
-            //        // Extract the JSON part
-            //        std::string jsonStr = input.substr(jsonStart, jsonEnd - jsonStart + 1);
-            //
-            //        try {
-            //            // Parse the JSON string
-            //            json j = json::parse(jsonStr);
-            //
-            //            // Extract the ID as a string
-            //            std::string id = j["id"];
-            //
-            //            // Output the result
-            //            std::cout << "Extracted ID: " << id << std::endl;
-            //        } catch (const std::exception& e) {
-            //            std::cerr << "Error parsing JSON: " << e.what() << std::endl;
-            //        }
-            //    } else {
-            //        std::cerr << "No valid JSON found in the input string." << std::endl;
-            //    }
+            size_t json_start = msg.find('{');
+            size_t json_end = msg.rfind('}');
+            std::string json_str = msg.substr(json_start, json_end - json_start + 1);
+            nlohmann::json json = nlohmann::json::parse(json_str);
+            std::string id = json["id"];
+            return id;
         }
-
-
-    private:
         boost::asio::io_context context_;
         boost::thread thread_context_;
         std::unique_ptr<Connection> connection_;
