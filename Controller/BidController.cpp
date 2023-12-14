@@ -116,6 +116,7 @@ namespace s21{
     nlohmann::json BidController::CancelBid(const nlohmann::json &request_body){
         nlohmann::json response;
         try {
+            std::cout << "cancelling request with id:\n" <<  request_body[BDNames::bid_table_id] << "\n";
             service_.CancelBid(request_body.at(BDNames::bid_table_id));
             response["status"] = ServerMessage::ResponseCode::OK;
             return response;

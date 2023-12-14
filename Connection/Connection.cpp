@@ -12,7 +12,7 @@ namespace s21{
     void Connection::ConnectToServer(const tcp::resolver::results_type &endpoints){
         if(owner_ == CLIENT){
             boost::asio::async_connect(socket_, endpoints,
-                                       [this](error_code ec, tcp::endpoint endpoint) {
+                                       [this](error_code ec, tcp::endpoint) {
                                            if (!ec) {
                                                Read();
                                            }
@@ -36,7 +36,7 @@ namespace s21{
         std::cout << "I'm writing\n";
         if(!out_.Empty()) {
                 boost::asio::async_write(socket_, boost::asio::buffer(out_.Front().data(), out_.Front().length()),
-                                         [this](error_code ec, size_t length) {
+                                         [this](error_code ec, size_t) {
                                              if (!ec) {
                                                  std::cout << out_.PopFront() << "\n";
                                                  if (!out_.Empty()) {
@@ -51,7 +51,7 @@ namespace s21{
 
     void Connection::Read(){
             boost::asio::async_read_until(socket_, boost::asio::dynamic_buffer(unfinished_message_), "\r\n\r\n",
-                                          [this](error_code ec, std::size_t length) {
+                                          [this](error_code ec, std::size_t) {
                                               std::cout << "I'm reading\n";
                                               if (!ec) {
                                                   AddToIncomingQueue();

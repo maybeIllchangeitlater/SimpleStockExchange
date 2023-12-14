@@ -56,8 +56,9 @@ namespace s21{
         } ///Add Logic For Sending Transaction notifications?
     }
 
-    void Server::OnDisconnect(connection_ptr client) {
+    void Server::OnDisconnect(connection_ptr) {
         std::cout << "Removing client ";
+
     }
 
     void Server::OnConnect(connection_ptr client) {

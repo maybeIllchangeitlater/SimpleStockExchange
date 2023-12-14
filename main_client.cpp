@@ -13,7 +13,8 @@ int main(){
             }
             std::cout
                     << "Enter command:\n1 - LogIn\n2 - Register\n3 - Create Sell Bid\n4 - Create Buy Bid\n5 - CancelBid\n6 - ChangePassword"
-                       "\n7 - View All Sell Bids\n8 - View All Buy Bids\n9 - ChangeUsername\n10 - DeleteMe\n";
+                       "\n7 - View All Sell Bids\n8 - View All Buy Bids\n9 - ChangeUsername\n10 - DeleteMe\n"
+                       "11 - UpdateBidRate\n12 - UpdateBidQuantity\n";
             std::cin >> command;
             switch (command) {
                 case 1:
@@ -45,6 +46,12 @@ int main(){
                     break;
                 case 10:
                     client.DeleteMe();
+                    break;
+                case 11:
+                    client.UpdateBidRate();
+                    break;
+                case 12:
+                    client.UpdateBidQuantity();
                     break;
                 default:
                     std::cout << "invalid input\n";

@@ -99,8 +99,6 @@ namespace s21{
                               + " = " + task.quote(seller_id);
             std::cout << sql << "\n";
             auto res = task.exec(sql);
-            std::cout << "total bids = " << res.affected_rows() << "\n" << res[0]["rate"].as<std::string>();
-
             return res;
         }catch(const std::exception &e){
             std::cout << "\naboorting task because " << e.what() << "\n";
@@ -130,7 +128,6 @@ namespace s21{
                               + " = " + task.quote(buyer_id);
             std::cout << sql << "\n";
             auto res = task.exec(sql);
-            std::cout << "total bids = " << res.affected_rows() << "\n" << res[0]["rate"].as<std::string>();
             return res;
         }catch(const std::exception &e){
             std::cout << "\naboorting task because " << e.what() << "\n";
@@ -143,28 +140,23 @@ namespace s21{
         pqxx::work task(db_connection_);
         try{
             std::string participants = "SELECT " + std::string(BDNames::bid_table_buyer_id) + ", "
-                                + std::string(BDNames::bid_table_seller_id) + ", "
+                                + std::string(BDNames::bid_table_seller_id)
                                 + " FROM " + std::string(BDNames::bid_table)
                                 + " WHERE " + std::string(BDNames::bid_table_id)
                                 + " = " + task.quote(bid_id);
-            pqxx::result result = task.exec(participants);
-            if(result.empty()){
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::BID_NOT_FOUND));
-            }
+            std::cout << participants << "\n";
+            auto result = task.exec(participants);
             if (result[0][BDNames::bid_table_seller_id].is_null()
                 || result[0][BDNames::bid_table_buyer_id].is_null()) {
                 std::string sql = "DELETE FROM " + std::string(BDNames::bid_table)
-                        + " WHERE " + std::string(BDNames::bid_table_id)
-                        + " = " + task.quote(bid_id);
-                if(!task.exec(sql).empty()) {
-                    task.commit();
-                }else{
-                    throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
-                }
-            } else {
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
+                                  + " WHERE " + std::string(BDNames::bid_table_id)
+                                  + " = " + task.quote(bid_id);
+                std::cout << sql << "\n";
+                result = task.exec(sql);
+                task.commit();
             }
-        } catch (...){
+        } catch (const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }
@@ -174,7 +166,7 @@ namespace s21{
         pqxx::work task(db_connection_);
         try{
             std::string participants = "SELECT " + std::string(BDNames::bid_table_buyer_id) + ", "
-                                       + std::string(BDNames::bid_table_seller_id) + ", "
+                                       + std::string(BDNames::bid_table_seller_id)
                                        + " FROM " + std::string(BDNames::bid_table)
                                        + " WHERE " + std::string(BDNames::bid_table_id)
                                        + " = " + task.quote(bid_id);
@@ -184,12 +176,12 @@ namespace s21{
                 std::string sql = "DELETE FROM " + std::string(BDNames::bid_table)
                                   + " WHERE " + std::string(BDNames::bid_table_id)
                                   + " = " + std::string(bid_id);
-                task.exec(sql);
+                std::cout << sql << "\n";
+                result = task.exec(sql);
                 task.commit();
-            } else {
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
             }
-        } catch (...){
+        } catch (const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }
@@ -200,15 +192,14 @@ namespace s21{
         try{
             std::string sql = "UPDATE " + std::string(BDNames::bid_table)
                               + " SET " + std::string(BDNames::bid_table_rate)
-                              + " = " + task.quote(rate) + " time = " + task.quote(time)
+                              + " = " + rate + ", time = " + task.quote(time)
                               + " WHERE " + std::string(BDNames::bid_table_id)
                               + " = " + task.quote(bid_id);
-            if(!task.exec(sql).empty()) {
-                task.commit();
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
-            }
-        }catch(...){
+            std::cout << sql << "\n";
+            task.exec(sql);
+            task.commit();
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }
@@ -219,15 +210,14 @@ namespace s21{
         try{
             std::string sql = "UPDATE " + std::string(BDNames::bid_table)
                               + " SET " + std::string(BDNames::bid_table_quantity)
-                              + " = " + task.quote(quantity) + " time = " + task.quote(time)
+                              + " = " + quantity + ", time = " + task.quote(time)
                               + " WHERE " + std::string(BDNames::bid_table_id)
-                              + " = " + std::string(bid_id);
-            if(!task.exec(sql).empty()) {
-                task.commit();
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
-            }
-        }catch(...){
+                              + " = " + task.quote(bid_id);
+            std::cout << sql << "\n";
+            task.exec(sql);
+            task.commit();
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }

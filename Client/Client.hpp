@@ -102,12 +102,21 @@ namespace s21 {
             Disconnect();
         }
 
-//        void UpdateBidRate(){
-//            std::string bid_id;
-//            std::string new_rate;
-//            std::cout << "Please enter bid_id and new rate";
-//            std::cin >> bid_id, new_rate;
-//        }
+        void UpdateBidRate(){
+            std::string bid_id;
+            std::string new_rate;
+            std::cout << "Please enter bid_id and new rate\n";
+            std::cin >> bid_id >> new_rate;
+            Send(ClientController::UpdateBidRate(bid_id, new_rate));
+        }
+
+        void UpdateBidQuantity(){
+            std::string bid_id;
+            std::string new_quantity;
+            std::cout << "Please enter bid_id and new quantity\n";
+            std::cin >> bid_id >> new_quantity;
+            Send(ClientController::UpdateBidQuantity(bid_id, new_quantity));
+        }
 
 
 
