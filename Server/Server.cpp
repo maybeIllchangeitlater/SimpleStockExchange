@@ -38,15 +38,10 @@ namespace s21{
         });
     }
 
-    void Server::MessageClient(connection_ptr client, const std::string &message){
-        if(client && client->Connected()){
-            std::cout << "Server: messaging clients\n";
-            client->Send(message);
-        }else{
-            OnDisconnect(client);
-            client.reset();
-            connections_.erase(std::remove(connections_.begin(), connections_.end(), client), connections_.end());
-        }
+    void Server::RemoveClient(connection_ptr client){
+        OnDisconnect(client);
+        client.reset();
+        connections_.erase(std::remove(connections_.begin(), connections_.end(), client), connections_.end());
     }
 
     void Server::Update() {
@@ -57,7 +52,7 @@ namespace s21{
     }
 
     void Server::OnDisconnect(connection_ptr) {
-        std::cout << "Removing client ";
+        std::cout << "Removing client \n";
 
     }
 
@@ -88,8 +83,9 @@ namespace s21{
             } else if (request.path[0] == 'T') {
                 result = ControllerMapping::method_mapping_transaction.at(request.path.substr(1))(
                         transaction_controller_, request.body);
-            } else if (request.path[0] == 'G'){
-                client->Send(client->GetUserId());
+            }
+            else if (request.path[0] == 'D'){
+                RemoveClient(client);
                 return;
             }
             if(result.is_array()) {

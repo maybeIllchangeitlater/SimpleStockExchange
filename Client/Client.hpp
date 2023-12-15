@@ -25,20 +25,11 @@ namespace s21 {
             return from_server_;
         }
 
-        void Register(){
-            std::string username;
-            std::string password;
-            std::string balance;
-            std::cout << "Please Enter Username, Password and Balance\n";
-            std::cin >> username >> password >> balance;
+        void Register(const std::string &username, const std::string &password, const std::string &balance){
             Send(ClientController::Register(username, password, balance));
         }
 
-        void LogIn(){
-            std::string username;
-            std::string password;
-            std::cout << "Please Enter Username and Password\n";
-            std::cin >> username >> password;
+        void LogIn(const std::string &username, const std::string& password){
             Send(ClientController::Login(username, password));
         }
 
@@ -118,32 +109,48 @@ namespace s21 {
             Send(ClientController::UpdateBidQuantity(bid_id, new_quantity));
         }
 
-
-
-    private:
-        const std::string &GetUserId(){
-            if(user_id_.empty()) {
-                Send(ClientController::GetMyId());
-                while (from_server_.Empty()) {}
-                user_id_ = GetIdFromHTTP();
-            }
-            return user_id_;
+        void WaitForResponse(){
+            while (from_server_.Empty()) {}
+        }
+        bool CheckStatus(){
+            return from_server_.Front().second.find("OK") != std::string::npos;
         }
 
-        std:: string GetIdFromHTTP(){
+        void Authorize(){
             auto msg = from_server_.PopFront().second;
             size_t json_start = msg.find('{');
             size_t json_end = msg.rfind('}');
             std::string json_str = msg.substr(json_start, json_end - json_start + 1);
             nlohmann::json json = nlohmann::json::parse(json_str);
-            std::string id = json["id"];
-            return id;
+            user_id_ = json["id"];
+        }
+
+        std::string CleanServerResponse(){
+            auto msg = from_server_.PopFront().second;
+            bool error = msg.find("message") != std::string::npos;
+                size_t json_start = error
+                        ? msg.find_last_of('{')
+                        : msg.find('{');
+
+                size_t json_end = error
+                        ? msg.find('}')
+                        : msg.rfind('}');
+                return msg.substr(json_start +1 , json_end - json_start - 1);
+            }
+
+
+
+
+    private:
+        const std::string &GetUserId(){
+            return user_id_;
         }
         boost::asio::io_context context_;
         boost::thread thread_context_;
         std::unique_ptr<Connection> connection_;
         ThreadSafeQ<std::pair<connection_ptr, std::string>> from_server_;
         std::string user_id_;
+        bool dcd = false;
     };
 }
 

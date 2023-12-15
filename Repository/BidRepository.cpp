@@ -21,7 +21,7 @@ namespace s21{
         }catch(const std::exception &e){
             std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
-        throw;
+            throw;
         }
     }
 
@@ -66,13 +66,11 @@ namespace s21{
                               + " = buyer." + task.quote(BDNames::user_table_id)
                               + " WHERE " + task.quote(BDNames::bid_table_id)
                               + " = " + task.quote(bid_id);
-            pqxx::result res = task.exec(sql);
-            if(!res.empty()) {
-                return res;
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::BID_NOT_FOUND));
-            }
-        }catch(...){
+            std::cout << sql << "\n";
+            auto res = task.exec(sql);
+            return res;
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }

@@ -26,8 +26,8 @@ namespace s21 {
         void Stop();
 
         void WaitForClient();
-        void MessageClient(connection_ptr, const std::string &message);
         void Update();
+        void RemoveClient(connection_ptr client);
 
     private:
         bool LoginRegisterAttempt(const std::string &message){

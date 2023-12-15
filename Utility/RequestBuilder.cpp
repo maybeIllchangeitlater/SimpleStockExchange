@@ -4,6 +4,7 @@ namespace s21{
     const std::unordered_map<RequestStringBuilder::RequestType, std::pair<const char *, const char*>> RequestStringBuilder::request_method{
             {REGISTER, std::make_pair("POST", "URegisterUser")},
             {LOGIN, std::make_pair("GET", "UAuthenticateUser")},
+            {LOGOUT, std::make_pair("DELETE", "DDCMe")},
             {GET_USER_BY_ID, std::make_pair("GET", "UGetUserById")},
             {GET_USER_BY_NAME, std::make_pair("GET", "UGetUserByName")},
             {GET_MY_ID, std::make_pair("GET", "GReturnId")},

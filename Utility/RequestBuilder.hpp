@@ -11,6 +11,7 @@ namespace s21 {
         enum RequestType{
             REGISTER,
             LOGIN,
+            LOGOUT,
             GET_USER_BY_ID,
             GET_USER_BY_NAME,
             GET_MY_ID,

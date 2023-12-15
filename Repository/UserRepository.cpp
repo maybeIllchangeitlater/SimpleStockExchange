@@ -35,13 +35,11 @@ namespace s21 {
                     + " FROM " + std::string(BDNames::user_table)
                     + " WHERE " + std::string(BDNames::user_table_id)
                     + " = " + task.quote(user_id);
-            res = task.exec(sql);
-            if(!res.empty()) {
-                return res;
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::USER_NOT_FOUND));
-            }
+            std::cout << sql << "\n";
+            auto result = task.exec(sql);
+            return result;
         }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }
@@ -58,13 +56,14 @@ namespace s21 {
                     + " FROM " + std::string(BDNames::user_table)
                     + " WHERE " + std::string(BDNames::user_table_user_name)
                     + " = " + task.quote(user_name);
-            res = task.exec(sql);
-            if(!res.empty()) {
-                return res;
-            }else{
+            std::cout << sql << "\n";
+            auto result = task.exec(sql);
+            if(result.empty()){
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::USER_NOT_FOUND));
             }
-        }catch(...){
+            return result;
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }

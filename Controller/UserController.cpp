@@ -56,9 +56,7 @@ namespace s21{
             response["status"] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
-            response["status"] = ServerMessage::response_code.find(e.what()) != ServerMessage::response_code.end()
-                                 ? ServerMessage::response_code.at(e.what())
-                                 : ServerMessage::ResponseCode::BAD_REQUEST;
+            ResponseError(response, e.what());
             return response;
         }
     }
@@ -71,9 +69,7 @@ namespace s21{
             response["status"] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
-            response["status"] = ServerMessage::response_code.find(e.what()) != ServerMessage::response_code.end()
-                                 ? ServerMessage::response_code.at(e.what())
-                                 : ServerMessage::ResponseCode::BAD_REQUEST;
+            ResponseError(response, e.what());
             return response;
         }
     }
@@ -86,9 +82,7 @@ namespace s21{
             response["status"] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
-            response["status"] = ServerMessage::response_code.find(e.what()) != ServerMessage::response_code.end()
-                                 ? ServerMessage::response_code.at(e.what())
-                                 : ServerMessage::ResponseCode::BAD_REQUEST;
+            ResponseError(response, e.what());
             return response;
         }
     }
@@ -101,9 +95,7 @@ namespace s21{
             response["status"] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
-            response["status"] = ServerMessage::response_code.find(e.what()) != ServerMessage::response_code.end()
-                                 ? ServerMessage::response_code.at(e.what())
-                                 : ServerMessage::ResponseCode::BAD_REQUEST;
+            ResponseError(response, e.what());
             return response;
         }
     }
@@ -116,9 +108,7 @@ namespace s21{
             response["status"] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
-            response["status"] = ServerMessage::response_code.find(e.what()) != ServerMessage::response_code.end()
-                                 ? ServerMessage::response_code.at(e.what())
-                                 : ServerMessage::ResponseCode::BAD_REQUEST;
+            ResponseError(response, e.what());
             return response;
         }
     }
@@ -130,9 +120,7 @@ namespace s21{
             response["status"] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
-            response["status"] = ServerMessage::response_code.find(e.what()) != ServerMessage::response_code.end()
-                                 ? ServerMessage::response_code.at(e.what())
-                                 : ServerMessage::ResponseCode::BAD_REQUEST;
+            ResponseError(response, e.what());
             return response;
         }
     }

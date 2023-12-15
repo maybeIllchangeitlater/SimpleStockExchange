@@ -99,6 +99,12 @@ namespace s21 {
             body[BDNames::user_table_id] = user_id;
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::DELETE_USER, body);
         }
+
+        static std::string Logout(){
+            nlohmann::json body;
+            body["aboba"] = "biba";
+            return RequestStringBuilder::BuildRequest(RequestStringBuilder::LOGOUT, body);
+        }
     };
 }
 

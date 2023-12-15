@@ -44,6 +44,7 @@ namespace s21{
                                                  }
                                              } else {
                                                  std::cout << "Write failed, closing socket\n";
+                                                 socket_.close();
                                              }
                                          });
         }

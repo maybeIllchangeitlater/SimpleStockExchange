@@ -31,7 +31,7 @@ class Connection : public boost::enable_shared_from_this<Connection>{
             boost::asio::post(context_, [this]() { socket_.close(); });
     }
 
-    bool Connected() const{
+    bool Connected() const {
         return socket_.is_open();
     }
 

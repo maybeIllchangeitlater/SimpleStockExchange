@@ -40,17 +40,3 @@ ADD_EXECUTABLE(ServerR
 )
 TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx
         ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/cryptopp890/libcryptopp.a)
-
-
-ADD_EXECUTABLE(ClientR
-        Controller/ClientController.cpp
-        Client/Client.cpp
-        Utility/ThreadSafeQ.hpp
-        main_client.cpp
-        Utility/RequestBuilder.cpp
-        Connection/Connection.cpp
-        Connection/Connection.hpp
-        Client/Client.cpp
-        Client/Client.hpp
-)
-TARGET_LINK_LIBRARIES(ClientR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx)
