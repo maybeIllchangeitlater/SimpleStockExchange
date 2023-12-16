@@ -85,6 +85,9 @@ namespace s21{
                         transaction_controller_, request.body);
             }
             else if (request.path[0] == 'D'){
+                response.status = ServerMessage::ResponseCode::OK;
+                response.body = ServerMessage::server_message.at(ServerMessage::WELCOME);
+                client->Send(response.ToString());
                 RemoveClient(client);
                 return;
             }

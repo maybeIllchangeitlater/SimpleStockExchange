@@ -145,12 +145,11 @@ namespace s21 {
         const std::string &GetUserId(){
             return user_id_;
         }
-        boost::asio::io_context context_;
+        std::unique_ptr<boost::asio::io_context> context_;
         boost::thread thread_context_;
         std::unique_ptr<Connection> connection_;
         ThreadSafeQ<std::pair<connection_ptr, std::string>> from_server_;
         std::string user_id_;
-        bool dcd = false;
     };
 }
 

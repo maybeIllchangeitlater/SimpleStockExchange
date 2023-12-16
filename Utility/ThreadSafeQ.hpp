@@ -5,6 +5,7 @@
 #include <boost/noncopyable.hpp>
 #include <queue>
 #include <iostream>
+#include <boost/lockfree/queue.hpp>
 
 
 namespace s21 {
@@ -13,6 +14,8 @@ namespace s21 {
         using scoped_lock = boost::recursive_mutex::scoped_lock;
     public:
         ThreadSafeQ() = default;
+        ThreadSafeQ(ThreadSafeQ&&) = default;
+        ThreadSafeQ &operator=(ThreadSafeQ&&) = default;
         ~ThreadSafeQ() {
             Clear();
         }

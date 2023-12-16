@@ -24,7 +24,7 @@ MainWindow::MainWindow(s21::Client &client, QWidget *parent)
     connect(log_pop_.get(), &LoginPopup::LoginAttempt, this, &MainWindow::HandleLoginAttempt);
     connect(ui->Logout, &QPushButton::clicked, this, [&](){
         client_.Disconnect();
-        std::cout << "turning on log buttons\n";
+        ui->ServerMessageInitScreen->setText("Signed Out");
         SetNotLoginnedButtons();
     });
     Connect();
@@ -81,21 +81,13 @@ void MainWindow::SetNotLoginnedButtons()
     ui->Login->setVisible(true);
     ui->Register->setVisible(true);
     ui->Logout->setVisible(false);
-    std::cout << "butooooons\n";
 }
 
 void MainWindow::Connect()
 {
-    std::cout << "Not dc'd yet\n";
     if(!client_.Connected()){
-        std::cout << "trying to connect\n";
         client_.Connect("127.0.0.1", 5050);
-        std::cout << "connected\n";
-        if(client_.Connected()){
-            std::cout << "connected-connected\n";
-        }
         client_.WaitForResponse();
-        std::cout << "tsq mutex didnt fail\n";
         ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
     }
 }
