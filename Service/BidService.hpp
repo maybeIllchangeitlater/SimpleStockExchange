@@ -2,6 +2,7 @@
 #define SIMPLESTOCKEXCHANGE_BIDSERVICE_HPP
 
 #include "../Repository/BidRepository.hpp"
+#include "../Repository/BdNames.hpp"
 #include "../3rdParty/json.hpp"
 #include "../Utility/Timestamper.hpp"
 #include "../Utility/ServerMessage.hpp"
@@ -47,11 +48,31 @@ namespace s21{
         }
 
         void CloseBid(const std::string &bid_id){
-            repository_.DeleteFinishedBid(bid_id);
+            repository_.DeleteBid(bid_id);
         }
 
-        void CancelBid(const std::string &bid_id){
-            repository_.DeleteUnfinishedBid(bid_id);
+        void CancelBid(const std::string &bid_id, const std::string &user_id){
+            std::cout << "trying to cancel bid :" << bid_id << "\n";
+            auto check = repository_.ReadBidRaw(bid_id);
+            if(check[0][BDNames::bid_table_rate].is_null()){
+                std::cout << "bid doesnt exist\n";
+                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::BID_NOT_FOUND));
+            }
+            if(!check[0][BDNames::bid_table_buyer_id].is_null()){
+                auto buyer = check[0][BDNames::bid_table_buyer_id].as<std::string>();
+                if(buyer == user_id){
+                    repository_.DeleteBid(bid_id);
+                    return;
+                }
+            }else if(!check[0][BDNames::bid_table_seller_id].is_null()){
+                auto seller = check[0][BDNames::bid_table_seller_id].as<std::string>();
+                if(seller == user_id){
+                    repository_.DeleteBid(bid_id);
+                    return;
+                }
+            }
+            std::cout << "Cannot delete bid that isnt yours\n";
+            throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::BID_NOT_YOURS));
         }
 
         nlohmann::json ReadBid(const std::string &bid_id){
@@ -77,31 +98,31 @@ namespace s21{
     private:
 
         bool ValidateRate(const std::string &rate){
-            return std::stoi(rate) > 0;
+            return std::stod(rate) > 0;
         }
 
         bool ValidateQuantity(const std::string &quantity){
             return std::stoi(quantity) > 0;
         }
         nlohmann::json GenerateBidInfo(const pqxx::row & bid_info){
-            auto bid_id = bid_info["bid_id"].as<std::string>();
+            auto bid_id = bid_info[BDNames::bid_id_for_join].as<std::string>();
             std::cout << bid_id << "\n";
-            auto seller = !bid_info["seller_username"].is_null()
-                    ? bid_info["seller_username"].as<std::string>()
+            auto seller = !bid_info[BDNames::joined_seller_name].is_null()
+                    ? bid_info[BDNames::joined_seller_name].as<std::string>()
                     : "no seller yet";
-            auto buyer = !bid_info["buyer_username"].is_null()
-                    ? bid_info["buyer_username"].as<std::string>()
-                    : "no buyer yer";
-            auto quantity = bid_info["quantity"].as<std::string>();
-            auto rate = bid_info["rate"].as<std::string>();
-            auto time = bid_info["time"].as<std::string>();
+            auto buyer = !bid_info[BDNames::joined_buyer_name].is_null()
+                    ? bid_info[BDNames::joined_buyer_name].as<std::string>()
+                    : "no buyer yet";
+            auto quantity = bid_info[BDNames::bid_table_quantity].as<std::string>();
+            auto rate = bid_info[BDNames::bid_table_rate].as<std::string>();
+            auto time = bid_info[BDNames::bid_table_create_update_time].as<std::string>();
             nlohmann::json bid_json;
-            bid_json["bid_id"] = bid_id;
-            bid_json["seller_username"] = seller;
-            bid_json["buyer_username"] = buyer;
-            bid_json["quantity"] = quantity;
-            bid_json["rate"] = rate;
-            bid_json["time"] = time;
+            bid_json[BDNames::bid_id_for_join] = bid_id;
+            bid_json[BDNames::joined_seller_name] = seller;
+            bid_json[BDNames::joined_buyer_name] = buyer;
+            bid_json[BDNames::bid_table_quantity] = quantity;
+            bid_json[BDNames::bid_table_rate] = rate;
+            bid_json[BDNames::bid_table_create_update_time] = time;
             return bid_json;
         }
         BidRepository &repository_;

@@ -33,19 +33,11 @@ namespace s21 {
             Send(ClientController::Login(username, password));
         }
 
-        void CreateSellBid(){
-            std::string quantity;
-            std::string rate;
-            std::cout << "Please Enter Quantity and Rate\n";
-            std::cin >> quantity >> rate;
+        void CreateSellBid(const std::string &quantity, const std::string &rate){
             Send(ClientController::CreateBid(GetUserId(), quantity, rate, BidService::SELLING));
         }
 
-        void CreateBuyBid(){
-            std::string quantity;
-            std::string rate;
-            std::cout << "Please Enter Quantity and Rate\n";
-            std::cin >> quantity >> rate;
+        void CreateBuyBid(const std::string &quantity, const std::string &rate){
             Send(ClientController::CreateBid(GetUserId(), quantity, rate, BidService::BUYING));
         }
 
@@ -66,11 +58,8 @@ namespace s21 {
             Send(ClientController::GetMyBuyTransactions(GetUserId()));
         }
 
-        void CancelBid(){
-            std::string bid_id; //validate that its own bid id
-            std::cout << "Please enter bid_id\n";
-            std::cin >> bid_id;
-            Send(ClientController::CancelBid(bid_id));
+        void CancelBid(const std::string &bid_id){
+            Send(ClientController::CancelBid(bid_id, user_id_));
         }
 
         void ChangeName(){
@@ -109,6 +98,10 @@ namespace s21 {
             Send(ClientController::UpdateBidQuantity(bid_id, new_quantity));
         }
 
+        void CheckBalance(){
+            Send(ClientController::GetMyBalance(user_id_));
+        }
+
         void WaitForResponse(){
             while (from_server_.Empty()) {}
         }
@@ -127,6 +120,7 @@ namespace s21 {
 
         std::string CleanServerResponse(){
             auto msg = from_server_.PopFront().second;
+            std::cout << msg << "\n";
             bool error = msg.find("message") != std::string::npos;
                 size_t json_start = error
                         ? msg.find_last_of('{')

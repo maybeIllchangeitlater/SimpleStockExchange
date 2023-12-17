@@ -19,12 +19,12 @@ namespace s21 {
                                     const std::string& timestamp);
 
         pqxx::result ReadBid(const std::string &bid_id);
+        pqxx::result ReadBidRaw(const std::string &bid_id);
         pqxx::result ReadAllUserSellBids(const std::string &seller_id);
         pqxx::result ReadAllUserBuyBids(const std::string &buyer_id);
         void UpdateBidRate(const std::string &bid_id, const std::string &rate, const std::string &time);
         void UpdateBidQuantity(const std::string &bid_id, const std::string &quantity, const std::string &time);
-        void DeleteUnfinishedBid(const std::string &bid_id);
-        void DeleteFinishedBid(const std::string &bid_id);
+        void DeleteBid(const std::string &bid_id);
     private:
         pqxx::connection &db_connection_;
     };

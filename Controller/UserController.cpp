@@ -61,6 +61,22 @@ namespace s21{
         }
     }
 
+    nlohmann::json UserController::GetUserBalance(const nlohmann::json &request_body) {
+        nlohmann::json response;
+        try {
+            std::cout << request_body.at(BDNames::user_table_id) << "\n";
+            auto tmp = GetUserById(request_body.at(BDNames::user_table_id));
+            std::cout << "requested user: " << tmp.at(BDNames::user_table_user_name)
+            << "  " << tmp.at(BDNames::user_table_balance) << "\n";
+            response[BDNames::user_table_balance] = tmp[BDNames::user_table_balance];
+            response["status"] = ServerMessage::ResponseCode::OK;
+            return response;
+        } catch (const std::exception &e) {
+            ResponseError(response, e.what());
+            return response;
+        }
+    }
+
     nlohmann::json UserController::GetUserByName(const nlohmann::json &request_body){
         nlohmann::json response;
         try {

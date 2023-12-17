@@ -15,6 +15,7 @@ namespace s21 {
             GET_USER_BY_ID,
             GET_USER_BY_NAME,
             GET_MY_ID,
+            GET_MY_BALANCE,
             UPDATE_USER_NAME,
             UPDATE_USER_PASSWORD,
             UPDATE_USER_BALANCE,

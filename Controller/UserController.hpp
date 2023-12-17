@@ -21,6 +21,8 @@ namespace s21 {
 
         nlohmann::json GetUserByName(const nlohmann::json &request_body);
 
+        nlohmann::json GetUserBalance(const nlohmann::json &request_body);
+
         nlohmann::json UpdateUserName(const nlohmann::json &request_body);
 
         nlohmann::json UpdateUserPassword(const nlohmann::json &request_body);

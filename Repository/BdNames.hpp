@@ -25,6 +25,11 @@ namespace s21 {
         constexpr static const char * transaction_table_rate = "rate";
         constexpr static const char * transaction_table_quantity = "quantity";
         constexpr static const char * transaction_table_create_update_time = "time";
+
+        constexpr static const char * joined_seller_name = "seller_username";
+        constexpr static const char * joined_buyer_name = "buyer_username";
+        constexpr static const char * bid_id_for_join = "bid_id";
+        constexpr static const char * trader_id = "trader_id";
     };
 } //s21
 

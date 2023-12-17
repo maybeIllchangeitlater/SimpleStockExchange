@@ -43,6 +43,13 @@ set(PROJECT_SOURCES
         RegisterPopup.hpp
         RegisterPopup.cpp
         RegisterPopup.ui
+        CreateBidPopup.hpp
+        CreateBidPopup.cpp
+        CreateBidPopup.ui
+        ViewBids.hpp
+        ViewBids.cpp
+        ViewBids.ui
+        ../Repository/BdNames.hpp
 
 )
 

@@ -31,9 +31,10 @@ namespace s21 {
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::CREATE_BID, body);
         }
 
-        static std::string CancelBid(const std::string &bid_id){
+        static std::string CancelBid(const std::string &bid_id, const std::string &user_id){
             nlohmann::json body;
             body[BDNames::bid_table_id] = bid_id;
+            body[BDNames::trader_id] = user_id;
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::CANCEL_BID, body);
         }
 
@@ -92,6 +93,12 @@ namespace s21 {
             body[BDNames::user_table_password] = new_password;
             body[BDNames::user_table_id] = user_id;
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::UPDATE_USER_PASSWORD, body);
+        }
+
+        static std::string GetMyBalance(const std::string &user_id){
+            nlohmann::json body;
+            body[BDNames::user_table_id] = user_id;
+            return RequestStringBuilder::BuildRequest(RequestStringBuilder::GET_MY_BALANCE, body);
         }
 
         static std::string DeleteMe(const std::string &user_id){

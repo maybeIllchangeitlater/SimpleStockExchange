@@ -117,7 +117,7 @@ namespace s21{
         nlohmann::json response;
         try {
             std::cout << "cancelling request with id:\n" <<  request_body[BDNames::bid_table_id] << "\n";
-            service_.CancelBid(request_body.at(BDNames::bid_table_id));
+            service_.CancelBid(request_body.at(BDNames::bid_table_id), request_body.at(BDNames::trader_id));
             response["status"] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){

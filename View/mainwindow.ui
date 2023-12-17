@@ -20,32 +20,6 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="gridLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>250</x>
-      <y>410</y>
-      <width>291</width>
-      <height>111</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QPushButton" name="Login">
-       <property name="text">
-        <string>Sign In</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QPushButton" name="Register">
-       <property name="text">
-        <string>Sign Up</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
    <widget class="QLabel" name="ServerMessageInitScreen">
     <property name="geometry">
      <rect>
@@ -78,6 +52,112 @@
     </property>
     <property name="text">
      <string>Sign Out</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="LoggedAs">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>10</y>
+      <width>221</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QStackedWidget" name="layoutwidget">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>330</y>
+      <width>741</width>
+      <height>161</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>1</number>
+    </property>
+    <widget class="QWidget" name="page">
+     <widget class="QWidget" name="gridLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>50</y>
+        <width>291</width>
+        <height>111</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="NotLoggedLayout">
+       <item row="2" column="0">
+        <widget class="QPushButton" name="Register">
+         <property name="text">
+          <string>Sign Up</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="Login">
+         <property name="text">
+          <string>Sign In</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="gridStackedWidget_2Page1">
+     <layout class="QGridLayout" name="LoggedLayout">
+      <item row="0" column="0">
+       <widget class="QPushButton" name="CreateBid">
+        <property name="text">
+         <string>Create Bid</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="Transactions">
+        <property name="text">
+         <string>My Transactions</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="Bids">
+        <property name="text">
+         <string>My Bids</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QPushButton" name="Quotations">
+        <property name="text">
+         <string>View quotations</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QPushButton" name="Balance">
+        <property name="text">
+         <string>View Balance</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="DeleteMe">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>500</y>
+      <width>174</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Delete Account</string>
     </property>
    </widget>
   </widget>

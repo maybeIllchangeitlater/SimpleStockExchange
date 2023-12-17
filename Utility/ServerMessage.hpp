@@ -21,6 +21,7 @@ namespace s21 {
             BID_NOT_FOUND,
             BID_BAD_RATE,
             BID_BAD_QUANTITY,
+            BID_NOT_YOURS,
             TRANSACTION_OK,
             TRANSACTION_NOT_FOUND,
             TRANSACTION_INVALID,

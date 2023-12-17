@@ -4,6 +4,7 @@
 namespace s21{
     const std::unordered_map<std::string, ControllerMapping::UserFunction> ControllerMapping::method_mapping_user{
             {"AuthenticateUser", [](UserController& c, const nlohmann::json &json){ return c.AuthenticateUser(json); }},
+            {"GetUserBalance", [](UserController &c, const nlohmann::json &json){ return c.GetUserBalance(json); }},
             {"GetUserById", [](UserController& c, const nlohmann::json &json){ return c.GetUserById(json); }},
             {"GetUserByName", [](UserController& c, const nlohmann::json &json){ return c.GetUserByName(json); }},
             {"RegisterUser", [](UserController& c, const nlohmann::json &json){ return c.RegisterUser(json); }},

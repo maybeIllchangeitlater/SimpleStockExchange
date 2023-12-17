@@ -2,6 +2,7 @@
 #define SIMPLESTOCKEXCHANGE_USERSERVICE_HPP
 
 #include "../Repository/UserRepository.hpp"
+#include "../Repository/BdNames.hpp"
 #include "../Utility/UUIDGenerator.hpp"
 #include "../Utility/Encoder.hpp"
 #include "../Utility/ServerMessage.hpp"
@@ -72,15 +73,15 @@ namespace s21 {
             return has_uppercase && has_lowercase && has_symbols;
         }
         nlohmann::json GenerateUserInfo(const pqxx::result &user_info){
-            std::string id = user_info[0]["id"].as<std::string>();
-            std::string user_name = user_info[0]["username"].as<std::string>();
-            std::string hashed_password = user_info[0]["password"].as<std::string>();
-            std::string balance = user_info[0]["balance"].as<std::string>();
+            std::string id = user_info[0][BDNames::user_table_id].as<std::string>();
+            std::string user_name = user_info[0][BDNames::user_table_user_name].as<std::string>();
+            std::string hashed_password = user_info[0][BDNames::user_table_password].as<std::string>();
+            std::string balance = user_info[0][BDNames::user_table_balance].as<std::string>();
             nlohmann::json user_json;
-            user_json["id"] = id;
-            user_json["username"] = user_name;
-            user_json["password"] = hashed_password;
-            user_json["balance"] = balance;
+            user_json[BDNames::user_table_id] = id;
+            user_json[BDNames::user_table_user_name] = user_name;
+            user_json[BDNames::user_table_password] = hashed_password;
+            user_json[BDNames::user_table_balance] = balance;
             return user_json;
         }
         UserRepository &repository_;

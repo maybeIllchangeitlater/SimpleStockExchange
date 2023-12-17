@@ -15,4 +15,4 @@ int main(int argc, char *argv[])
 }
 
 
-///mutex MANAGING on disconnects and reconnects since the same q is used. Or recreate q lazy way
+///get user by id breaks everything, (get user raw?) Bids are never cancelled sometimes not send (long fix)
