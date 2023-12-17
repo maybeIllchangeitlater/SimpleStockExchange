@@ -38,6 +38,7 @@ namespace s21{
         request_string += std::to_string(dumped_json.length());
         request_string += "\r\n\r\n";
         request_string += dumped_json;
+//        request_string += "\r\n\r\n\r";
         return request_string;
     }
 }

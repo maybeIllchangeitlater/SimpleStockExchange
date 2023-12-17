@@ -15,4 +15,3 @@ int main(int argc, char *argv[])
 }
 
 
-///get user by id breaks everything, (get user raw?) Bids are never cancelled sometimes not send (long fix)

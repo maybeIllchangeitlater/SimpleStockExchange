@@ -11,7 +11,6 @@
 namespace s21 {
     struct Request {
 
-        size_t content_length;
         std::string method;
         std::string path;
         nlohmann::json body;
@@ -74,6 +73,7 @@ namespace s21 {
         std::string ToString() const {
             return "HTTP/1.1 " + std::to_string(status) + " " + ServerMessage::status_message.at(status) + "\nContent-Length: "
             + std::to_string(body.dump().size()) + "\r\n\r\n" + body.dump();
+            //+ "\r\n\r\n\r";
         }
     };
 }

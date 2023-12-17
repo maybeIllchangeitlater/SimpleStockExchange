@@ -42,8 +42,6 @@ int main() {
     while(true){
         server.Update();
     }
-
-
 }
 
 ///2 threads for server? prob not needed

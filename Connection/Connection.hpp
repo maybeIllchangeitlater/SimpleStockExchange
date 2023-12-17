@@ -39,7 +39,11 @@ class Connection : public boost::enable_shared_from_this<Connection>{
 
     void Write();
 
-    void Read();
+//    void Read();
+
+    void ReadHeader();
+
+    void ReadBody(size_t body_length);
 
     bool Authorized(){
           return authorized_;
@@ -57,9 +61,9 @@ class Connection : public boost::enable_shared_from_this<Connection>{
 
 private:
 
+    size_t CalculateBodyLength();
 
     void AddToIncomingQueue();
-
 
     Owner owner_;
     boost::asio::io_context &context_;
@@ -68,7 +72,6 @@ private:
     ThreadSafeQ<std::pair<connection_ptr, std::string>> &in_;
     std::string unfinished_message_;
     std::string user_id_;
-    boost::thread reader_;
     bool authorized_ = false;
 
 

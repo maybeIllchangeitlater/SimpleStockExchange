@@ -4,7 +4,7 @@ namespace s21{
     void Connection::ConnectToClient(){
         if (owner_ == SERVER){
             if (Connected()){
-                Read();
+                ReadHeader();
         }
     }
     }
@@ -14,7 +14,7 @@ namespace s21{
             boost::asio::async_connect(socket_, endpoints,
                                        [this](error_code ec, tcp::endpoint) {
                                            if (!ec) {
-                                               Read();
+                                               ReadHeader();
                                            }
                                        });
         }
@@ -50,18 +50,49 @@ namespace s21{
         }
     }
 
-    void Connection::Read(){
+
+    void Connection::ReadHeader() {
             boost::asio::async_read_until(socket_, boost::asio::dynamic_buffer(unfinished_message_), "\r\n\r\n",
                                           [this](error_code ec, std::size_t) {
-                                              std::cout << "I'm reading\n";
                                               if (!ec) {
-                                                  AddToIncomingQueue();
+                                                  auto body_size = CalculateBodyLength();
+                                                  if (body_size > 0) {
+                                                      unfinished_message_.resize(
+                                                              unfinished_message_.length() + body_size);
+                                                      ReadBody(body_size);
+                                                  } else {
+                                                      AddToIncomingQueue();
+                                                  }
                                               } else {
                                                   std::cout << "Read Header Fail.\n";
                                                   socket_.close();
                                               }
                                           });
     }
+
+    void Connection::ReadBody(size_t body_length) {
+        boost::asio::async_read(socket_,
+                                boost::asio::buffer(unfinished_message_.data()
+                                + unfinished_message_.length() - body_length, body_length),
+                                [this](error_code ec, std::size_t) {
+                                    if (!ec) {
+                                        AddToIncomingQueue();
+                                    }
+                                    else {
+                                        std::cout << "Read Body Fail.\n";
+                                        socket_.close();
+                                    }
+                                });
+    }
+
+    size_t Connection::CalculateBodyLength() {
+        auto delimiter_pos = unfinished_message_.find("\r\n\r\n");
+        auto body_start = delimiter_pos + 4;
+        auto content_length_pos = unfinished_message_.find("Content-Length:");
+        auto content_length = std::stoul(unfinished_message_.substr(content_length_pos + 16));
+        return content_length - (unfinished_message_.length() - body_start);
+    }
+
 
     void Connection::AddToIncomingQueue(){
         std::cout << "Adding " << unfinished_message_ << " to incoming queue\n";
@@ -70,6 +101,6 @@ namespace s21{
         else if(owner_ == CLIENT){
             in_.EmplaceBack(std::make_pair(nullptr, std::move(unfinished_message_)));
         }
-        Read();
+        ReadHeader();
     }
 }
