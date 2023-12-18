@@ -37,6 +37,7 @@ set(PROJECT_SOURCES
         ../Controller/ClientController.cpp
         ../Controller/ClientController.hpp
         ../Utility/ThreadSafeQ.hpp
+        ../Repository/BdNames.hpp
         LoginPopup.hpp
         LoginPopup.cpp
         LoginPopup.ui
@@ -49,7 +50,9 @@ set(PROJECT_SOURCES
         ViewBids.hpp
         ViewBids.cpp
         ViewBids.ui
-        ../Repository/BdNames.hpp
+        DeleteAccountPopup.hpp
+        DeleteAccountPopup.cpp
+        DeleteAccountPopup.ui
 
 )
 

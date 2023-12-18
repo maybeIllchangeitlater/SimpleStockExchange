@@ -148,7 +148,6 @@ namespace s21{
                               + " = " + task.quote(buyer_id);
             std::cout << sql << "\n";
             auto res = task.exec(sql);
-            std::cout << res[0][BDNames::bid_id_for_join].as<std::string>() << "\n";
             return res;
         }catch(const std::exception &e){
             std::cout << "\naboorting task because " << e.what() << "\n";

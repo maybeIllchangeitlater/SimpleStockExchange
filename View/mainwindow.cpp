@@ -20,18 +20,21 @@ MainWindow::MainWindow(s21::Client &client, QWidget *parent)
         Connect();
         log_pop_->exec();
     });
-    connect(ui->Logout, &QPushButton::clicked, this, [&](){
-        client_.Disconnect();
-        ui->ServerMessageInitScreen->setText("Signed Out");
-        ui->LoggedAs->clear();
-        SetNotLoginnedButtons();
-    });
     connect(ui->CreateBid, &QPushButton::clicked, this, [&](){
        create_bid_pop_->exec();
     });
     connect(ui->Bids, &QPushButton::clicked, this, [&](){
        view_bid_pop_->exec();
 
+    });
+    connect(ui->DeleteMe, &QPushButton::clicked, this, [&](){
+        delete_account_pop_->exec();
+    });
+    connect(ui->Logout, &QPushButton::clicked, this, [&](){
+        client_.Disconnect();
+        ui->ServerMessageInitScreen->setText("Signed Out");
+        ui->LoggedAs->clear();
+        SetNotLoginnedButtons();
     });
     connect(ui->Balance, &QPushButton::clicked, this, [&](){
        client_.CheckBalance();
@@ -42,6 +45,12 @@ MainWindow::MainWindow(s21::Client &client, QWidget *parent)
     connect(log_pop_.get(), &LoginPopup::LoginAttempt, this, &MainWindow::HandleLoginAttempt);
     connect(create_bid_pop_.get(), &CreateBidPopup::MakeBid, this, &MainWindow::HandleCreateBid);
     connect(view_bid_pop_.get(), &ViewBids::ViewBid, this, &MainWindow::HandleViewBid);
+    connect(delete_account_pop_.get(), &DeleteAccountPopup::DeleteAccount, this, [&](){
+       client_.DeleteMe();
+       ui->LoggedAs->clear();
+       ui->ServerMessageInitScreen->setText("Account Deleted");
+       SetNotLoginnedButtons();
+    });
     connect(view_bid_pop_.get(), &ViewBids::CancelBid, this, [&](const std::string bid_id){
         client_.CancelBid(bid_id);
         client_.WaitForResponse();
