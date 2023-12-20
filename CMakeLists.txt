@@ -37,6 +37,6 @@ ADD_EXECUTABLE(ServerR
         main.cpp
         Connection/Connection.cpp
         Connection/Connection.hpp
-)
+        Utility/ExtraJSONKeys.hpp)
 TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx
         ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/cryptopp890/libcryptopp.a)

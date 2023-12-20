@@ -6,6 +6,7 @@
 #include "LoginPopup.hpp"
 #include "RegisterPopup.hpp"
 #include "CreateBidPopup.hpp"
+#include "BidTransactionMadePopup.hpp"
 #include "ViewBids.hpp"
 #include "DeleteAccountPopup.hpp"
 #include <memory.h>
@@ -39,6 +40,7 @@ private:
     std::unique_ptr<CreateBidPopup> create_bid_pop_ = boost::make_unique<CreateBidPopup>();
     std::unique_ptr<ViewBids> view_bid_pop_ = boost::make_unique<ViewBids>();
     std::unique_ptr<DeleteAccountPopup> delete_account_pop_ = boost::make_unique<DeleteAccountPopup>();
+    std::unique_ptr<BidTransactionMadePopup> newtrans_pop_ = boost::make_unique<BidTransactionMadePopup>();
     s21::Client &client_;
 };
 #endif // MAINWINDOW_HPP

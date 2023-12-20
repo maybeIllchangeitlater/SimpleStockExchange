@@ -2,16 +2,17 @@
 #define SIMPLESTOCKEXCHANGE_TRANSACTIONSERVICE_HPP
 
 #include "../Repository/TransactionRepository.hpp"
-#include "../Utility/UUIDGenerator.hpp"
 #include "../Utility/Timestamper.hpp"
 
 namespace s21{
     class TransactionService{
     public:
         TransactionService(TransactionRepository& repository) : repository_(repository) {}
+
         void MakeTransaction(const std::string &seller_id, const std::string &buyer_id,
                              const std::string &rate, const std::string &quantity){
-            repository_.CreateTransaction(UUIDGenerator::Generate(), seller_id, buyer_id,
+            std::cout << "making transaction\n";
+            repository_.CreateTransaction(seller_id, buyer_id,
                                           rate, quantity, Timestamper::GetTimestamp());
         }
         nlohmann::json ReadTransaction(const std::string &transaction_id){

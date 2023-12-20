@@ -6,6 +6,7 @@
 #include "../HTTP/Http.hpp"
 #include "../Utility/Encoder.hpp"
 #include "../Repository/BdNames.hpp"
+#include "../Utility/ExtraJSONKeys.hpp"
 
 namespace s21 {
     class UserController {

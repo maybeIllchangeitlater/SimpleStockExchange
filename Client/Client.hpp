@@ -6,6 +6,7 @@
 #include "../Connection/Connection.hpp"
 #include "../Controller/ClientController.hpp"
 #include "../Utility/ThreadSafeQ.hpp"
+#include "../Utility/ExtraJSONKeys.hpp"
 #include <boost/make_unique.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
@@ -130,7 +131,12 @@ namespace s21 {
                         ? msg.find('}')
                         : msg.rfind('}');
                 return msg.substr(json_start +1 , json_end - json_start - 1);
-            }
+        }
+
+        bool CheckIfTransactionsWereMade(){
+            return from_server_.Front().second.find(s21::ExtraJSONKeys::buy_transaction) != std::string::npos
+                    ||from_server_.Front().second.find(s21::ExtraJSONKeys::sell_transaction) != std::string::npos;
+        }
 
 
 

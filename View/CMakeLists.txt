@@ -37,6 +37,7 @@ set(PROJECT_SOURCES
         ../Controller/ClientController.cpp
         ../Controller/ClientController.hpp
         ../Utility/ThreadSafeQ.hpp
+        ../Utility/ExtraJSONKeys.hpp
         ../Repository/BdNames.hpp
         LoginPopup.hpp
         LoginPopup.cpp
@@ -47,6 +48,9 @@ set(PROJECT_SOURCES
         CreateBidPopup.hpp
         CreateBidPopup.cpp
         CreateBidPopup.ui
+        BidTransactionMadePopup.hpp
+        BidTransactionMadePopup.cpp
+        BidTransactionMadePopup.ui
         ViewBids.hpp
         ViewBids.cpp
         ViewBids.ui

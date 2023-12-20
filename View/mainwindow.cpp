@@ -39,7 +39,7 @@ MainWindow::MainWindow(s21::Client &client, QWidget *parent)
     connect(ui->Balance, &QPushButton::clicked, this, [&](){
        client_.CheckBalance();
        client_.WaitForResponse();
-       ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+       ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()).replace("\"", ""));
     });
     connect(reg_pop_.get(), &RegisterPopup::RegisterAttempt, this, &MainWindow::HandleRegisterAttempt);
     connect(log_pop_.get(), &LoginPopup::LoginAttempt, this, &MainWindow::HandleLoginAttempt);
@@ -105,25 +105,22 @@ void MainWindow::HandleRegisterAttempt(const std::string username, const std::st
 
 void MainWindow::HandleCreateBid(const std::string quantity, const std::string rate, const std::string bid_type)
 {
-    if(bid_type.find("Sell") != std::string::npos){
-        client_.CreateSellBid(quantity, rate);
-        client_.WaitForResponse();
-        auto error_msg = client_.CleanServerResponse();
-        ui->ServerMessageInitScreen->setText(error_msg.empty()
-                                             ? "Bid Created"
-                                             : QString::fromStdString(error_msg));
-    }else if(bid_type.find("Buy") != std::string::npos){
-        client_.CreateBuyBid(quantity, rate);
-        client_.WaitForResponse();
-        auto error_msg = client_.CleanServerResponse();
-        ui->ServerMessageInitScreen->setText(error_msg.empty()
-                                             ? "Bid Created"
-                                             : QString::fromStdString(error_msg));
-    }else{
-        ui->ServerMessageInitScreen->setText("Invalid bid type");
-    }
     create_bid_pop_->hide();
     create_bid_pop_->close();
+    bid_type.find("Sell") != std::string::npos
+            ? client_.CreateSellBid(quantity, rate)
+            : client_.CreateBuyBid(quantity, rate);
+    client_.WaitForResponse();
+    if(!client_.CheckStatus()){
+        ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+    }else if(!client_.CheckIfTransactionsWereMade()){
+
+    }else{
+        newtrans_pop_->exec();
+        auto bid = newtrans_pop_->DisplayNewTransactions(client_.Inbox().PopFront().second);
+        ui->ServerMessageInitScreen->setText(QString::fromStdString(bid.empty() ? "Bid fullfilled" : bid));
+    }
+
 }
 
 void MainWindow::HandleViewBid(const std::string bid_type)

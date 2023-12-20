@@ -1,27 +1,24 @@
 #include "TransactionRepository.hpp"
 
 namespace s21{
-    void TransactionRepository::CreateTransaction(const std::string &id, const std::string &seller_id,
+    void TransactionRepository::CreateTransaction(const std::string &seller_id,
                                                   const std::string &buyer_id, const std::string &rate,
                                                   const std::string &quantity, const std::string &timestamp) {
         pqxx::work task(db_connection_);
         try{
-
-            std::string sql = "INSERT INTO " + task.quote(BDNames::transaction_table) + " ("
-                    + task.quote(BDNames::transaction_table_id) + ", "
-                    + task.quote(BDNames::transaction_table_seller_id) + ", "
-                    + task.quote(BDNames::transaction_table_buyer_id) + ", "
-                    + task.quote(BDNames::transaction_table_rate) + ", "
-                    + task.quote(BDNames::transaction_table_quantity)
-                    + " VALUES (" + task.quote(id) + ", "
-                    + task.quote(seller_id) + ", " + task.quote(buyer_id) + ", "
+            std::string sql = "INSERT INTO " + std::string(BDNames::transaction_table) + " ("
+                    + std::string(BDNames::transaction_table_seller_id) + ", "
+                    + std::string(BDNames::transaction_table_buyer_id) + ", "
+                    + std::string(BDNames::transaction_table_rate) + ", "
+                    + std::string(BDNames::transaction_table_quantity) + ", "
+                    + std::string(BDNames::transaction_table_create_update_time)
+                    + ") VALUES (" + task.quote(seller_id) + ", " + task.quote(buyer_id) + ", "
                     + task.quote(rate) + ", " + task.quote(quantity) + ", " + task.quote(timestamp) + ")";
-            if(!task.exec(sql).empty()) {
-                task.commit();
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::ERROR));
-            }
-        }catch(...){
+            std::cout << sql << "\n";
+            auto result = task.exec(sql);
+            task.commit();
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }

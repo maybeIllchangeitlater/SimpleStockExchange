@@ -11,7 +11,7 @@ namespace s21{
                 == Encoder::Encode(request_body.at(BDNames::user_table_password))) {
                 std::cout << "user password is " << user.at(
                         BDNames::user_table_password) << " vs passed password " << Encoder::Encode(request_body.at(BDNames::user_table_password));
-                response["status"] = ServerMessage::ResponseCode::OK;
+                response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
                 response[BDNames::user_table_id] = user.at(BDNames::user_table_id);
                 return response;
             } else {
@@ -37,7 +37,7 @@ namespace s21{
                                     request_body.at(BDNames::user_table_password),
                                     request_body.at(BDNames::user_table_balance));
                 auto user = service_.GetUserByName(request_body.at(BDNames::user_table_user_name));
-                response["status"] = ServerMessage::ResponseCode::OK;
+                response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
                 response[BDNames::user_table_id] = user.at(BDNames::user_table_id);
                 return response;
             }catch(const std::exception &e){
@@ -53,7 +53,7 @@ namespace s21{
         try {
             response = service_.GetUserById(request_body.at(BDNames::user_table_id));
             response.erase(BDNames::user_table_password);
-            response["status"] = ServerMessage::ResponseCode::OK;
+            response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
             ResponseError(response, e.what());
@@ -65,11 +65,11 @@ namespace s21{
         nlohmann::json response;
         try {
             std::cout << request_body.at(BDNames::user_table_id) << "\n";
-            auto tmp = GetUserById(request_body.at(BDNames::user_table_id));
+            auto tmp = GetUserById(request_body);
             std::cout << "requested user: " << tmp.at(BDNames::user_table_user_name)
             << "  " << tmp.at(BDNames::user_table_balance) << "\n";
             response[BDNames::user_table_balance] = tmp[BDNames::user_table_balance];
-            response["status"] = ServerMessage::ResponseCode::OK;
+            response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         } catch (const std::exception &e) {
             ResponseError(response, e.what());
@@ -82,7 +82,7 @@ namespace s21{
         try {
             response = service_.GetUserByName(request_body.at(BDNames::user_table_user_name));
             response.erase(BDNames::user_table_password);
-            response["status"] = ServerMessage::ResponseCode::OK;
+            response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
             ResponseError(response, e.what());
@@ -95,7 +95,7 @@ namespace s21{
         try {
             service_.UpdateUserName(request_body.at(BDNames::user_table_id),
                                     request_body.at(BDNames::user_table_user_name));
-            response["status"] = ServerMessage::ResponseCode::OK;
+            response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
             ResponseError(response, e.what());
@@ -108,7 +108,7 @@ namespace s21{
         try {
             service_.UpdateUserPassword(request_body.at(BDNames::user_table_id),
                                         request_body.at(BDNames::user_table_password));
-            response["status"] = ServerMessage::ResponseCode::OK;
+            response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
             ResponseError(response, e.what());
@@ -121,7 +121,7 @@ namespace s21{
         try {
             service_.UpdateUserBalance(request_body.at(BDNames::user_table_id),
                                        request_body.at(BDNames::user_table_balance));
-            response["status"] = ServerMessage::ResponseCode::OK;
+            response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
             ResponseError(response, e.what());
@@ -133,7 +133,7 @@ namespace s21{
         nlohmann::json response;
         try {
             service_.DeleteUser(request_body.at(BDNames::user_table_id));
-            response["status"] = ServerMessage::ResponseCode::OK;
+            response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
             ResponseError(response, e.what());
@@ -142,9 +142,9 @@ namespace s21{
     }
 
     void UserController::ResponseError(nlohmann::json &response, const char *exception) {
-        response["status"] = ServerMessage::response_code.find(exception) != ServerMessage::response_code.end()
+        response[ExtraJSONKeys::status] = ServerMessage::response_code.find(exception) != ServerMessage::response_code.end()
                              ? ServerMessage::response_code.at(exception)
                              : ServerMessage::ResponseCode::BAD_REQUEST;
-        response["message"] = exception;
+        response[ExtraJSONKeys::message] = exception;
     }
 }

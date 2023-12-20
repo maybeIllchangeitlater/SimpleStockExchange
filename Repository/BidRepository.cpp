@@ -210,4 +210,48 @@ namespace s21{
         }
     }
 
+    pqxx::result BidRepository::MatchBuyBids(const std::string &user_id,
+                                             const std::string &rate) {
+        pqxx::work task(db_connection_); // usd for rubs
+        try{
+            std::string sql = "SELECT " + std::string(BDNames::bid_table_id)
+                    + ", " + std::string(BDNames::bid_table_rate)
+                    + ", " + std::string(BDNames::bid_table_buyer_id)
+                    + ", " + std::string(BDNames::bid_table_quantity) + " FROM " + std::string(BDNames::bid_table)
+                    + " WHERE " + std::string(BDNames::bid_table_seller_id) + " is NULL AND "
+                    + std::string(BDNames::bid_table_buyer_id) + " != " + task.quote(user_id)
+                    + " AND " + std::string(BDNames::bid_table_rate) + " <= " + rate
+                    + " ORDER BY " + std::string(BDNames::bid_table_rate) + " ASC";
+            std::cout <<  sql << "\n";
+            auto res = task.exec(sql);
+            return res;
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
+            task.abort();
+            throw;
+        }
+    }
+
+    pqxx::result BidRepository::MatchSellBids(const std::string &user_id,
+                                             const std::string &rate) {
+        pqxx::work task(db_connection_); // rubs for USD
+        try{
+            std::string sql = "SELECT " + std::string(BDNames::bid_table_id)
+                              + ", " + std::string(BDNames::bid_table_rate)
+                              + ", " + std::string(BDNames::bid_table_seller_id)
+                              + ", " + std::string(BDNames::bid_table_quantity) + " FROM " + std::string(BDNames::bid_table)
+                              + " WHERE " + std::string(BDNames::bid_table_buyer_id) + " is NULL AND "
+                              + std::string(BDNames::bid_table_seller_id) + " != " + task.quote(user_id)
+                              + " AND " + std::string(BDNames::bid_table_rate) + " <= " + rate
+                              + " ORDER BY " + std::string(BDNames::bid_table_rate) + " DESC";
+            std::cout <<  sql << "\n";
+            auto res = task.exec(sql);
+            return res;
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
+            task.abort();
+            throw;
+        }
+    }
+
 }

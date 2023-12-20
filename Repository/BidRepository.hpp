@@ -22,6 +22,8 @@ namespace s21 {
         pqxx::result ReadBidRaw(const std::string &bid_id);
         pqxx::result ReadAllUserSellBids(const std::string &seller_id);
         pqxx::result ReadAllUserBuyBids(const std::string &buyer_id);
+        pqxx::result MatchSellBids(const std::string &user_id, const std::string &rate);
+        pqxx::result MatchBuyBids(const std::string &user_id, const std::string &rate);
         void UpdateBidRate(const std::string &bid_id, const std::string &rate, const std::string &time);
         void UpdateBidQuantity(const std::string &bid_id, const std::string &quantity, const std::string &time);
         void DeleteBid(const std::string &bid_id);
