@@ -36,7 +36,7 @@
   <widget class="QPushButton" name="Ok">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>270</x>
      <y>460</y>
      <width>100</width>
      <height>32</height>
@@ -59,7 +59,7 @@
   <widget class="QPushButton" name="Cancel">
    <property name="geometry">
     <rect>
-     <x>799</x>
+     <x>840</x>
      <y>460</y>
      <width>141</width>
      <height>32</height>
@@ -67,6 +67,19 @@
    </property>
    <property name="text">
     <string>Cancel Bid</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Update">
+   <property name="geometry">
+    <rect>
+     <x>680</x>
+     <y>460</y>
+     <width>141</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Update Bid</string>
    </property>
   </widget>
  </widget>

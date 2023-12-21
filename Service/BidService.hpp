@@ -129,7 +129,7 @@ namespace s21{
         nlohmann::json MakeBuyBidOrTransaction(const std::string &user_id, const std::string &rate, const std::string &quantity){
             nlohmann::json send_back;
             pqxx::result res;
-            res = repository_.MatchSellBids(user_id, rate);
+            res = repository_.MatchSellBids(user_id, rate); ///first try to match buying bid with already existing selling bids
             auto remaining_quantity = std::stoll(quantity);
             if(!res.empty()){
                 for(const auto& col : res){
@@ -139,16 +139,16 @@ namespace s21{
                     current_transaction[ExtraJSONKeys::buy_transaction] = seller_quant <= buyer_quant
                                                                            ? std::to_string(seller_quant)
                                                                            : std::to_string(buyer_quant);
-                    current_transaction[ExtraJSONKeys::bid_transaction_rate] = col[BDNames::bid_table_quantity]
+                    current_transaction[ExtraJSONKeys::bid_transaction_rate] = col[BDNames::bid_table_rate]
                             .as<std::string>();
                     std::cout << "transaction:\n" << current_transaction.dump() << "\n";
                     transaction_service_.MakeTransaction(col[BDNames::bid_table_seller_id].as<std::string>(),
                                                          user_id, col[BDNames::bid_table_rate].as<std::string>(),
-                                                         col[BDNames::bid_table_quantity].as<std::string>());
+                                                         current_transaction[ExtraJSONKeys::buy_transaction]);
                     send_back += current_transaction;
                     remaining_quantity -= seller_quant;
                     if(seller_quant <= buyer_quant){
-
+                        repository_.DeleteBid(col[BDNames::bid_table_id].as<std::string>());
                     }else{
                         repository_.UpdateBidQuantity(col[BDNames::bid_table_id].as<std::string>(),
                                 std::to_string(seller_quant - buyer_quant),
@@ -186,13 +186,13 @@ namespace s21{
                     current_transaction[ExtraJSONKeys::sell_transaction] = seller_quant <= buyer_quant
                             ? std::to_string(seller_quant)
                             : std::to_string(buyer_quant);
-                    current_transaction[ExtraJSONKeys::bid_transaction_rate] = col[BDNames::bid_table_quantity].as<std::string>();
+                    current_transaction[ExtraJSONKeys::bid_transaction_rate] = col[BDNames::bid_table_rate].as<std::string>();
                     std::cout << "transaction:\n" << current_transaction.dump() << "\n";
                     transaction_service_.MakeTransaction(col[BDNames::bid_table_buyer_id].as<std::string>(),
                                                          user_id, col[BDNames::bid_table_rate].as<std::string>(),
-                                                         col[BDNames::bid_table_quantity].as<std::string>());
+                                                         current_transaction[ExtraJSONKeys::sell_transaction]);
                     send_back += current_transaction;
-                    remaining_quantity -= seller_quant;
+                    remaining_quantity -= buyer_quant;
                     if(buyer_quant <= seller_quant){
                         repository_.DeleteBid(col[BDNames::bid_table_id].as<std::string>());
                     }else {

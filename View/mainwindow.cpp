@@ -59,6 +59,11 @@ MainWindow::MainWindow(s21::Client &client, QWidget *parent)
                                              ? "Bid Cancelled"
                                              : QString::fromStdString(error_msg));
     });
+    connect(view_bid_pop_.get(), &ViewBids::UpdateBid, this, [&](const std::string bid_id,
+            const std::string bid_rate, const std::string bid_quantity){
+         upd_bid_pop_->
+         upd_bid_pop_->exec();
+    });
     Connect();
 
 }
@@ -114,11 +119,17 @@ void MainWindow::HandleCreateBid(const std::string quantity, const std::string r
     if(!client_.CheckStatus()){
         ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
     }else if(!client_.CheckIfTransactionsWereMade()){
-
+        auto msg = client_.CleanServerResponse();
+        std::string second_part;
+        std::string first_part;
+        first_part = msg.substr(msg.find(',') + 1);
+        second_part = msg.substr(msg.find('{') + 1, msg.find(','));
+        ui->ServerMessageInitScreen->setText(
+            QString::fromStdString(first_part + second_part).remove("\"").remove(":") + " RUB per 1 USD");
     }else{
-        newtrans_pop_->exec();
         auto bid = newtrans_pop_->DisplayNewTransactions(client_.Inbox().PopFront().second);
         ui->ServerMessageInitScreen->setText(QString::fromStdString(bid.empty() ? "Bid fullfilled" : bid));
+        newtrans_pop_->exec();
     }
 
 }

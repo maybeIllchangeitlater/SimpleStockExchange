@@ -9,7 +9,7 @@ namespace s21 {
         constexpr static const char * sell_transaction = "Sold ";
         constexpr static const char * created_sell_bid_quantity = "Created bid to sell ";
         constexpr static const char * created_buy_bid_quantity = "Created bid to buy ";
-        constexpr static const char * bid_transaction_rate = " USD for ";
+        constexpr static const char * bid_transaction_rate = " USD with rate ";
         constexpr static const char * bid_creation_check = "Created bid to ";
     };
 } //s21

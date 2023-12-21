@@ -57,6 +57,9 @@ set(PROJECT_SOURCES
         DeleteAccountPopup.hpp
         DeleteAccountPopup.cpp
         DeleteAccountPopup.ui
+        UpdateBidPopup.hpp
+        UpdateBidPopup.cpp
+        UpdateBidPopup.ui
 
 )
 

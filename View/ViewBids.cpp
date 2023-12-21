@@ -17,6 +17,13 @@ ViewBids::ViewBids(QWidget *parent) :
             ui->BidsListWidget->takeItem(ui->BidsListWidget->currentRow());
         }
     });
+    connect(ui->Update, &QPushButton::clicked, this, [&](){
+        if(!ui->BidsListWidget->selectedItems().empty()
+                && ui->BidsListWidget->currentItem()->text().contains(s21::BDNames::bid_id_for_join)){
+            emit UpdateBid(GrabId(), GrabRate(), GrabQuantity());
+            ui->BidsListWidget->takeItem(ui->BidsListWidget->currentRow()); //swap to grap by id and update
+        }
+    });
 }
 
 ViewBids::~ViewBids()
@@ -55,7 +62,18 @@ void ViewBids::closeEvent(QCloseEvent *event)
 
 std::string ViewBids::GrabId()
 {
-
     auto str = ui->BidsListWidget->currentItem()->text().toStdString().substr(std::string(s21::BDNames::bid_id_for_join).length() + 3); // " : "
+    return str.substr(0, str.find(' '));
+}
+
+std::string ViewBids::GrabRate()
+{
+    auto str = ui->BidsListWidget->currentItem()->text().toStdString().substr(std::string(s21::BDNames::bid_table_rate).length() + 3); // " : "
+    return str.substr(0, str.find(' '));
+}
+
+std::string ViewBids::GrabQuantity()
+{
+    auto str = ui->BidsListWidget->currentItem()->text().toStdString().substr(std::string(s21::BDNames::bid_table_quantity).length() + 3); // " : "
     return str.substr(0, str.find(' '));
 }
