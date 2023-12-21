@@ -30,6 +30,8 @@ private slots:
     void HandleRegisterAttempt(const std::string username, const std::string password, const std::string balance);
     void HandleCreateBid(const std::string quantity, const std::string rate, const std::string bid_type);
     void HandleViewBid(const std::string bid_type);
+    void HandleUpdateBid(const std::string bid_id,
+                         const std::string bid_rate, const std::string bid_quantity);
 
 private:
     void SetLoginnedButtons();

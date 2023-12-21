@@ -68,12 +68,14 @@ std::string ViewBids::GrabId()
 
 std::string ViewBids::GrabRate()
 {
-    auto str = ui->BidsListWidget->currentItem()->text().toStdString().substr(std::string(s21::BDNames::bid_table_rate).length() + 3); // " : "
+    auto str = ui->BidsListWidget->currentItem()->text().toStdString();
+    str.substr(str.find(s21::BDNames::bid_table_rate) + 3, std::string::npos);
     return str.substr(0, str.find(' '));
 }
 
 std::string ViewBids::GrabQuantity()
 {
-    auto str = ui->BidsListWidget->currentItem()->text().toStdString().substr(std::string(s21::BDNames::bid_table_quantity).length() + 3); // " : "
+    auto str = ui->BidsListWidget->currentItem()->text().toStdString();
+    str.substr(str.find(s21::BDNames::bid_table_rate) + 3, std::string::npos);
     return str.substr(0, str.find(' '));
 }

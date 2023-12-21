@@ -25,6 +25,9 @@ public:
 
     std::string DisplayNewTransactions(const std::string &raw_response);
 
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
 private:
     std::string NewBid(const QJsonValueRef &json, QString bid_type);
     Ui::BidTransactionMadePopup *ui;

@@ -50,23 +50,23 @@ namespace s21{
     pqxx::result BidRepository::ReadBid(const std::string &bid_id) {
         pqxx::work task(db_connection_);
         try{
-            std::string sql = "SELECT b." + task.quote(BDNames::bid_table_id)
+            std::string sql = "SELECT b." + std::string(BDNames::bid_table_id)
                                 + " AS " + BDNames::bid_id_for_join
-                                + ", seller." + task.quote(BDNames::user_table_user_name)
+                                + ", seller." + BDNames::user_table_user_name
                               + " AS " + BDNames::joined_seller_name
-                              + ", buyer." + task.quote(BDNames::user_table_user_name)
+                              + ", buyer." + BDNames::user_table_user_name
                               + " AS " + BDNames::joined_buyer_name
-                              + ", b." + task.quote(BDNames::bid_table_rate)
-                              + " b." + task.quote(BDNames::bid_table_quantity)
-                              + " b." + task.quote(BDNames::bid_table_create_update_time)
-                              + " FROM " + task.quote(BDNames::bid_table)
-                              + " b LEFT JOIN " + task.quote(BDNames::user_table) + " seller ON b."
-                              + task.quote(BDNames::bid_table_seller_id)
-                              + " = seller." + task.quote(BDNames::user_table_id)
-                              + " LEFT JOIN "  + task.quote(BDNames::user_table) + " buyer ON b."
-                              + task.quote(BDNames::bid_table_buyer_id)
-                              + " = buyer." + task.quote(BDNames::user_table_id)
-                              + " WHERE " + task.quote(BDNames::bid_table_id)
+                              + ", b." + BDNames::bid_table_rate
+                              + ", b." + BDNames::bid_table_quantity
+                              + ", b." + BDNames::bid_table_create_update_time
+                              + " FROM " + BDNames::bid_table
+                              + " b LEFT JOIN " + BDNames::user_table + " seller ON "
+                              + BDNames::bid_table_seller_id
+                              + " = seller." + BDNames::user_table_id
+                              + " LEFT JOIN "  + BDNames::user_table + " buyer ON "
+                              + BDNames::bid_table_buyer_id
+                              + " = buyer." + BDNames::user_table_id
+                              + " WHERE b." + BDNames::bid_table_id
                               + " = " + task.quote(bid_id);
             std::cout << sql << "\n";
             auto res = task.exec(sql);

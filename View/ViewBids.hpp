@@ -32,6 +32,8 @@ protected:
 
 private:
     std::string GrabId();
+    std::string GrabRate();
+    std::string GrabQuantity();
     Ui::ViewBids *ui;
 };
 

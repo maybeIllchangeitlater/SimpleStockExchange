@@ -13,12 +13,12 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QPushButton" name="pushButton_3">
+  <widget class="QPushButton" name="update">
    <property name="geometry">
     <rect>
      <x>130</x>
      <y>220</y>
-     <width>111</width>
+     <width>131</width>
      <height>51</height>
     </rect>
    </property>

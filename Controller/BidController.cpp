@@ -67,6 +67,7 @@ namespace s21{
         try {
             service_.UpdateBidQuantity(request_body.at(BDNames::bid_table_id),
                                        request_body.at(BDNames::bid_table_quantity));
+            response = service_.ReadBid(request_body.at(BDNames::bid_table_id));
             response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
@@ -80,6 +81,7 @@ namespace s21{
         try {
             service_.UpdateBidRate(request_body.at(BDNames::bid_table_id),
                                    request_body.at(BDNames::bid_table_rate));
+            response = service_.ReadBid(request_body.at(BDNames::bid_table_id));
             response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){

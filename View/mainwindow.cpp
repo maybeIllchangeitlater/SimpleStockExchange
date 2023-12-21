@@ -44,6 +44,7 @@ MainWindow::MainWindow(s21::Client &client, QWidget *parent)
     connect(reg_pop_.get(), &RegisterPopup::RegisterAttempt, this, &MainWindow::HandleRegisterAttempt);
     connect(log_pop_.get(), &LoginPopup::LoginAttempt, this, &MainWindow::HandleLoginAttempt);
     connect(create_bid_pop_.get(), &CreateBidPopup::MakeBid, this, &MainWindow::HandleCreateBid);
+    connect(upd_bid_pop_.get(), &UpdateBidPopup::UpdateBid, this, &MainWindow::HandleUpdateBid);
     connect(view_bid_pop_.get(), &ViewBids::ViewBid, this, &MainWindow::HandleViewBid);
     connect(delete_account_pop_.get(), &DeleteAccountPopup::DeleteAccount, this, [&](){
        client_.DeleteMe();
@@ -61,7 +62,7 @@ MainWindow::MainWindow(s21::Client &client, QWidget *parent)
     });
     connect(view_bid_pop_.get(), &ViewBids::UpdateBid, this, [&](const std::string bid_id,
             const std::string bid_rate, const std::string bid_quantity){
-         upd_bid_pop_->
+         upd_bid_pop_->SetParameters(bid_id, bid_rate, bid_quantity);
          upd_bid_pop_->exec();
     });
     Connect();
@@ -149,6 +150,34 @@ void MainWindow::HandleViewBid(const std::string bid_type)
     }
     create_bid_pop_->hide();
     create_bid_pop_->close();
+}
+
+void MainWindow::HandleUpdateBid(const std::string bid_id, const std::string bid_rate, const std::string bid_quantity)
+{
+    client_.UpdateBidRate(bid_id, bid_rate);
+    client_.WaitForResponse();
+    if(client_.Inbox().Front().second.find(s21::ExtraJSONKeys::message) != std::string::npos){
+        ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+        return;
+    }
+    client_.Inbox().PopFront();
+    client_.UpdateBidQuantity(bid_id, bid_quantity);
+    client_.WaitForResponse();
+    if(client_.Inbox().Front().second.find(s21::ExtraJSONKeys::message) != std::string::npos){
+        ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+        return;
+    }
+    auto msg = client_.Inbox().PopFront().second;
+    std::cout << msg;
+    ui->ServerMessageInitScreen->
+            setText(QString::fromStdString(
+                        "Updated " + msg.substr(msg.find(s21::BDNames::bid_id_for_join), msg.find(',')).replace(0, '"', "")
+                        + " to " + s21::BDNames::bid_table_quantity + " : "
+                        + msg.substr(msg.find(s21::BDNames::bid_table_quantity), msg.find(',')) + " "
+                        + s21::BDNames::bid_table_rate + " : "
+                        + msg.substr(msg.find(s21::BDNames::bid_table_rate), msg.find(','))));
+    upd_bid_pop_->hide();
+    upd_bid_pop_->close();
 }
 
 void MainWindow::SetLoginnedButtons()
