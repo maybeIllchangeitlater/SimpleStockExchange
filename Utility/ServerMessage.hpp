@@ -14,6 +14,7 @@ namespace s21 {
             REGISTER_BAD_NAME,
             REGISTER_NOT_UNIQUE_NAME,
             REGISTER_BAD_PASSWORD,
+            BALANCE_BAD_BALANCE,
             LOGIN_OK,
             USER_NOT_FOUND,
             LOGIN_BAD_PASSWORD,

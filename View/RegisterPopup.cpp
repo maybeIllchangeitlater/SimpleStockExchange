@@ -9,10 +9,13 @@ RegisterPopup::RegisterPopup(QWidget *parent) :
     ui->PasswordLine->setEchoMode(QLineEdit::Password);
     connect(ui->Ok, &QPushButton::clicked, this, [&](){
                 emit RegisterAttempt(ui->LoginLine->text().toStdString(),
-                                     ui->PasswordLine->text().toStdString(), ui->BalanceLine->text().toStdString());
+                                     ui->PasswordLine->text().toStdString(),
+                                     ui->BalanceLineUSD->text().toStdString(),
+                                     ui->BalanceLineRUB->text().toStdString());
                 ui->LoginLine->clear();
                 ui->PasswordLine->clear();
-                ui->BalanceLine->clear();
+                ui->BalanceLineUSD->clear();
+                ui->BalanceLineRUB->clear();
             });
 }
 

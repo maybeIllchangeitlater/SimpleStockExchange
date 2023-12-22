@@ -7,7 +7,11 @@ namespace s21 {
         constexpr static const char * user_table_id = "id";
         constexpr static const char * user_table_user_name = "username";
         constexpr static const char * user_table_password = "password";
-        constexpr static const char * user_table_balance = "balance";
+
+        constexpr static const char * balance_table = "balance_info";
+        constexpr static const char * balance_table_user_id = "user_id";
+        constexpr static const char * balance_table_usd = "usd_balance";
+        constexpr static const char * balance_table_rub = "rub_balance";
 
         constexpr static const char * bid_table = "bid_info";
         constexpr static const char * bid_table_id = "id";
@@ -30,6 +34,9 @@ namespace s21 {
         constexpr static const char * joined_buyer_name = "buyer_username";
         constexpr static const char * bid_id_for_join = "bid_id";
         constexpr static const char * trader_id = "trader_id";
+
+        constexpr static const char * missing_buyer = "no buyer yet";
+        constexpr static const char * missing_seller = "no seller yet";
     };
 } //s21
 

@@ -7,27 +7,48 @@
 #include "../Utility/Encoder.hpp"
 #include "../Utility/ServerMessage.hpp"
 #include "../3rdParty/json.hpp"
+#include "../Service/BalanceService.hpp"
 #include <iostream>
 
 namespace s21 {
     class UserService {
     public:
-        explicit UserService(UserRepository &repository) :repository_(repository){}
-        void CreateUser(const std::string &user_name, const std::string &password, const std::string &user_balance){
+        explicit UserService(UserRepository &repository, BalanceService &balance_service)
+        : repository_(repository), balance_service_(balance_service){}
+
+        void CreateUser(const std::string &user_name, const std::string &password,
+                        const std::string &user_balance_usd, const std::string &user_balance_rub){
             if(!ValidateUserName(user_name)){
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_BAD_NAME));
             }
             if(!ValidatePassword(password)){
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_BAD_PASSWORD));
             }
-            std::cout << "User Validated\n";
-            repository_.CreateUser(user_name, Encoder::Encode(password), user_balance);
+            if(!balance_service_.ValidateBalance(user_balance_usd) || !balance_service_.ValidateBalance(user_balance_rub)){
+                throw std::logic_error(ServerMessage::server_message.at(ServerMessage::BALANCE_BAD_BALANCE));
+            }
+            repository_.CreateUser(user_name, Encoder::Encode(password));
+            auto id = repository_.ReadUserByName(user_name)[0][BDNames::user_table_id].as<std::string>();
+            try{
+                balance_service_.SetUserBalance(id, user_balance_usd, user_balance_rub);
+            }catch(...){
+                repository_.DeleteUser(id);
+                throw;
+            }
         }
         nlohmann::json GetUserByName(const std::string &user_name){
-            return GenerateUserInfo(repository_.ReadUserByName(user_name));
+            auto result_json = GenerateUserInfo(repository_.ReadUserByName(user_name));
+            auto balance_json = balance_service_.GetUserBalance(result_json[BDNames::user_table_id]);
+            result_json[BDNames::balance_table_usd] = balance_json[BDNames::balance_table_usd];
+            result_json[BDNames::balance_table_rub] = balance_json[BDNames::balance_table_rub];
+            return result_json;
         }
         nlohmann::json GetUserById(const std::string &user_id){
-            return GenerateUserInfo(repository_.ReadUserById(user_id));
+            auto result_json = GenerateUserInfo(repository_.ReadUserById(user_id));
+            auto balance_json = balance_service_.GetUserBalance(user_id);
+            result_json[BDNames::balance_table_usd] = balance_json[BDNames::balance_table_usd];
+            result_json[BDNames::balance_table_rub] = balance_json[BDNames::balance_table_rub];
+            return result_json;
         }
         void UpdateUserName(const std::string &user_id, const std::string &new_name){
             if(!ValidateUserName(new_name)){
@@ -35,8 +56,13 @@ namespace s21 {
             }
             repository_.UpdateUserName(user_id, new_name);
         }
-        void UpdateUserBalance(const std::string &user_id, const std::string &new_balance){
-            repository_.UpdateUserBalance(user_id, new_balance);
+        void UpdateUserBalance(const std::string &user_id, const std::string &new_balance_usd,
+                               const std::string &new_balance_rub){
+            if(!balance_service_.ValidateBalance(new_balance_rub)
+            || !balance_service_.ValidateBalance(new_balance_usd)){
+                throw std::logic_error(ServerMessage::server_message.at(ServerMessage::BALANCE_BAD_BALANCE));
+            }
+            balance_service_.SetUserBalance(user_id, new_balance_usd, new_balance_rub);
         }
         void UpdateUserPassword(const std::string &user_id, const std::string &new_password){
             if(!ValidatePassword(new_password)){
@@ -73,18 +99,14 @@ namespace s21 {
             return has_uppercase && has_lowercase && has_symbols;
         }
         nlohmann::json GenerateUserInfo(const pqxx::result &user_info){
-            std::string id = user_info[0][BDNames::user_table_id].as<std::string>();
-            std::string user_name = user_info[0][BDNames::user_table_user_name].as<std::string>();
-            std::string hashed_password = user_info[0][BDNames::user_table_password].as<std::string>();
-            std::string balance = user_info[0][BDNames::user_table_balance].as<std::string>();
             nlohmann::json user_json;
-            user_json[BDNames::user_table_id] = id;
-            user_json[BDNames::user_table_user_name] = user_name;
-            user_json[BDNames::user_table_password] = hashed_password;
-            user_json[BDNames::user_table_balance] = balance;
+            user_json[BDNames::user_table_id] = user_info[0][BDNames::user_table_id].as<std::string>();
+            user_json[BDNames::user_table_user_name] = user_info[0][BDNames::user_table_user_name].as<std::string>();
+            user_json[BDNames::user_table_password] = user_info[0][BDNames::user_table_password].as<std::string>();
             return user_json;
         }
         UserRepository &repository_;
+        BalanceService &balance_service_;
     };
 } //s21
 

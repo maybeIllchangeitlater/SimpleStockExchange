@@ -15,7 +15,7 @@ namespace s21 {
         explicit UserRepository(pqxx::connection &db_conn) : db_connection_(db_conn) {}
 
         void CreateUser(const std::string &username,
-                                        const std::string &password, const std::string &user_balance);
+                                        const std::string &password);
 
         pqxx::result ReadUserById(const std::string &user_id);
 
@@ -24,8 +24,6 @@ namespace s21 {
         void UpdateUserName(const std::string &user_id, const std::string &new_username);
 
         void UpdateUserPassword(const std::string &user_id, const std::string &new_password);
-
-        void UpdateUserBalance(const std::string &user_id, const std::string &new_balance);
 
         void DeleteUser(const std::string &user_id);
 

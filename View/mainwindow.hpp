@@ -9,6 +9,7 @@
 #include "BidTransactionMadePopup.hpp"
 #include "ViewBids.hpp"
 #include "DeleteAccountPopup.hpp"
+#include <regex>
 #include "UpdateBidPopup.hpp"
 #include <memory.h>
 #include <boost/make_unique.hpp>
@@ -27,16 +28,19 @@ public:
 
 private slots:
     void HandleLoginAttempt(const std::string username, const std::string password);
-    void HandleRegisterAttempt(const std::string username, const std::string password, const std::string balance);
+    void HandleRegisterAttempt(const std::string username, const std::string password, const std::string balance_usd,
+                               const std::string balance_rub);
     void HandleCreateBid(const std::string quantity, const std::string rate, const std::string bid_type);
     void HandleViewBid(const std::string bid_type);
-    void HandleUpdateBid(const std::string bid_id,
-                         const std::string bid_rate, const std::string bid_quantity);
+    void HandleUpdateBid(const std::string bid_id, const std::string bid_rate,
+                         const std::string bid_quantity, int index);
 
 private:
     void SetLoginnedButtons();
     void SetNotLoginnedButtons();
     void Connect();
+    void ConnectToHandlers();
+    void ConnectToPopups();
     Ui::MainWindow *ui;
     std::unique_ptr<LoginPopup> log_pop_ = boost::make_unique<LoginPopup>();
     std::unique_ptr<ViewBids> view_bid_pop_ = boost::make_unique<ViewBids>();

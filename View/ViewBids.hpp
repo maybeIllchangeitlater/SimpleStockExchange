@@ -21,11 +21,12 @@ public:
     ~ViewBids();
 
     void ShowBids(const std::string &bids, const char *type);
+    void InsertUpdatedBidBack(const std::string &bid, size_t bid_index);
 
 signals:
     void ViewBid(std::string bid_type);
     void CancelBid(std::string bid_id);
-    void UpdateBid(std::string bid_id, std::string bid_rate, std::string bid_quantity);
+    void UpdateBid(std::string bid_id, std::string bid_rate, std::string bid_quantity, int item_index);
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -34,6 +35,7 @@ private:
     std::string GrabId();
     std::string GrabRate();
     std::string GrabQuantity();
+    QString GrabBidFromJson(const QJsonValueRef &json);
     Ui::ViewBids *ui;
 };
 

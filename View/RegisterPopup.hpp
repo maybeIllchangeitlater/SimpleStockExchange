@@ -16,7 +16,7 @@ public:
     ~RegisterPopup();
 
 signals:
-    void RegisterAttempt(std::string login, std::string password, std::string balance);
+    void RegisterAttempt(std::string login, std::string password, std::string balance_usd, std::string balance_rub);
 
 private:
     Ui::RegisterPopup *ui;

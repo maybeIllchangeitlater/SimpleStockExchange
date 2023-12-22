@@ -10,6 +10,7 @@
 #include <boost/make_unique.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
+
 namespace s21 {
     class Client {
         using connection_ptr = boost::shared_ptr<Connection>;
@@ -26,8 +27,9 @@ namespace s21 {
             return from_server_;
         }
 
-        void Register(const std::string &username, const std::string &password, const std::string &balance){
-            Send(ClientController::Register(username, password, balance));
+        void Register(const std::string &username, const std::string &password,
+                      const std::string &balance_usd, const std::string &balance_rub){
+            Send(ClientController::Register(username, password, balance_usd, balance_rub));
         }
 
         void LogIn(const std::string &username, const std::string& password){
@@ -128,6 +130,36 @@ namespace s21 {
         bool CheckIfTransactionsWereMade(){
             return from_server_.Front().second.find(s21::ExtraJSONKeys::buy_transaction) != std::string::npos
                     ||from_server_.Front().second.find(s21::ExtraJSONKeys::sell_transaction) != std::string::npos;
+        }
+
+        std::string CleanBidCreatedResponse(){
+            auto msg = CleanServerResponse();
+            msg.erase(std::remove_if(msg.begin(), msg.end(), [](char c) { return c == '\"' || c == ':'; }), msg.end());
+
+            std::string second_part;
+            std::string first_part;
+            first_part = msg.substr(msg.find(',') + 1);
+            second_part = msg.substr(msg.find('{') + 1, msg.find(','));
+
+            return first_part + second_part + " RUB per 1 USD";
+        }
+
+        std::string CleanBidUpdateRespons(std::string &server_response){
+            server_response.erase(std::remove(server_response.begin(), server_response.end(), '"'), server_response.end());
+
+            std::string msg_bid_type = server_response.find(s21::BDNames::missing_buyer) != std::string::npos
+                    ? " sell "
+                    : " buy ";
+
+            auto msg_bid = server_response.substr(server_response.find(s21::BDNames::bid_id_for_join) + 7,
+                                      server_response.find(',') - server_response.find(s21::BDNames::bid_id_for_join) - 7);
+
+            auto quant_start_pos = server_response.find(s21::BDNames::bid_table_quantity);
+            auto msg_quant = server_response.substr(quant_start_pos, server_response.find(',', quant_start_pos) - quant_start_pos);
+
+            auto rate_start_pos = server_response.find(s21::BDNames::bid_table_rate);
+            auto msg_rate = server_response.substr(rate_start_pos, server_response.find(',', rate_start_pos) - rate_start_pos);
+            return "Updated" + msg_bid_type +  "bid :\n" + msg_bid + "\nto " + msg_quant + " and " + msg_rate;
         }
 
 

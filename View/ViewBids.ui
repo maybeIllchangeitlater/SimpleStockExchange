@@ -82,6 +82,19 @@
     <string>Update Bid</string>
    </property>
   </widget>
+  <widget class="QLabel" name="bid_status_label">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>460</y>
+     <width>281</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

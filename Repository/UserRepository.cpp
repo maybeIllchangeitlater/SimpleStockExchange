@@ -4,17 +4,15 @@
 namespace s21 {
 
     void UserRepository::CreateUser(const std::string &username,
-                                    const std::string &password, const std::string &user_balance) {
+                                    const std::string &password) {
         pqxx::work task(db_connection_);
         try{
 
             std::string sql = "INSERT INTO " +  std::string(BDNames::user_table) +
-                    "(" + std::string(BDNames::user_table_user_name) + ", "
-                    + std::string(BDNames::user_table_password) +", "
-                    + std::string(BDNames::user_table_balance)
+                    "(" + BDNames::user_table_user_name + ", "
+                    + BDNames::user_table_password
                     + ") VALUES (" +
-                     task.quote(username) + ", " + task.quote(password) + ", " +
-                     user_balance + ");";
+                     task.quote(username) + ", " + task.quote(password) + ");";
             std::cout << sql << "\n";
             auto result = task.exec(sql);
             task.commit();
@@ -29,11 +27,10 @@ namespace s21 {
         pqxx::result res;
         try{
             std::string sql = "SELECT " + std::string(BDNames::user_table_id)
-                    + ", " + std::string(BDNames::user_table_user_name)
-                    + ", " + std::string(BDNames::user_table_password)
-                    + ", " + std::string(BDNames::user_table_balance)
-                    + " FROM " + std::string(BDNames::user_table)
-                    + " WHERE " + std::string(BDNames::user_table_id)
+                    + ", " + BDNames::user_table_user_name
+                    + ", " + BDNames::user_table_password
+                    + " FROM " + BDNames::user_table
+                    + " WHERE " + BDNames::user_table_id
                     + " = " + task.quote(user_id);
             std::cout << sql << "\n";
             auto result = task.exec(sql);
@@ -50,11 +47,10 @@ namespace s21 {
         pqxx::result res;
         try{
             std::string sql = "SELECT " + std::string(BDNames::user_table_id)
-                    + ", " + std::string(BDNames::user_table_user_name)
-                    + ", " + std::string(BDNames::user_table_password)
-                    + ", " + std::string(BDNames::user_table_balance)
-                    + " FROM " + std::string(BDNames::user_table)
-                    + " WHERE " + std::string(BDNames::user_table_user_name)
+                    + ", " + BDNames::user_table_user_name
+                    + ", " + BDNames::user_table_password
+                    + " FROM " + BDNames::user_table
+                    + " WHERE " + BDNames::user_table_user_name
                     + " = " + task.quote(user_name);
             std::cout << sql << "\n";
             auto result = task.exec(sql);
@@ -74,9 +70,9 @@ namespace s21 {
         pqxx::work task(db_connection_);
         try{
             std::string sql = "UPDATE " + std::string(BDNames::user_table)
-                    + " SET " + std::string(BDNames::user_table_user_name)
+                    + " SET " + BDNames::user_table_user_name
                     + " = " + task.quote(new_username)
-                    + " WHERE " + std::string(BDNames::user_table_id)
+                    + " WHERE " + BDNames::user_table_id
                     + " = " + task.quote(user_id);
             std::cout << sql << "\n";
             auto res = task.exec(sql);
@@ -92,9 +88,9 @@ namespace s21 {
         pqxx::work task(db_connection_);
         try{
             std::string sql = "UPDATE " + std::string(BDNames::user_table)
-                    + " SET " + std::string(BDNames::user_table_password)
+                    + " SET " + BDNames::user_table_password
                     + " = " + task.quote(new_password)
-                    + " WHERE " + std::string(BDNames::user_table_id)
+                    + " WHERE " + BDNames::user_table_id
                     + " = " + task.quote(user_id);
             std::cout << sql << "\n";
             auto res = task.exec(sql);
@@ -106,29 +102,12 @@ namespace s21 {
         }
     }
 
-    void UserRepository::UpdateUserBalance(const std::string &user_id, const std::string &new_balance) {
-        pqxx::work task(db_connection_);
-        try{
-            std::string sql = "UPDATE " + std::string(BDNames::user_table)
-                    + " SET " + std::string(BDNames::user_table_balance)
-                    + " = " + task.quote(new_balance)
-                    + " WHERE " + std::string(BDNames::user_table_id)
-                    + " = " + task.quote(user_id);
-            std::cout << sql << "\n";
-            auto res = task.exec(sql);
-            task.commit();
-        }catch(const std::exception &e){
-            std::cout << "\naboorting task because " << e.what() << "\n";
-            task.abort();
-            throw;
-        }
-    }
 
     void UserRepository::DeleteUser(const std::string &user_id) {
         pqxx::work task(db_connection_);
         try {
             std::string sql = "DELETE FROM " + std::string(BDNames::user_table)
-                    + " WHERE " + std::string(BDNames::user_table_id)
+                    + " WHERE " + BDNames::user_table_id
                     + " = " + task.quote(user_id);
             std::cout << sql << "\n";
             auto result = task.exec(sql);

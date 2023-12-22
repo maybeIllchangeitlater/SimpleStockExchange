@@ -15,12 +15,12 @@ int main(int argc, char *argv[])
 
 
 ///transactions tab and change username and password
-///add balance table - dollars and usd, no new repo
 /// change balance during transactions
 /// update of balance during transaction
 /// documentation using Open API 2.0 aka Swagger
 /// unit test coverage with boost tests
 /// docker image for server
 
-///bid info during update, fix it
 
+
+///create balance on top of updating balance for creating user to balance service

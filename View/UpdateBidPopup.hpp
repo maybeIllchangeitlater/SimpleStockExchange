@@ -14,11 +14,12 @@ class UpdateBidPopup : public QDialog
 public:
     explicit UpdateBidPopup(QWidget *parent = nullptr);
     ~UpdateBidPopup();
-     void SetParameters(const std::string &id, const std::string &rate, const std::string &quantity);
+     void SetParameters(const std::string &id, const std::string &rate, const std::string &quantity, int bid_index);
 signals:
-     void UpdateBid(const std::string id, const std::string rate, const std::string quantity);
+     void UpdateBid(const std::string id, const std::string rate, const std::string quantity, int bid_index);
 private:
     Ui::UpdateBidPopup *ui;
+    int bid_index_;
 };
 
 #endif // UPDATEBIDPOPUP_HPP

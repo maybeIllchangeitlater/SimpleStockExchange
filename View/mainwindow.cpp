@@ -12,59 +12,8 @@ MainWindow::MainWindow(s21::Client &client, QWidget *parent)
     ui->setupUi(this);
     SetNotLoginnedButtons();
     ui->ServerMessageInitScreen->setWordWrap(true);
-    connect(ui->Register, &QPushButton::clicked, this, [&](){
-        Connect();
-        reg_pop_->exec();
-    });
-    connect(ui->Login, &QPushButton::clicked, this, [&](){
-        Connect();
-        log_pop_->exec();
-    });
-    connect(ui->CreateBid, &QPushButton::clicked, this, [&](){
-       create_bid_pop_->exec();
-    });
-    connect(ui->Bids, &QPushButton::clicked, this, [&](){
-       view_bid_pop_->exec();
-
-    });
-    connect(ui->DeleteMe, &QPushButton::clicked, this, [&](){
-        delete_account_pop_->exec();
-    });
-    connect(ui->Logout, &QPushButton::clicked, this, [&](){
-        client_.Disconnect();
-        ui->ServerMessageInitScreen->setText("Signed Out");
-        ui->LoggedAs->clear();
-        SetNotLoginnedButtons();
-    });
-    connect(ui->Balance, &QPushButton::clicked, this, [&](){
-       client_.CheckBalance();
-       client_.WaitForResponse();
-       ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()).replace("\"", ""));
-    });
-    connect(reg_pop_.get(), &RegisterPopup::RegisterAttempt, this, &MainWindow::HandleRegisterAttempt);
-    connect(log_pop_.get(), &LoginPopup::LoginAttempt, this, &MainWindow::HandleLoginAttempt);
-    connect(create_bid_pop_.get(), &CreateBidPopup::MakeBid, this, &MainWindow::HandleCreateBid);
-    connect(upd_bid_pop_.get(), &UpdateBidPopup::UpdateBid, this, &MainWindow::HandleUpdateBid);
-    connect(view_bid_pop_.get(), &ViewBids::ViewBid, this, &MainWindow::HandleViewBid);
-    connect(delete_account_pop_.get(), &DeleteAccountPopup::DeleteAccount, this, [&](){
-       client_.DeleteMe();
-       ui->LoggedAs->clear();
-       ui->ServerMessageInitScreen->setText("Account Deleted");
-       SetNotLoginnedButtons();
-    });
-    connect(view_bid_pop_.get(), &ViewBids::CancelBid, this, [&](const std::string bid_id){
-        client_.CancelBid(bid_id);
-        client_.WaitForResponse();
-        auto error_msg = client_.CleanServerResponse();
-        ui->ServerMessageInitScreen->setText(error_msg.empty()
-                                             ? "Bid Cancelled"
-                                             : QString::fromStdString(error_msg));
-    });
-    connect(view_bid_pop_.get(), &ViewBids::UpdateBid, this, [&](const std::string bid_id,
-            const std::string bid_rate, const std::string bid_quantity){
-         upd_bid_pop_->SetParameters(bid_id, bid_rate, bid_quantity);
-         upd_bid_pop_->exec();
-    });
+    ConnectToPopups();
+    ConnectToHandlers();
     Connect();
 
 }
@@ -78,9 +27,7 @@ MainWindow::~MainWindow()
 void MainWindow::HandleLoginAttempt(const std::string username, const std::string password)
 {
     client_.LogIn(username, password);
-    std::cout << "attempting login, waiting for response\n";
     client_.WaitForResponse();
-    std::cout << "response came\n";
     if(client_.CheckStatus()){
         client_.Authorize();
         ui->ServerMessageInitScreen->setText(QString::fromStdString("Loged in as " + username));
@@ -93,9 +40,10 @@ void MainWindow::HandleLoginAttempt(const std::string username, const std::strin
     log_pop_->close();
 }
 
-void MainWindow::HandleRegisterAttempt(const std::string username, const std::string password, const std::string balance)
+void MainWindow::HandleRegisterAttempt(const std::string username, const std::string password,
+                                       const std::string balance_usd, const std::string balance_rub)
 {
-    client_.Register(username, password, balance);
+    client_.Register(username, password, balance_usd, balance_rub);
     client_.WaitForResponse();
     if(client_.CheckStatus()){
         client_.Authorize();
@@ -120,13 +68,8 @@ void MainWindow::HandleCreateBid(const std::string quantity, const std::string r
     if(!client_.CheckStatus()){
         ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
     }else if(!client_.CheckIfTransactionsWereMade()){
-        auto msg = client_.CleanServerResponse();
-        std::string second_part;
-        std::string first_part;
-        first_part = msg.substr(msg.find(',') + 1);
-        second_part = msg.substr(msg.find('{') + 1, msg.find(','));
         ui->ServerMessageInitScreen->setText(
-            QString::fromStdString(first_part + second_part).remove("\"").remove(":") + " RUB per 1 USD");
+            QString::fromStdString(client_.CleanBidCreatedResponse()));
     }else{
         auto bid = newtrans_pop_->DisplayNewTransactions(client_.Inbox().PopFront().second);
         ui->ServerMessageInitScreen->setText(QString::fromStdString(bid.empty() ? "Bid fullfilled" : bid));
@@ -152,30 +95,31 @@ void MainWindow::HandleViewBid(const std::string bid_type)
     create_bid_pop_->close();
 }
 
-void MainWindow::HandleUpdateBid(const std::string bid_id, const std::string bid_rate, const std::string bid_quantity)
+void MainWindow::HandleUpdateBid(const std::string bid_id, const std::string bid_rate,
+                                 const std::string bid_quantity, int index)
 {
     client_.UpdateBidRate(bid_id, bid_rate);
     client_.WaitForResponse();
-    if(client_.Inbox().Front().second.find(s21::ExtraJSONKeys::message) != std::string::npos){
+    if(!client_.CheckStatus()){
         ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+        upd_bid_pop_->hide();
+        upd_bid_pop_->close();
         return;
     }
     client_.Inbox().PopFront();
     client_.UpdateBidQuantity(bid_id, bid_quantity);
     client_.WaitForResponse();
-    if(client_.Inbox().Front().second.find(s21::ExtraJSONKeys::message) != std::string::npos){
+    if(!client_.CheckStatus()){
         ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+        upd_bid_pop_->hide();
+        upd_bid_pop_->close();
         return;
     }
-    auto msg = client_.Inbox().PopFront().second;
-    std::cout << msg;
-    ui->ServerMessageInitScreen->
-            setText(QString::fromStdString(
-                        "Updated " + msg.substr(msg.find(s21::BDNames::bid_id_for_join), msg.find(',')).replace(0, '"', "")
-                        + " to " + s21::BDNames::bid_table_quantity + " : "
-                        + msg.substr(msg.find(s21::BDNames::bid_table_quantity), msg.find(',')) + " "
-                        + s21::BDNames::bid_table_rate + " : "
-                        + msg.substr(msg.find(s21::BDNames::bid_table_rate), msg.find(','))));
+    auto server_response = client_.CleanServerResponse();
+    if(view_bid_pop_->isVisible()){
+        view_bid_pop_->InsertUpdatedBidBack(server_response, index);
+    }
+    ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanBidUpdateRespons(server_response)));
     upd_bid_pop_->hide();
     upd_bid_pop_->close();
 }
@@ -220,5 +164,68 @@ void MainWindow::Connect()
         client_.WaitForResponse();
         ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
     }
+}
+
+void MainWindow::ConnectToHandlers()
+{
+    connect(reg_pop_.get(), &RegisterPopup::RegisterAttempt, this, &MainWindow::HandleRegisterAttempt);
+    connect(log_pop_.get(), &LoginPopup::LoginAttempt, this, &MainWindow::HandleLoginAttempt);
+    connect(create_bid_pop_.get(), &CreateBidPopup::MakeBid, this, &MainWindow::HandleCreateBid);
+    connect(upd_bid_pop_.get(), &UpdateBidPopup::UpdateBid, this, &MainWindow::HandleUpdateBid);
+    connect(view_bid_pop_.get(), &ViewBids::ViewBid, this, &MainWindow::HandleViewBid);
+
+    connect(ui->Logout, &QPushButton::clicked, this, [&](){
+        client_.Disconnect();
+        ui->ServerMessageInitScreen->setText("Signed Out");
+        ui->LoggedAs->clear();
+        SetNotLoginnedButtons();
+    });
+    connect(ui->Balance, &QPushButton::clicked, this, [&](){
+       client_.CheckBalance();
+       client_.WaitForResponse();
+       ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()).replace("\"", ""));
+    });
+
+    connect(delete_account_pop_.get(), &DeleteAccountPopup::DeleteAccount, this, [&](){
+       client_.DeleteMe();
+       ui->LoggedAs->clear();
+       ui->ServerMessageInitScreen->setText("Account Deleted");
+       SetNotLoginnedButtons();
+    });
+    connect(view_bid_pop_.get(), &ViewBids::CancelBid, this, [&](const std::string bid_id){
+        client_.CancelBid(bid_id);
+        client_.WaitForResponse();
+        auto error_msg = client_.CleanServerResponse();
+        ui->ServerMessageInitScreen->setText(error_msg.empty()
+                                             ? "Bid Cancelled"
+                                             : QString::fromStdString(error_msg));
+    });
+    connect(view_bid_pop_.get(), &ViewBids::UpdateBid, this, [&](const std::string bid_id,
+            const std::string bid_rate, const std::string bid_quantity, int bid_index){
+         upd_bid_pop_->SetParameters(bid_id, bid_rate, bid_quantity, bid_index);
+         upd_bid_pop_->exec();
+    });
+}
+
+void MainWindow::ConnectToPopups()
+{
+    connect(ui->Register, &QPushButton::clicked, this, [&](){
+        Connect();
+        reg_pop_->exec();
+    });
+    connect(ui->Login, &QPushButton::clicked, this, [&](){
+        Connect();
+        log_pop_->exec();
+    });
+    connect(ui->CreateBid, &QPushButton::clicked, this, [&](){
+       create_bid_pop_->exec();
+    });
+    connect(ui->Bids, &QPushButton::clicked, this, [&](){
+       view_bid_pop_->exec();
+
+    });
+    connect(ui->DeleteMe, &QPushButton::clicked, this, [&](){
+        delete_account_pop_->exec();
+    });
 }
 

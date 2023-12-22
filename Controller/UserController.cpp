@@ -35,7 +35,8 @@ namespace s21{
             try {
                 service_.CreateUser(request_body.at(BDNames::user_table_user_name),
                                     request_body.at(BDNames::user_table_password),
-                                    request_body.at(BDNames::user_table_balance));
+                                    request_body.at(BDNames::balance_table_usd),
+                                    request_body.at(BDNames::balance_table_rub));
                 auto user = service_.GetUserByName(request_body.at(BDNames::user_table_user_name));
                 response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
                 response[BDNames::user_table_id] = user.at(BDNames::user_table_id);
@@ -64,11 +65,9 @@ namespace s21{
     nlohmann::json UserController::GetUserBalance(const nlohmann::json &request_body) {
         nlohmann::json response;
         try {
-            std::cout << request_body.at(BDNames::user_table_id) << "\n";
             auto tmp = GetUserById(request_body);
-            std::cout << "requested user: " << tmp.at(BDNames::user_table_user_name)
-            << "  " << tmp.at(BDNames::user_table_balance) << "\n";
-            response[BDNames::user_table_balance] = tmp[BDNames::user_table_balance];
+            response[BDNames::balance_table_usd] = tmp[BDNames::balance_table_usd];
+            response[BDNames::balance_table_rub] = tmp[BDNames::balance_table_rub];
             response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         } catch (const std::exception &e) {
@@ -120,7 +119,8 @@ namespace s21{
         nlohmann::json response;
         try {
             service_.UpdateUserBalance(request_body.at(BDNames::user_table_id),
-                                       request_body.at(BDNames::user_table_balance));
+                                       request_body.at(BDNames::balance_table_usd),
+                                       request_body.at(BDNames::balance_table_rub));
             response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){

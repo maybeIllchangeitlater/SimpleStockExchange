@@ -9,11 +9,13 @@
 namespace s21 {
     struct ClientController {
 
-        static std::string Register(const std::string &username, const std::string &password, const std::string &balance){
+        static std::string Register(const std::string &username, const std::string &password,
+                                    const std::string &balance_usd, const std::string &balance_rub){
             nlohmann::json body;
             body[BDNames::user_table_user_name] = username;
             body[BDNames::user_table_password] = password;
-            body[BDNames::user_table_balance] = balance;
+            body[BDNames::balance_table_usd] = balance_usd;
+            body[BDNames::balance_table_rub] = balance_rub;
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::REGISTER, body);
         }
         static std::string Login(const std::string &username, const std::string &password){

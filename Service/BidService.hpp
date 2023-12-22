@@ -23,14 +23,11 @@ namespace s21{
         nlohmann::json CreateBid(const std::string &user_id, const std::string& rate,
                                const std::string &quantity, BidType bid_type){
             if(!ValidateRate(rate)){
-                std::cout << "non-valid bid rate\n";
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::BID_BAD_RATE));
             }
             if(!ValidateQuantity(quantity)){
-                std::cout << "non-valid bid count\n";
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::BID_BAD_QUANTITY));
             }
-            std::cout << "Bid validated, trying to match\n";
             return bid_type == BUYING
                 ? MakeBuyBidOrTransaction(user_id, rate, quantity)
                 : MakeSellBidOrTransaction(user_id, rate, quantity);
@@ -53,10 +50,8 @@ namespace s21{
         }
 
         void CancelBid(const std::string &bid_id, const std::string &user_id){
-            std::cout << "trying to cancel bid :" << bid_id << "\n";
             auto check = repository_.ReadBidRaw(bid_id);
             if(check[0][BDNames::bid_table_rate].is_null()){
-                std::cout << "bid doesnt exist\n";
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::BID_NOT_FOUND));
             }
             if(!check[0][BDNames::bid_table_buyer_id].is_null()){
@@ -72,7 +67,6 @@ namespace s21{
                     return;
                 }
             }
-            std::cout << "Cannot delete bid that isnt yours\n";
             throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::BID_NOT_YOURS));
         }
 
@@ -99,21 +93,29 @@ namespace s21{
     private:
 
         bool ValidateRate(const std::string &rate){
-            return std::stod(rate) > 0;
+            try {
+                return std::stod(rate) > 0;
+            }catch(...){
+                return false;
+            }
         }
 
         bool ValidateQuantity(const std::string &quantity){
-            return std::stoi(quantity) > 0;
+            try {
+                return std::stoi(quantity) > 0;
+            }catch(...){
+                return false;
+            }
         }
         nlohmann::json GenerateBidInfo(const pqxx::row & bid_info){
             auto bid_id = bid_info[BDNames::bid_id_for_join].as<std::string>();
             std::cout << bid_id << "\n";
             auto seller = !bid_info[BDNames::joined_seller_name].is_null()
                     ? bid_info[BDNames::joined_seller_name].as<std::string>()
-                    : "no seller yet";
+                    : BDNames::missing_seller;
             auto buyer = !bid_info[BDNames::joined_buyer_name].is_null()
                     ? bid_info[BDNames::joined_buyer_name].as<std::string>()
-                    : "no buyer yet";
+                    : BDNames::missing_buyer;
             auto quantity = bid_info[BDNames::bid_table_quantity].as<std::string>();
             auto rate = bid_info[BDNames::bid_table_rate].as<std::string>();
             auto time = bid_info[BDNames::bid_table_create_update_time].as<std::string>();
@@ -141,7 +143,6 @@ namespace s21{
                                                                            : std::to_string(buyer_quant);
                     current_transaction[ExtraJSONKeys::bid_transaction_rate] = col[BDNames::bid_table_rate]
                             .as<std::string>();
-                    std::cout << "transaction:\n" << current_transaction.dump() << "\n";
                     transaction_service_.MakeTransaction(col[BDNames::bid_table_seller_id].as<std::string>(),
                                                          user_id, col[BDNames::bid_table_rate].as<std::string>(),
                                                          current_transaction[ExtraJSONKeys::buy_transaction]);
@@ -187,7 +188,6 @@ namespace s21{
                             ? std::to_string(seller_quant)
                             : std::to_string(buyer_quant);
                     current_transaction[ExtraJSONKeys::bid_transaction_rate] = col[BDNames::bid_table_rate].as<std::string>();
-                    std::cout << "transaction:\n" << current_transaction.dump() << "\n";
                     transaction_service_.MakeTransaction(col[BDNames::bid_table_buyer_id].as<std::string>(),
                                                          user_id, col[BDNames::bid_table_rate].as<std::string>(),
                                                          current_transaction[ExtraJSONKeys::sell_transaction]);

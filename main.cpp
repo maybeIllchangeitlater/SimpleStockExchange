@@ -28,10 +28,12 @@ int main() {
 //            std::cout << e.what();
 //        }
 //    }
+    s21::BalanceRepository balance_repository(connection);
     s21::UserRepository user_repository(connection);
     s21::BidRepository bid_repository(connection);
     s21::TransactionRepository transaction_repository(connection);
-    s21::UserService user_service(user_repository);
+    s21::BalanceService balance_service(balance_repository);
+    s21::UserService user_service(user_repository, balance_service);
     s21::TransactionService transaction_service(transaction_repository);
     s21::BidService bid_service(bid_repository, transaction_service);
     s21::UserController user_controller(user_service);
