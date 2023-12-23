@@ -2,18 +2,22 @@
 #define SIMPLESTOCKEXCHANGE_TRANSACTIONSERVICE_HPP
 
 #include "../Repository/TransactionRepository.hpp"
+#include "BalanceService.hpp"
 #include "../Utility/Timestamper.hpp"
 
 namespace s21{
     class TransactionService{
     public:
-        TransactionService(TransactionRepository& repository) : repository_(repository) {}
+        TransactionService(TransactionRepository& repository, BalanceService &balance_service)
+        : repository_(repository), balance_service_(balance_service) {}
 
         void MakeTransaction(const std::string &seller_id, const std::string &buyer_id,
                              const std::string &rate, const std::string &quantity){
             std::cout << "making transaction\n";
             repository_.CreateTransaction(seller_id, buyer_id,
                                           rate, quantity, Timestamper::GetTimestamp());
+            balance_service_.DecreaseUsdIncreaseRubBalance(seller_id, rate, quantity);
+            balance_service_.IncreaseUsdDecreaseRubBalance(buyer_id, rate, quantity);
         }
         nlohmann::json ReadTransaction(const std::string &transaction_id){
             return GenerateTransactionInfo(repository_.ReadTransaction(transaction_id)[0]);
@@ -52,6 +56,7 @@ namespace s21{
             return transaction_json;
         }
         TransactionRepository& repository_;
+        BalanceService &balance_service_;
     };
 } //s21
 

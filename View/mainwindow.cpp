@@ -221,6 +221,9 @@ void MainWindow::ConnectToPopups()
     connect(ui->CreateBid, &QPushButton::clicked, this, [&](){
        create_bid_pop_->exec();
     });
+    connect(view_bid_pop_.get(), &ViewBids::CreateBid, this, [&](){
+        create_bid_pop_->exec();
+    });
     connect(ui->Bids, &QPushButton::clicked, this, [&](){
        view_bid_pop_->exec();
 

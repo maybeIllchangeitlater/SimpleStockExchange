@@ -24,6 +24,9 @@ ViewBids::ViewBids(QWidget *parent) :
             emit UpdateBid(GrabId(), GrabRate(), GrabQuantity(), ui->BidsListWidget->currentRow());
         }
     });
+    connect(ui->Create, &QPushButton::clicked, this, [&](){
+        emit CreateBid();
+    })
 }
 
 ViewBids::~ViewBids()

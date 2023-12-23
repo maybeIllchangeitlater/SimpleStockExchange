@@ -15,12 +15,13 @@ int main(int argc, char *argv[])
 
 
 ///transactions tab and change username and password
-/// change balance during transactions
-/// update of balance during transaction
 /// documentation using Open API 2.0 aka Swagger
 /// unit test coverage with boost tests
 /// docker image for server
 
 
-
-///create balance on top of updating balance for creating user to balance service
+/// update of balance during transaction
+///
+/// add create bid option to view bids
+///
+/// large balance either not displayed corrrectly or not displayed correctly when other balance is 0

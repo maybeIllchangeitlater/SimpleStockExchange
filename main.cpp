@@ -34,7 +34,7 @@ int main() {
     s21::TransactionRepository transaction_repository(connection);
     s21::BalanceService balance_service(balance_repository);
     s21::UserService user_service(user_repository, balance_service);
-    s21::TransactionService transaction_service(transaction_repository);
+    s21::TransactionService transaction_service(transaction_repository, balance_service);
     s21::BidService bid_service(bid_repository, transaction_service);
     s21::UserController user_controller(user_service);
     s21::BidController bid_controller(bid_service);

@@ -59,27 +59,14 @@
   <widget class="QPushButton" name="Cancel">
    <property name="geometry">
     <rect>
-     <x>840</x>
+     <x>890</x>
      <y>460</y>
-     <width>141</width>
+     <width>91</width>
      <height>32</height>
     </rect>
    </property>
    <property name="text">
     <string>Cancel Bid</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="Update">
-   <property name="geometry">
-    <rect>
-     <x>680</x>
-     <y>460</y>
-     <width>141</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Update Bid</string>
    </property>
   </widget>
   <widget class="QLabel" name="bid_status_label">
@@ -93,6 +80,32 @@
    </property>
    <property name="text">
     <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Update">
+   <property name="geometry">
+    <rect>
+     <x>790</x>
+     <y>460</y>
+     <width>91</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Update</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Create">
+   <property name="geometry">
+    <rect>
+     <x>690</x>
+     <y>460</y>
+     <width>91</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Create</string>
    </property>
   </widget>
  </widget>

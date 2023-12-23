@@ -27,6 +27,7 @@ signals:
     void ViewBid(std::string bid_type);
     void CancelBid(std::string bid_id);
     void UpdateBid(std::string bid_id, std::string bid_rate, std::string bid_quantity, int item_index);
+    void CreateBid();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

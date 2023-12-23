@@ -3,6 +3,7 @@
 
 #include "../Repository/BidRepository.hpp"
 #include "../Service/TransactionService.hpp"
+#include "../Service/BalanceService.hpp"
 #include "../Repository/BdNames.hpp"
 #include "../3rdParty/json.hpp"
 #include "../Utility/Timestamper.hpp"
@@ -19,7 +20,8 @@ namespace s21{
             SELLING,
         };
         BidService(BidRepository &repository, TransactionService &service)
-        : repository_(repository), transaction_service_(service){}
+        : repository_(repository), transaction_service_(service)
+        {}
         nlohmann::json CreateBid(const std::string &user_id, const std::string& rate,
                                const std::string &quantity, BidType bid_type){
             if(!ValidateRate(rate)){
@@ -221,7 +223,6 @@ namespace s21{
         }
         BidRepository &repository_;
         TransactionService &transaction_service_;
-
     };
 } //s21
 
