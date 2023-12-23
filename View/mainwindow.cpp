@@ -206,6 +206,24 @@ void MainWindow::ConnectToHandlers()
          upd_bid_pop_->SetParameters(bid_id, bid_rate, bid_quantity, bid_index);
          upd_bid_pop_->exec();
     });
+    connect(viewtrans_pop_.get(), &ViewTransactionsPopup::ShowBuyTransactions, this, [&](){
+        client_.GetMyBuyTransactions();
+        client_.WaitForResponse();
+        if(!client_.CheckStatus()){
+             ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+        }else{
+            viewtrans_pop_->DisplayTransactions("Buy", client_.CleanServerResponse());
+        }
+    });
+    connect(viewtrans_pop_.get(), &ViewTransactionsPopup::ShowSellTransactions, this, [&](){
+        client_.GetMySellTransactions();
+        client_.WaitForResponse();
+        if(!client_.CheckStatus()){
+             ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+        }else{
+            viewtrans_pop_->DisplayTransactions("Sell", client_.CleanServerResponse());
+        }
+    });
 }
 
 void MainWindow::ConnectToPopups()
@@ -230,6 +248,9 @@ void MainWindow::ConnectToPopups()
     });
     connect(ui->DeleteMe, &QPushButton::clicked, this, [&](){
         delete_account_pop_->exec();
+    });
+    connect(ui->Transactions, &QPushButton::clicked, this, [&](){
+        viewtrans_pop_->exec();
     });
 }
 

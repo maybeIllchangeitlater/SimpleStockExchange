@@ -9,6 +9,7 @@
 #include "BidTransactionMadePopup.hpp"
 #include "ViewBids.hpp"
 #include "DeleteAccountPopup.hpp"
+#include "ViewTransactionsPopup.hpp"
 #include <regex>
 #include "UpdateBidPopup.hpp"
 #include <memory.h>
@@ -48,6 +49,7 @@ private:
     std::unique_ptr<UpdateBidPopup> upd_bid_pop_ = boost::make_unique<UpdateBidPopup>();
     std::unique_ptr<CreateBidPopup> create_bid_pop_ = boost::make_unique<CreateBidPopup>();
     std::unique_ptr<DeleteAccountPopup> delete_account_pop_ = boost::make_unique<DeleteAccountPopup>();
+    std::unique_ptr<ViewTransactionsPopup> viewtrans_pop_ = boost::make_unique<ViewTransactionsPopup>();
     std::unique_ptr<BidTransactionMadePopup> newtrans_pop_ = boost::make_unique<BidTransactionMadePopup>();
     s21::Client &client_;
 };

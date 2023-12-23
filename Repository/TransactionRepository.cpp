@@ -7,11 +7,11 @@ namespace s21{
         pqxx::work task(db_connection_);
         try{
             std::string sql = "INSERT INTO " + std::string(BDNames::transaction_table) + " ("
-                    + std::string(BDNames::transaction_table_seller_id) + ", "
-                    + std::string(BDNames::transaction_table_buyer_id) + ", "
-                    + std::string(BDNames::transaction_table_rate) + ", "
-                    + std::string(BDNames::transaction_table_quantity) + ", "
-                    + std::string(BDNames::transaction_table_create_update_time)
+                    + BDNames::transaction_table_seller_id + ", "
+                    + BDNames::transaction_table_buyer_id + ", "
+                    + BDNames::transaction_table_rate + ", "
+                    + BDNames::transaction_table_quantity + ", "
+                    + BDNames::transaction_table_create_update_time
                     + ") VALUES (" + task.quote(seller_id) + ", " + task.quote(buyer_id) + ", "
                     + task.quote(rate) + ", " + task.quote(quantity) + ", " + task.quote(timestamp) + ")";
             std::cout << sql << "\n";
@@ -59,28 +59,29 @@ namespace s21{
         pqxx::work task(db_connection_);
         try{
 
-            std::string sql = "SELECT t." + task.quote(BDNames::transaction_table_id) + " AS transaction id, "
-                              + "seller." + task.quote(BDNames::user_table_user_name) + " AS seller name, "
-                              + "buyer." + task.quote(BDNames::user_table_user_name) + " AS buyer name, "
-                              + "t." + task.quote(BDNames::transaction_table_rate)
-                              + ", t." + task.quote(BDNames::transaction_table_quantity)
-                              + ", t." + task.quote(BDNames::transaction_table_create_update_time)
-                              + " FROM " + task.quote(BDNames::transaction_table) + " t "
-                              + "JOIN " + task.quote(BDNames::user_table)
-                              + " seller ON t." + task.quote(BDNames::transaction_table_seller_id)
-                              + " = seller." + task.quote(BDNames::user_table_id)
-                              + " JOIN" + task.quote(BDNames::user_table)
-                              + " buyer ON t." + task.quote(BDNames::transaction_table_buyer_id)
-                              + " = buyer." + task.quote(BDNames::user_table_id)
-                              + " WHERE seller." + task.quote(BDNames::user_table_id)
+            std::string sql = "SELECT b." + std::string(BDNames::transaction_table_id)
+                              + " AS " + BDNames::transaction_id_for_join + ", seller."
+                              + BDNames::user_table_user_name +
+                              " AS " + BDNames::joined_seller_name
+                              + ", buyer." + BDNames::user_table_user_name
+                              + " AS " + BDNames::joined_buyer_name
+                              + ", b." + BDNames::transaction_table_rate
+                              + ", b." + BDNames::transaction_table_quantity
+                              + ", b." + BDNames::transaction_table_create_update_time
+                              + " FROM " + BDNames::transaction_table
+                              + " b LEFT JOIN " + BDNames::user_table + " seller ON b."
+                              + BDNames::bid_table_seller_id
+                              + " = seller." + BDNames::user_table_id
+                              + " JOIN "  + BDNames::user_table + " buyer ON b."
+                              + BDNames::bid_table_buyer_id
+                              + " = buyer." + BDNames::user_table_id
+                              + " WHERE buyer." + BDNames::user_table_id
                               + " = " + task.quote(user_id);
-            pqxx::result res = task.exec(sql);
-            if(!res.empty()) {
-                return res;
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::TRANSACTION_NOT_FOUND));
-            }
-        }catch(...){
+            std::cout << sql << "\n";
+            auto res = task.exec(sql);
+            return res;
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }
@@ -89,29 +90,29 @@ namespace s21{
     pqxx::result TransactionRepository::ReadAllUserBuyTransactions(const std::string &user_id) {
         pqxx::work task(db_connection_);
         try{
-
-            std::string sql = "SELECT t." + task.quote(BDNames::transaction_table_id) + " AS transaction id, "
-                              + "seller." + task.quote(BDNames::user_table_user_name) + " AS seller name, "
-                              + "buyer." + task.quote(BDNames::user_table_user_name) + " AS buyer name, "
-                              + "t." + task.quote(BDNames::transaction_table_rate)
-                              + ", t." + task.quote(BDNames::transaction_table_quantity)
-                              + ", t." + task.quote(BDNames::transaction_table_create_update_time)
-                              + " FROM " + task.quote(BDNames::transaction_table) + " t "
-                              + "JOIN " + task.quote(BDNames::user_table)
-                              + " seller ON t." + task.quote(BDNames::transaction_table_seller_id)
-                              + " = seller." + task.quote(BDNames::user_table_id)
-                              + " JOIN" + task.quote(BDNames::user_table)
-                              + " buyer ON t." + task.quote(BDNames::transaction_table_buyer_id)
-                              + " = buyer." + task.quote(BDNames::user_table_id)
-                              + " WHERE buyer." + task.quote(BDNames::user_table_id)
+            std::string sql = "SELECT b." + std::string(BDNames::transaction_table_id)
+                              + " AS " + BDNames::transaction_id_for_join
+                              + ", seller." + BDNames::user_table_user_name
+                              + " AS " + BDNames::joined_seller_name
+                              + ", buyer." + BDNames::user_table_user_name
+                              + " AS " + BDNames::joined_buyer_name
+                              + ", b." + BDNames::transaction_table_rate
+                              + ", b." + BDNames::transaction_table_quantity
+                              + ", b." + BDNames::transaction_table_create_update_time
+                              + " FROM " + BDNames::transaction_table
+                              + " b JOIN " + BDNames::user_table + " seller ON b."
+                              + BDNames::transaction_table_seller_id
+                              + " = seller." + BDNames::user_table_id
+                              + " LEFT JOIN "  + BDNames::user_table + " buyer ON b."
+                              + BDNames::transaction_table_buyer_id
+                              + " = buyer." + BDNames::user_table_id
+                              + " WHERE seller." + BDNames::user_table_id
                               + " = " + task.quote(user_id);
-            pqxx::result res = task.exec(sql);
-            if(!res.empty()) {
-                return res;
-            }else{
-                throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::TRANSACTION_NOT_FOUND));
-            }
-        }catch(...){
+            std::cout << sql << "\n";
+            auto res = task.exec(sql);
+            return res;
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
             task.abort();
             throw;
         }

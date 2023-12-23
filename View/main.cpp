@@ -14,14 +14,15 @@ int main(int argc, char *argv[])
 }
 
 
-///transactions tab and change username and password
+///change username and password
 /// documentation using Open API 2.0 aka Swagger
 /// unit test coverage with boost tests
 /// docker image for server
 
 
-/// update of balance during transaction
-///
-/// add create bid option to view bids
+/// change create bid in view bid to display newly made transaction
 ///
 /// large balance either not displayed corrrectly or not displayed correctly when other balance is 0
+///
+///
+/// move response error from controllers to utility or controller common

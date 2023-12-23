@@ -19,40 +19,43 @@ namespace s21{
             balance_service_.DecreaseUsdIncreaseRubBalance(seller_id, rate, quantity);
             balance_service_.IncreaseUsdDecreaseRubBalance(buyer_id, rate, quantity);
         }
+
         nlohmann::json ReadTransaction(const std::string &transaction_id){
             return GenerateTransactionInfo(repository_.ReadTransaction(transaction_id)[0]);
         }
+
         nlohmann::json ReadAllUserSellTransactions(const std::string &user_id){
             auto transactions_info = repository_.ReadAllUserSellTransactions(user_id);
             nlohmann::json res;
             for(const auto& v: transactions_info){
-                res.emplace_back(GenerateTransactionInfo(v));
+                res += GenerateTransactionInfo(v);
             }
             return res;
         }
+
         nlohmann::json ReadAllUserBuyTransactions(const std::string &user_id){
             auto transactions_info = repository_.ReadAllUserBuyTransactions(user_id);
             nlohmann::json res;
             for(const auto& v: transactions_info){
-                res.emplace_back(GenerateTransactionInfo(v));
+                res += GenerateTransactionInfo(v);
             }
             return res;
         }
     private:
         nlohmann::json GenerateTransactionInfo(const pqxx::row & transaction_info){
-            auto id = transaction_info["id"].as<std::string>();
-            auto buyer = transaction_info["buyer name"].as<std::string>();
-            auto seller = transaction_info["seller name"].as<std::string>();
-            auto rate = transaction_info["rate"].as<std::string>();
-            auto quantity = transaction_info["quantity"].as<std::string>();
-            auto time = transaction_info["time"].as<std::string>();
             nlohmann::json transaction_json;
-            transaction_json["id"] = id;
-            transaction_json["buyer"] = buyer;
-            transaction_json["seller"] = seller;
-            transaction_json["rate"] = rate;
-            transaction_json["quantity"] = quantity;
-            transaction_json["time"] = time;
+            transaction_json[BDNames::transaction_id_for_join] =
+                    transaction_info[BDNames::transaction_id_for_join].as<std::string>();
+            transaction_json[BDNames::joined_buyer_name] =
+                    transaction_info[BDNames::joined_buyer_name].as<std::string>();
+            transaction_json[BDNames::joined_seller_name] =
+                    transaction_info[BDNames::joined_seller_name].as<std::string>();
+            transaction_json[BDNames::transaction_table_rate] =
+                    transaction_info[BDNames::transaction_table_rate].as<std::string>();
+            transaction_json[BDNames::transaction_table_quantity] =
+                    transaction_info[BDNames::transaction_table_quantity].as<std::string>();
+            transaction_json[BDNames::transaction_table_create_update_time] =
+                    transaction_info[BDNames::transaction_table_create_update_time].as<std::string>();
             return transaction_json;
         }
         TransactionRepository& repository_;

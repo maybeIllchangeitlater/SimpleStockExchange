@@ -81,6 +81,8 @@ namespace s21{
                 result = ControllerMapping::method_mapping_bid.at(request.path.substr(1))(bid_controller_,
                                                                                               request.body);
             } else if (request.path[0] == 'T') {
+                std::cout << "parsing transaction request\n" << request.path.substr(1) << "\nbody is :\n"
+                          << request.body.dump() << "\n";
                 result = ControllerMapping::method_mapping_transaction.at(request.path.substr(1))(
                         transaction_controller_, request.body);
             }

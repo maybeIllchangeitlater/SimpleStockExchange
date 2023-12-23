@@ -26,7 +26,7 @@ ViewBids::ViewBids(QWidget *parent) :
     });
     connect(ui->Create, &QPushButton::clicked, this, [&](){
         emit CreateBid();
-    })
+    });
 }
 
 ViewBids::~ViewBids()

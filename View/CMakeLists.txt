@@ -60,6 +60,9 @@ set(PROJECT_SOURCES
         UpdateBidPopup.hpp
         UpdateBidPopup.cpp
         UpdateBidPopup.ui
+        ViewTransactionsPopup.hpp
+        ViewTransactionsPopup.cpp
+        viewtransactionspopup.ui
 
 )
 

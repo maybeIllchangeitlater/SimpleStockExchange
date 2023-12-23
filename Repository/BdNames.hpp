@@ -33,6 +33,7 @@ namespace s21 {
         constexpr static const char * joined_seller_name = "seller_username";
         constexpr static const char * joined_buyer_name = "buyer_username";
         constexpr static const char * bid_id_for_join = "bid_id";
+        constexpr static const char * transaction_id_for_join = "transaction_id";
         constexpr static const char * trader_id = "trader_id";
 
         constexpr static const char * missing_buyer = "no buyer yet";

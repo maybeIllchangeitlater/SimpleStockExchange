@@ -5,6 +5,7 @@
 #include "../Service/TransactionService.hpp"
 #include "../3rdParty/json.hpp"
 #include "../Repository/BdNames.hpp"
+#include "../Utility/ExtraJSONKeys.hpp"
 
 namespace s21 {
     class TransactionController {
@@ -20,6 +21,7 @@ namespace s21 {
         nlohmann::json GetUserBuyTransactions(const nlohmann::json &request_body);
 
     private:
+        void ResponseError(nlohmann::json &response, const char * exception);
         TransactionService &service_;
     };
 }
