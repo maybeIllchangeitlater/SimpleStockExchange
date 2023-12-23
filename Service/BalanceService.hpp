@@ -10,6 +10,12 @@ namespace s21 {
     class BalanceService {
     public:
         explicit BalanceService(BalanceRepository &balance_repository) : balance_repository_(balance_repository){}
+
+        void CreateUserBalance(const std::string &user_id, const std::string &user_balance_usd,
+                               const std::string &user_balance_rub){
+            balance_repository_.CreateUserBalance(user_id, user_balance_usd, user_balance_rub);
+        }
+
         nlohmann::json GetUserBalance(const std::string &user_id){
             nlohmann::json res;
             auto balance_info = balance_repository_.GetUserBalance(user_id);

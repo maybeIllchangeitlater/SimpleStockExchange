@@ -183,7 +183,8 @@ void MainWindow::ConnectToHandlers()
     connect(ui->Balance, &QPushButton::clicked, this, [&](){
        client_.CheckBalance();
        client_.WaitForResponse();
-       ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()).replace("\"", ""));
+       ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()).
+                                            replace("\"", "").replace(",", "\n"));
     });
 
     connect(delete_account_pop_.get(), &DeleteAccountPopup::DeleteAccount, this, [&](){

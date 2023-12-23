@@ -30,12 +30,13 @@ namespace s21 {
             repository_.CreateUser(user_name, Encoder::Encode(password));
             auto id = repository_.ReadUserByName(user_name)[0][BDNames::user_table_id].as<std::string>();
             try{
-                balance_service_.SetUserBalance(id, user_balance_usd, user_balance_rub);
+                balance_service_.CreateUserBalance(id, user_balance_usd, user_balance_rub);
             }catch(...){
                 repository_.DeleteUser(id);
                 throw;
             }
         }
+
         nlohmann::json GetUserByName(const std::string &user_name){
             auto result_json = GenerateUserInfo(repository_.ReadUserByName(user_name));
             auto balance_json = balance_service_.GetUserBalance(result_json[BDNames::user_table_id]);
@@ -43,6 +44,7 @@ namespace s21 {
             result_json[BDNames::balance_table_rub] = balance_json[BDNames::balance_table_rub];
             return result_json;
         }
+
         nlohmann::json GetUserById(const std::string &user_id){
             auto result_json = GenerateUserInfo(repository_.ReadUserById(user_id));
             auto balance_json = balance_service_.GetUserBalance(user_id);
@@ -50,12 +52,14 @@ namespace s21 {
             result_json[BDNames::balance_table_rub] = balance_json[BDNames::balance_table_rub];
             return result_json;
         }
+
         void UpdateUserName(const std::string &user_id, const std::string &new_name){
             if(!ValidateUserName(new_name)){
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_BAD_NAME));
             }
             repository_.UpdateUserName(user_id, new_name);
         }
+
         void UpdateUserBalance(const std::string &user_id, const std::string &new_balance_usd,
                                const std::string &new_balance_rub){
             if(!balance_service_.ValidateBalance(new_balance_rub)
@@ -64,6 +68,7 @@ namespace s21 {
             }
             balance_service_.SetUserBalance(user_id, new_balance_usd, new_balance_rub);
         }
+
         void UpdateUserPassword(const std::string &user_id, const std::string &new_password){
             if(!ValidatePassword(new_password)){
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_BAD_PASSWORD));

@@ -1,6 +1,27 @@
 #include "BalanceRepository.hpp"
 
 namespace s21{
+    void BalanceRepository::CreateUserBalance(const std::string &user_id, const std::string &balance_usd,
+                                              const std::string &balance_rub) {
+        pqxx::work task(db_connection_);
+        pqxx::result res;
+        try{
+            std::string sql = "INSERT INTO " + std::string(BDNames::balance_table)
+                    + " (" + BDNames::balance_table_user_id
+                    + ", " + BDNames::balance_table_usd
+                    + ", " + BDNames::balance_table_rub
+                    + ") VALUES (" + task.quote(user_id)
+                    + ", " + balance_usd
+                    + ", " + balance_rub + ");";
+            std::cout << sql << "\n";
+            task.exec(sql);
+            task.commit();
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
+            task.abort();
+            throw;
+        }
+    }
     pqxx::result BalanceRepository::GetUserBalance(const std::string &user_id) {
         pqxx::work task(db_connection_);
         pqxx::result res;
