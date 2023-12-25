@@ -20,27 +20,16 @@ namespace s21 {
             Clear();
         }
 
-        const T& Front(){
+        const T& Front() const noexcept{
             scoped_lock lock(q_mutex_);
             return message_que_.front();
         }
 
-        const T& Back(){
-            scoped_lock lock(q_mutex_);
-            return message_que_.back();
-        }
 
         T PopFront(){
             scoped_lock lock(q_mutex_);
             auto t = std::move(message_que_.front());
             message_que_.pop_front();
-            return t;
-        }
-
-        T PopBack(){
-            scoped_lock lock(q_mutex_);
-            auto t = std::move(message_que_.back());
-            message_que_.pop_back();
             return t;
         }
 
@@ -52,19 +41,6 @@ namespace s21 {
             std::cout << "locked\n";
             message_que_.emplace_back(std::forward<Args>(args)...);
             std::cout << "data is in \n";
-
-//            boost::unique_lock<boost::mutex> unique_lock(blocking_mutex_);
-//            cv_block_.notify_one();
-        }
-
-
-        template<typename ... Args>
-        void EmplaceFront(Args&& ... args){
-            scoped_lock lock(q_mutex_);
-            message_que_.emplace_front(std::forward<Args>(args)...);
-
-//            boost::unique_lock<boost::mutex> unique_lock(blocking_mutex_);
-//            cv_block_.notify_one();
         }
 
         void Erase(T& value){
@@ -82,18 +58,10 @@ namespace s21 {
             message_que_.clear();
         }
 
-//        void Wait(){
-//            while(Empty()){
-//                boost::unique_lock<boost::mutex> unique_lock(blocking_mutex_);
-//                cv_block_.wait(unique_lock);
-//            }
-//        }
 
     private:
         std::deque<T> message_que_;
-//        boost::condition_variable cv_block_;
-        boost::recursive_mutex q_mutex_;
-//        boost::mutex blocking_mutex_;
+        mutable boost::recursive_mutex q_mutex_;
 
     };
 }

@@ -12,10 +12,6 @@ namespace s21 {
     public:
         explicit TransactionController(TransactionService &service) : service_(service){}
 
-        nlohmann::json MakeTransaction(const nlohmann::json &request_body);
-
-        nlohmann::json GetTransaction(const nlohmann::json &request_body);
-
         nlohmann::json GetUserSellTransactions(const nlohmann::json &request_body);
 
         nlohmann::json GetUserBuyTransactions(const nlohmann::json &request_body);

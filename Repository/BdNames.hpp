@@ -38,6 +38,8 @@ namespace s21 {
 
         constexpr static const char * missing_buyer = "no buyer yet";
         constexpr static const char * missing_seller = "no seller yet";
+
+        constexpr static const char * deleted_account = "deleted account";
     };
 } //s21
 

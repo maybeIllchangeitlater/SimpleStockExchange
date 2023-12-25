@@ -7,6 +7,7 @@
 #include <QJsonArray>
 #include <QCloseEvent>
 #include "../Repository/BdNames.hpp"
+#include "../Utility/ExtraJSONKeys.hpp"
 
 namespace Ui {
 class ViewBids;
@@ -21,6 +22,7 @@ public:
     ~ViewBids();
 
     void ShowBids(const std::string &bids, const char *type);
+    void InsertNewBid(const std::string &bid);
     void InsertUpdatedBidBack(const std::string &bid, size_t bid_index);
 
 signals:

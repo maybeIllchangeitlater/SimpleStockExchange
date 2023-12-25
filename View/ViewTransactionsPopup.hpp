@@ -26,6 +26,9 @@ signals:
     void ShowBuyTransactions();
     void ShowSellTransactions();
 
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
 private:
     QString GrabTransactionFromJson(const QJsonValueRef &json);
     Ui::ViewTransactionsPopup *ui;

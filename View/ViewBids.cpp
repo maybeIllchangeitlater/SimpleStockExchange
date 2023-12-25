@@ -46,17 +46,35 @@ void ViewBids::ShowBids(const std::string &bids, const char * type)
     }
 }
 
+void ViewBids::InsertNewBid(const std::string &bid)
+{
+    if(bid.empty()){
+        ui->bid_status_label->setText("Bid fullfilled");
+        return;
+    }
+    std::cout << "bid is : " << bid << "\n";
+    emit ViewBid(bid.find(s21::ExtraJSONKeys::created_sell_bid_quantity) != std::string::npos
+                 ? ui->comboBox->itemText(0).toStdString()
+                 : ui->comboBox->itemText(1).toStdString());
+    ui->bid_status_label->setText("Bid created");
+}
+
 void ViewBids::InsertUpdatedBidBack(const std::string &bid, size_t bid_index)
 {
     ui->BidsListWidget->takeItem(bid_index);
-    QJsonArray jsons = QJsonDocument::fromJson(QString::fromStdString("[{" + bid + "}]").toUtf8()).array();
-    ui->BidsListWidget->insertItem(bid_index, GrabBidFromJson(jsons[0]));
-    ui->bid_status_label->setText("Bid updated");
+    if(!bid.empty()){
+        QJsonArray jsons = QJsonDocument::fromJson(QString::fromStdString("[{" + bid + "}]").toUtf8()).array();
+        ui->BidsListWidget->insertItem(bid_index, GrabBidFromJson(jsons[0]));
+        ui->bid_status_label->setText("Bid updated");
+    }else{
+        ui->bid_status_label->setText("Bid fullfilled");
+    }
 }
 
 void ViewBids::closeEvent(QCloseEvent *event)
 {
     ui->BidsListWidget->clear();
+    ui->bid_status_label->clear();
     event->accept();
 }
 

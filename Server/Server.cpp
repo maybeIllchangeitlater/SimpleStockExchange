@@ -107,6 +107,7 @@ namespace s21{
                 result.erase("status");
             }
             response.body = result;
+            std::cout << "about to send response json back\n";
         }else{
             std::cout << "here at readmsg error\n";
             response.status = ServerMessage::ResponseCode::BAD_REQUEST;

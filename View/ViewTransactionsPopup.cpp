@@ -23,7 +23,7 @@ ViewTransactionsPopup::~ViewTransactionsPopup()
 
 void ViewTransactionsPopup::DisplayTransactions(const std::string &type, const std::string &raw_response)
 {
-    QJsonArray  jsons = QJsonDocument::fromJson(QString::fromStdString("[{" + raw_response + "}]").toUtf8()).array();
+    QJsonArray  jsons = QJsonDocument::fromJson(QString::fromStdString(raw_response).toUtf8()).array();
     ui->TransactionViewer->addItem(QString::fromStdString(type) + " :");
     if(jsons.empty()){
         ui->TransactionViewer->addItem("No transactions");
@@ -31,6 +31,12 @@ void ViewTransactionsPopup::DisplayTransactions(const std::string &type, const s
     for(const auto& json : jsons){
         ui->TransactionViewer->addItem(GrabTransactionFromJson(json));
     }
+}
+
+void ViewTransactionsPopup::closeEvent(QCloseEvent *event)
+{
+    ui->TransactionViewer->clear();
+    event->accept();
 }
 
 QString ViewTransactionsPopup::GrabTransactionFromJson(const QJsonValueRef &json)
@@ -48,4 +54,3 @@ QString ViewTransactionsPopup::GrabTransactionFromJson(const QJsonValueRef &json
             s21::BDNames::transaction_table_create_update_time + " : "
             + json.toObject().value(s21::BDNames::transaction_table_create_update_time).toString();
 }
-

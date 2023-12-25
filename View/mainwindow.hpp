@@ -10,7 +10,6 @@
 #include "ViewBids.hpp"
 #include "DeleteAccountPopup.hpp"
 #include "ViewTransactionsPopup.hpp"
-#include <regex>
 #include "UpdateBidPopup.hpp"
 #include <memory.h>
 #include <boost/make_unique.hpp>
@@ -37,6 +36,7 @@ private slots:
                          const std::string bid_quantity, int index);
 
 private:
+    bool WaitForServer();
     void SetLoginnedButtons();
     void SetNotLoginnedButtons();
     void Connect();

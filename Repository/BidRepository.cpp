@@ -220,7 +220,7 @@ namespace s21{
                     + ", " + std::string(BDNames::bid_table_quantity) + " FROM " + std::string(BDNames::bid_table)
                     + " WHERE " + std::string(BDNames::bid_table_seller_id) + " is NULL AND "
                     + std::string(BDNames::bid_table_buyer_id) + " != " + task.quote(user_id)
-                    + " AND " + std::string(BDNames::bid_table_rate) + " <= " + rate
+                    + " AND " + std::string(BDNames::bid_table_rate) + " >= " + rate
                     + " ORDER BY " + std::string(BDNames::bid_table_rate) + " ASC";
             std::cout <<  sql << "\n";
             auto res = task.exec(sql);

@@ -75,7 +75,7 @@ namespace s21{
                               + " JOIN "  + BDNames::user_table + " buyer ON b."
                               + BDNames::bid_table_buyer_id
                               + " = buyer." + BDNames::user_table_id
-                              + " WHERE buyer." + BDNames::user_table_id
+                              + " WHERE seller." + BDNames::user_table_id
                               + " = " + task.quote(user_id);
             std::cout << sql << "\n";
             auto res = task.exec(sql);
@@ -106,7 +106,7 @@ namespace s21{
                               + " LEFT JOIN "  + BDNames::user_table + " buyer ON b."
                               + BDNames::transaction_table_buyer_id
                               + " = buyer." + BDNames::user_table_id
-                              + " WHERE seller." + BDNames::user_table_id
+                              + " WHERE buyer." + BDNames::user_table_id
                               + " = " + task.quote(user_id);
             std::cout << sql << "\n";
             auto res = task.exec(sql);

@@ -18,9 +18,9 @@ ADD_EXECUTABLE(ServerR
         Repository/UserRepository.cpp
         Repository/BidRepository.cpp
         Repository/TransactionRepository.cpp
-        Service/UserService.hpp
-        Service/BidService.hpp
-        Service/TransactionService.hpp
+        Service/BidService.cpp
+        Service/UserService.cpp
+        Service/TransactionService.cpp
         Controller/ControllerMapping.cpp
         Controller/UserController.cpp
         Controller/BidController.cpp
@@ -37,6 +37,9 @@ ADD_EXECUTABLE(ServerR
         main.cpp
         Connection/Connection.cpp
         Connection/Connection.hpp
-        Utility/ExtraJSONKeys.hpp Repository/BalanceRepository.cpp Repository/BalanceRepository.hpp Service/BalanceService.hpp)
+        Utility/ExtraJSONKeys.hpp
+        Repository/BalanceRepository.cpp
+        Repository/BalanceRepository.hpp
+        Service/BalanceService.hpp)
 TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx
         ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/cryptopp890/libcryptopp.a)

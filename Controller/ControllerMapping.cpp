@@ -20,12 +20,9 @@ namespace s21{
             {"GetUserBuyBids", [](BidController& c, const nlohmann::json &json){ return c.GetUserBuyBids(json); }},
             {"UpdateBidRate", [](BidController& c, const nlohmann::json &json){ return c.UpdateBidRate(json); }},
             {"UpdateBidQuantity", [](BidController& c, const nlohmann::json &json){ return c.UpdateBidQuantity(json); }},
-            {"CloseBid", [](BidController& c, const nlohmann::json &json){ return c.CloseBid(json); }},
             {"CancelBid", [](BidController& c, const nlohmann::json &json){ return c.CancelBid(json); }}
     };
     const std::unordered_map<std::string, ControllerMapping::TransactionFunction> ControllerMapping::method_mapping_transaction{
-            {"MakeTransaction", [](TransactionController& c, const nlohmann::json &json){ return c.MakeTransaction(json); }},
-            {"GetTransaction", [](TransactionController& c, const nlohmann::json &json){ return c.GetTransaction(json); }},
             {"GetUserBuyTransactions", [](TransactionController& c, const nlohmann::json &json){ return c.GetUserBuyTransactions(json); }},
             {"GetUserSellTransactions", [](TransactionController& c, const nlohmann::json &json){ return c.GetUserSellTransactions(json); }}
     };

@@ -16,7 +16,6 @@ namespace s21{
             response.emplace_back(status);
             return response;
         }catch(const std::exception &e){
-            std::cout << "Failed creating bid because:\n" << e.what() << "\n";
             ResponseError(response, e.what());
             return response;
         }
@@ -79,10 +78,16 @@ namespace s21{
     nlohmann::json BidController::UpdateBidRate(const nlohmann::json &request_body){
         nlohmann::json response;
         try {
-            service_.UpdateBidRate(request_body.at(BDNames::bid_table_id),
+            response = service_.UpdateBidRate(request_body.at(BDNames::bid_table_id),
                                    request_body.at(BDNames::bid_table_rate));
-            response = service_.ReadBid(request_body.at(BDNames::bid_table_id));
-            response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
+            try {
+                response.emplace_back(service_.ReadBid(request_body.at(BDNames::bid_table_id)));
+            }catch(...){
+                {}
+            }
+            nlohmann::json status;
+            status[ExtraJSONKeys::status] = ServerMessage::OK;
+            response.emplace_back(status);
             return response;
         }catch(const std::exception &e){
             ResponseError(response, e.what());
@@ -90,22 +95,10 @@ namespace s21{
         }
     }
 
-    nlohmann::json BidController::CloseBid(const nlohmann::json &request_body){
-        nlohmann::json response;
-        try {
-            service_.CloseBid(request_body.at(BDNames::bid_table_id));
-            response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
-            return response;
-        }catch(const std::exception &e){
-            ResponseError(response, e.what());
-            return response;
-        }
-    }
 
     nlohmann::json BidController::CancelBid(const nlohmann::json &request_body){
         nlohmann::json response;
         try {
-            std::cout << "cancelling request with id:\n" <<  request_body[BDNames::bid_table_id] << "\n";
             service_.CancelBid(request_body.at(BDNames::bid_table_id), request_body.at(BDNames::trader_id));
             response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;

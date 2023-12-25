@@ -24,8 +24,6 @@ namespace s21 {
 
         nlohmann::json UpdateBidRate(const nlohmann::json &request_body);
 
-        nlohmann::json CloseBid(const nlohmann::json &request_body);
-
         nlohmann::json CancelBid(const nlohmann::json &request_body);
 
     private:

@@ -44,7 +44,6 @@ namespace s21 {
             Send(ClientController::CreateBid(GetUserId(), quantity, rate, BidService::BUYING));
         }
 
-
         void GetMySellBids(){
             Send(ClientController::GetMySellBids(GetUserId()));
         }
@@ -97,8 +96,15 @@ namespace s21 {
             Send(ClientController::GetMyBalance(user_id_));
         }
 
-        void WaitForResponse(){
+        bool WaitForResponse(){
+//            timer_->expires_from_now(boost::posix_time::seconds(3));
+//                    timer_->async_wait([&](const boost::system::error_code&) {
+//                            CutConnection();
+//                            return false;
+//                    });
             while (from_server_.Empty()) {}
+//            timer_->cancel();
+            return true;
         }
         bool CheckStatus(){
             return from_server_.Front().second.find("OK") != std::string::npos;
@@ -127,39 +133,71 @@ namespace s21 {
                 return msg.substr(json_start +1 , json_end - json_start - 1);
         }
 
-        bool CheckIfTransactionsWereMade(){
+        bool CheckIfTransactionsWereMade() const noexcept{
             return from_server_.Front().second.find(s21::ExtraJSONKeys::buy_transaction) != std::string::npos
                     ||from_server_.Front().second.find(s21::ExtraJSONKeys::sell_transaction) != std::string::npos;
         }
 
-        std::string CleanBidCreatedResponse(){
-            auto msg = CleanServerResponse();
-            msg.erase(std::remove_if(msg.begin(), msg.end(), [](char c) { return c == '\"' || c == ':'; }), msg.end());
-
-            std::string second_part;
-            std::string first_part;
-            first_part = msg.substr(msg.find(',') + 1);
-            second_part = msg.substr(msg.find('{') + 1, msg.find(','));
-
-            return first_part + second_part + " RUB per 1 USD";
+        bool CheckIfTransactionsWereMade(const std::string &msg) const noexcept{
+            return msg.find(s21::ExtraJSONKeys::buy_transaction) != std::string::npos
+                    ||msg.find(s21::ExtraJSONKeys::sell_transaction) != std::string::npos;
         }
 
-        std::string CleanBidUpdateRespons(std::string &server_response){
-            server_response.erase(std::remove(server_response.begin(), server_response.end(), '"'), server_response.end());
+        void CutConnection(){
+            context_->stop();
+            if(thread_context_.joinable())
+                thread_context_.join();
+            connection_->Disconnect();
+            connection_.reset();
+            context_.reset();
+            timer_.reset();
+            from_server_.Clear();
+        }
 
-            std::string msg_bid_type = server_response.find(s21::BDNames::missing_buyer) != std::string::npos
+        std::string CleanBidCreatedResponse(std::string &msg){
+            size_t first_part_start = msg.rfind(',');
+            size_t second_part_start = msg.rfind('{');
+            std::string first_part = msg.substr(first_part_start + 1, msg.rfind('}') - first_part_start - 1);
+            std::string second_part = msg.substr(second_part_start + 1, msg.find(',') - second_part_start - 1);
+
+            auto human_readable =  (first_part + second_part + " RUB per 1 USD");
+            human_readable.
+                    erase(std::remove_if(human_readable.begin(), human_readable.end(), [](char c) { return c == '\"' || c == ':'; }),
+                          human_readable.end());
+
+            return human_readable;
+        }
+
+        std::string ExtractDetailedBidInfoRaw(std::string &msg){
+            std::cout << msg << "\t-\tbid creating detailed server info\n";
+            if(msg.find(s21::BDNames::bid_table_create_update_time) == std::string::npos){
+                return "";
+            }
+            size_t info_start = msg.rfind('{');
+            size_t info_end = msg.rfind('}');
+            auto detailed_info = msg.substr(info_start +1 , info_end - info_start - 1);
+            msg.erase(info_start - 2, info_end);
+            return detailed_info;
+
+        }
+
+        std::string ExtractCleanBidUpdateResponse(std::string &msg){
+            std::string msg_bid_type = msg.find(s21::BDNames::missing_buyer) != std::string::npos
                     ? " sell "
                     : " buy ";
 
-            auto msg_bid = server_response.substr(server_response.find(s21::BDNames::bid_id_for_join) + 7,
-                                      server_response.find(',') - server_response.find(s21::BDNames::bid_id_for_join) - 7);
+            std::string msg_bid = msg.substr(msg.find(s21::BDNames::bid_id_for_join) + 8,
+                                      msg.find(',') - msg.find(s21::BDNames::bid_id_for_join) - 8);
 
-            auto quant_start_pos = server_response.find(s21::BDNames::bid_table_quantity);
-            auto msg_quant = server_response.substr(quant_start_pos, server_response.find(',', quant_start_pos) - quant_start_pos);
+            size_t quant_start_pos = msg.find(s21::BDNames::bid_table_quantity);
+            std::string msg_quant = msg.substr(quant_start_pos, msg.find(',', quant_start_pos) - quant_start_pos);
 
-            auto rate_start_pos = server_response.find(s21::BDNames::bid_table_rate);
-            auto msg_rate = server_response.substr(rate_start_pos, server_response.find(',', rate_start_pos) - rate_start_pos);
-            return "Updated" + msg_bid_type +  "bid :\n" + msg_bid + "\nto " + msg_quant + " and " + msg_rate;
+            size_t rate_start_pos = msg.find(s21::BDNames::bid_table_rate);
+            std::string msg_rate = msg.substr(rate_start_pos, msg.find(',', rate_start_pos) - rate_start_pos);
+
+            std::string bid_update("Updated" + msg_bid_type +  "bid :\n" + msg_bid + "\nto " + msg_quant + " and " + msg_rate);
+            bid_update.erase(std::remove(bid_update.begin(), bid_update.end(), '"'), bid_update.end());
+            return bid_update;
         }
 
 
@@ -170,6 +208,7 @@ namespace s21 {
             return user_id_;
         }
         std::unique_ptr<boost::asio::io_context> context_;
+        std::unique_ptr<boost::asio::deadline_timer> timer_;
         boost::thread thread_context_;
         std::unique_ptr<Connection> connection_;
         ThreadSafeQ<std::pair<connection_ptr, std::string>> from_server_;

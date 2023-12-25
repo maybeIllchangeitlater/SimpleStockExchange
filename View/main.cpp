@@ -19,10 +19,12 @@ int main(int argc, char *argv[])
 /// unit test coverage with boost tests
 /// docker image for server
 
-
-/// change create bid in view bid to display newly made transaction
-///
-/// large balance either not displayed corrrectly or not displayed correctly when other balance is 0
-///
+///change username and password
+///fix line edit position on close (should be reset to first line)
 ///
 /// move response error from controllers to utility or controller common
+/// move all string raw literals to utility
+///create Bid created, Bid fullfilled status messages as variables in utility
+/// create separate static(?) class for server message parsing
+/// correct architecture for server to send json to service through controller instead of just passing it down
+/// view transaction and bids as table display
