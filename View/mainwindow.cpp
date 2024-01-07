@@ -14,6 +14,7 @@ MainWindow::MainWindow(s21::Client &client, QWidget *parent)
     ui->ServerMessageInitScreen->setWordWrap(true);
     ConnectToPopups();
     ConnectToHandlers();
+    ConnectToSettingsHandlers();
     Connect();
 
 }
@@ -182,12 +183,11 @@ void MainWindow::SetLoginnedButtons()
     ui->Login->setVisible(false);
     ui->Register->setVisible(false);
 
+    ui->Settings->setVisible(true);
     ui->Logout->setVisible(true);
-    ui->Balance->setVisible(true);
     ui->Bids->setVisible(true);
     ui->CreateBid->setVisible(true);
     ui->Transactions->setVisible(true);
-    ui->DeleteMe->setVisible(true);
     ui->Quotations->setVisible(true);
 
     ui->layoutwidget->setCurrentIndex(1);
@@ -198,12 +198,11 @@ void MainWindow::SetNotLoginnedButtons()
     ui->Login->setVisible(true);
     ui->Register->setVisible(true);
 
+    ui->Settings->setVisible(false);
     ui->Logout->setVisible(false);
-    ui->Balance->setVisible(false);
     ui->Bids->setVisible(false);
     ui->CreateBid->setVisible(false);
     ui->Transactions->setVisible(false);
-    ui->DeleteMe->setVisible(false);
     ui->Quotations->setVisible(false);
 
     ui->layoutwidget->setCurrentIndex(0);
@@ -235,21 +234,7 @@ void MainWindow::ConnectToHandlers()
         ui->LoggedAs->clear();
         SetNotLoginnedButtons();
     });
-    connect(ui->Balance, &QPushButton::clicked, this, [&](){
-       client_.CheckBalance();
-       if(!WaitForServer()){
-           return;
-       }
-       ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()).
-                                            replace("\"", "").replace(",", "\n"));
-    });
 
-    connect(delete_account_pop_.get(), &DeleteAccountPopup::DeleteAccount, this, [&](){
-       client_.DeleteMe();
-       ui->LoggedAs->clear();
-       ui->ServerMessageInitScreen->setText("Account Deleted");
-       SetNotLoginnedButtons();
-    });
     connect(view_bid_pop_.get(), &ViewBids::CancelBid, this, [&](const std::string bid_id){
         client_.CancelBid(bid_id);
         if(!WaitForServer()){
@@ -289,6 +274,46 @@ void MainWindow::ConnectToHandlers()
     });
 }
 
+void MainWindow::ConnectToSettingsHandlers()
+{
+    connect(user_settings_.get(), &UserSettings::DeleteAccount, this, [&](const std::string user_password){
+        if(client_.DeleteMe(user_password)){
+            ui->LoggedAs->clear();
+            ui->ServerMessageInitScreen->setText("Account Deleted");
+            SetNotLoginnedButtons();
+            user_settings_->close();
+            user_settings_->hide();
+        }else{
+            auto error = client_.CleanServerResponse();
+            user_settings_->SetStatus(error);
+            ui->ServerMessageInitScreen->setText(QString::fromStdString(error));
+        }
+    });
+    connect(user_settings_.get(), &UserSettings::ChangeUsername, this, [&](const std::string user_name){
+        if(client_.ChangeName(user_name)){
+            ui->LoggedAs->setText(QString::fromStdString(user_name));
+            user_settings_->SetFields(user_name);
+            user_settings_->SetStatus("Username changed to " + user_name);
+            ui->ServerMessageInitScreen->setText(QString::fromStdString("Username changed to " + user_name));
+            client_.Inbox().PopFront();
+        }else{
+            auto error = client_.CleanServerResponse();
+            user_settings_->SetStatus(error);
+            ui->ServerMessageInitScreen->setText(QString::fromStdString(error));
+        }
+    });
+
+    connect(user_settings_.get(), &UserSettings::ChangePassword, this,
+            [&](const std::string new_password, const std::string old_password){
+        std::cout << "new ps is :  " << new_password << "old is :  " << old_password << "\n\n";
+        client_.ChangePassword(new_password, old_password);
+        WaitForServer();
+        auto error = client_.CleanServerResponse();
+        user_settings_->SetStatus(error.empty() ? "Password changed" : error);
+        ui->ServerMessageInitScreen->setText(QString::fromStdString(error.empty() ? "Password changed" : error));
+    });
+}
+
 void MainWindow::ConnectToPopups()
 {
     connect(ui->Register, &QPushButton::clicked, this, [&](){
@@ -309,11 +334,17 @@ void MainWindow::ConnectToPopups()
        view_bid_pop_->exec();
 
     });
-    connect(ui->DeleteMe, &QPushButton::clicked, this, [&](){
-        delete_account_pop_->exec();
-    });
     connect(ui->Transactions, &QPushButton::clicked, this, [&](){
         viewtrans_pop_->exec();
+    });
+    connect(ui->Settings, &QPushButton::clicked, this, [&](){
+        client_.CheckBalance();
+        if(!WaitForServer()){
+            return;
+        }
+        auto [usd_balance, rub_balance] = client_.ExtractCleanBalance(client_.Inbox().PopFront().second);
+        user_settings_->SetFields(ui->LoggedAs->text().toStdString(), client_.GetUserId(), usd_balance, rub_balance);
+        user_settings_->exec();
     });
 }
 

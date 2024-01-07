@@ -7,6 +7,11 @@ RegisterPopup::RegisterPopup(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->PasswordLine->setEchoMode(QLineEdit::Password);
+    connect(ui->eye, &QPushButton::clicked, this, [&](){
+        ui->PasswordLine->echoMode() == QLineEdit::Password
+                ? ui->PasswordLine->setEchoMode(QLineEdit::Normal)
+                : ui->PasswordLine->setEchoMode(QLineEdit::Password);
+    });
     connect(ui->Ok, &QPushButton::clicked, this, [&](){
                 emit RegisterAttempt(ui->LoginLine->text().toStdString(),
                                      ui->PasswordLine->text().toStdString(),
@@ -16,6 +21,8 @@ RegisterPopup::RegisterPopup(QWidget *parent) :
                 ui->PasswordLine->clear();
                 ui->BalanceLineUSD->clear();
                 ui->BalanceLineRUB->clear();
+                ui->PasswordLine->setEchoMode(QLineEdit::Password);
+                ui->LoginLine->setFocus();
             });
 }
 

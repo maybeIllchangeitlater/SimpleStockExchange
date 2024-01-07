@@ -5,6 +5,7 @@
 #include "../3rdParty/json.hpp"
 #include "../Repository/BdNames.hpp"
 #include "../Service/BidService.hpp"
+#include "../Utility/ExtraJSONKeys.hpp"
 
 namespace s21 {
     struct ClientController {
@@ -90,9 +91,11 @@ namespace s21 {
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::UPDATE_USER_NAME, body);
         }
 
-        static std::string ChangePassword(const std::string &user_id, const std::string &new_password){
+        static std::string ChangePassword(const std::string &user_id,
+                                          const std::string &new_password, const std::string &old_password){
             nlohmann::json body;
             body[BDNames::user_table_password] = new_password;
+            body[ExtraJSONKeys::old_password] = old_password;
             body[BDNames::user_table_id] = user_id;
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::UPDATE_USER_PASSWORD, body);
         }
@@ -103,9 +106,10 @@ namespace s21 {
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::GET_MY_BALANCE, body);
         }
 
-        static std::string DeleteMe(const std::string &user_id){
+        static std::string DeleteMe(const std::string &user_id, const std::string &user_password){
             nlohmann::json body;
             body[BDNames::user_table_id] = user_id;
+            body[BDNames::user_table_password] = user_password;
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::DELETE_USER, body);
         }
 

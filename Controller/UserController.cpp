@@ -106,7 +106,8 @@ namespace s21{
         nlohmann::json response;
         try {
             service_.UpdateUserPassword(request_body.at(BDNames::user_table_id),
-                                        request_body.at(BDNames::user_table_password));
+                                        request_body.at(BDNames::user_table_password),
+                                        request_body.at(ExtraJSONKeys::old_password));
             response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
@@ -132,7 +133,7 @@ namespace s21{
     nlohmann::json UserController::DeleteUser(const nlohmann::json &request_body){
         nlohmann::json response;
         try {
-            service_.DeleteUser(request_body.at(BDNames::user_table_id));
+            service_.DeleteUser(request_body.at(BDNames::user_table_id), request_body.at(BDNames::user_table_password));
             response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){

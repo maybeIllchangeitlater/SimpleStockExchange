@@ -1,5 +1,5 @@
-#ifndef LOGINPOPUP_HPP
-#define LOGINPOPUP_HPP
+#ifndef SIMPLESTOCKEXCHANGE_VIEW_LOGINPOPUP_HPP
+#define SIMPLESTOCKEXCHANGE_VIEW_LOGINPOPUP_HPP
 
 #include <QDialog>
 #include <string>
@@ -23,4 +23,4 @@ private:
     Ui::LoginPopup *ui;
 };
 
-#endif // LOGINPOPUP_HPP
+#endif // SIMPLESTOCKEXCHANGE_VIEW_LOGINPOPUP_HPP

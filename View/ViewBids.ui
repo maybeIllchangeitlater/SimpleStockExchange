@@ -68,6 +68,9 @@
    <property name="text">
     <string>Cancel Bid</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QLabel" name="bid_status_label">
    <property name="geometry">
@@ -94,6 +97,9 @@
    <property name="text">
     <string>Update</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="Create">
    <property name="geometry">
@@ -106,6 +112,9 @@
    </property>
    <property name="text">
     <string>Create</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
  </widget>

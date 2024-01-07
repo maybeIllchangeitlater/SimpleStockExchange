@@ -36,6 +36,9 @@ namespace s21 {
         }
 
         void UpdateUserName(const std::string &user_id, const std::string &new_name){
+            if(!ValidateUnique(new_name)){
+                throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_NOT_UNIQUE_NAME));
+            }
             if(!ValidateUserName(new_name)){
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_BAD_NAME));
             }
@@ -51,13 +54,22 @@ namespace s21 {
             balance_service_.SetUserBalance(user_id, new_balance_usd, new_balance_rub);
         }
 
-        void UpdateUserPassword(const std::string &user_id, const std::string &new_password){
+        void UpdateUserPassword(const std::string &user_id,
+                                const std::string &new_password, const std::string &old_password){
+            auto user = repository_.ReadUserById(user_id);
+            if(!(user[0][BDNames::user_table_password].as<std::string>() == Encoder::Encode(old_password))) {
+                throw std::logic_error(ServerMessage::server_message.at(ServerMessage::LOGIN_BAD_PASSWORD));
+            }
             if(!ValidatePassword(new_password)){
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_BAD_PASSWORD));
             }
             repository_.UpdateUserPassword(user_id, Encoder::Encode(new_password));
         }
-        void DeleteUser(const std::string &user_id){
+        void DeleteUser(const std::string &user_id, const std::string &user_password){
+            auto user = repository_.ReadUserById(user_id);
+            if(!(user[0][BDNames::user_table_password].as<std::string>() == Encoder::Encode(user_password))) {
+                throw std::logic_error(ServerMessage::server_message.at(ServerMessage::LOGIN_BAD_PASSWORD));
+            }
             repository_.DeleteUser(user_id);
         }
 
@@ -66,6 +78,15 @@ namespace s21 {
             return user_name.length() > 3;
         }
         bool ValidatePassword(const std::string &password);
+
+        bool ValidateUnique(const std::string &user_name){
+            try {
+                repository_.ReadUserByName(user_name);
+                return false;
+            }catch(...){
+                return true;
+            }
+        }
 
         nlohmann::json GenerateUserInfo(const pqxx::result &user_info){
             nlohmann::json user_json;

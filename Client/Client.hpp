@@ -64,25 +64,26 @@ namespace s21 {
             Send(ClientController::CancelBid(bid_id, user_id_));
         }
 
-        void ChangeName(){
-            std::string name;
-            std::cout << "Please enter your new username\n";
-            std::cin >> name;
-            Send(ClientController::ChangeUserName(GetUserId(), name));
-        }
-
-        void ChangePassword(){
-            std::string password;
-            std::cout << "Please enter your new password\n";
-            std::cin >> password;
-            Send(ClientController::ChangePassword(GetUserId(), password));
-        }
-
-        void DeleteMe(){
-            Send(ClientController::DeleteMe(GetUserId()));
+        bool ChangeName(const std::string &user_name){
+            Send(ClientController::ChangeUserName(GetUserId(), user_name));
             while (from_server_.Empty()) {}
-            Disconnect();
+            return CheckStatus();
         }
+
+        void ChangePassword(const std::string &new_password, const std::string &old_password){
+            Send(ClientController::ChangePassword(GetUserId(), new_password, old_password));
+        }
+
+        bool DeleteMe(const std::string &user_password){
+            Send(ClientController::DeleteMe(GetUserId(), user_password));
+            while (from_server_.Empty()) {}
+            if(CheckStatus()){
+                Disconnect();
+                return true;
+            }
+            return false;
+        }
+
 
         void UpdateBidRate(const std::string &bid_id, const std::string &new_rate){
             Send(ClientController::UpdateBidRate(bid_id, new_rate));
@@ -200,13 +201,25 @@ namespace s21 {
             return bid_update;
         }
 
+        const std::string &GetUserId() const{
+            return user_id_;
+        }
+
+        ///usd, rub
+        std::pair<std::string, std::string> ExtractCleanBalance(std::string &&msg){
+            size_t rub_start = msg.find(s21::BDNames::balance_table_rub)
+                    + std::string(s21::BDNames::balance_table_rub).length() + 2; //:
+            size_t usd_start = msg.find(s21::BDNames::balance_table_usd)
+                    + std::string(s21::BDNames::balance_table_usd).length() + 2; //:
+            std::string usd_balance = msg.substr(usd_start, msg.find(',') - usd_start);
+            std::string rub_balance = msg.substr(rub_start, msg.find('}') - rub_start);
+            return std::make_pair(std::move(usd_balance), std::move(rub_balance));
+        }
+
 
 
 
     private:
-        const std::string &GetUserId(){
-            return user_id_;
-        }
         std::unique_ptr<boost::asio::io_context> context_;
         std::unique_ptr<boost::asio::deadline_timer> timer_;
         boost::thread thread_context_;

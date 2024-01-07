@@ -35,6 +35,9 @@
    <property name="text">
     <string>My Sell Transactions</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="Buy">
    <property name="geometry">
@@ -47,6 +50,9 @@
    </property>
    <property name="text">
     <string>My Buy Transactions</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
  </widget>

@@ -10,6 +10,7 @@ CreateBidPopup::CreateBidPopup(QWidget *parent) :
                 emit MakeBid(ui->QuantityLine->text().toStdString(), ui->RateLine->text().toStdString(), ui->comboBox->currentText().toStdString());
                 ui->QuantityLine->clear();
                 ui->RateLine->clear();
+                ui->QuantityLine->setFocus();
             });
 }
 

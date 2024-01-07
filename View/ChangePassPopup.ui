@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RegisterPopup</class>
- <widget class="QDialog" name="RegisterPopup">
+ <class>ChangePassPopup</class>
+ <widget class="QDialog" name="ChangePassPopup">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>392</width>
-    <height>377</height>
+    <width>432</width>
+    <height>205</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,31 +16,73 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>30</y>
-     <width>171</width>
+     <x>150</x>
+     <y>10</y>
+     <width>161</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>Login</string>
+    <string>New password:</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="LoginLine">
+  <widget class="QLineEdit" name="newpass">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>60</y>
-     <width>321</width>
+     <x>10</x>
+     <y>40</y>
+     <width>381</width>
      <height>31</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="No">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>160</y>
+     <width>100</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="oldpass">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>110</y>
+     <width>381</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>80</y>
+     <width>161</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Old password:</string>
    </property>
   </widget>
   <widget class="QPushButton" name="Ok">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>320</y>
+     <x>40</x>
+     <y>160</y>
      <width>100</width>
      <height>32</height>
     </rect>
@@ -49,80 +91,37 @@
     <string>Ok</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QPushButton" name="eye_new">
    <property name="geometry">
     <rect>
-     <x>160</x>
-     <y>100</y>
-     <width>171</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Password</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="PasswordLine">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>130</y>
-     <width>321</width>
+     <x>400</x>
+     <y>40</y>
+     <width>21</width>
      <height>31</height>
     </rect>
    </property>
-  </widget>
-  <widget class="QLabel" name="label_3">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>170</y>
-     <width>171</width>
-     <height>16</height>
-    </rect>
-   </property>
    <property name="text">
-    <string>Balance USD</string>
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>resources/55c39703ef11466669e8c734030bd7f9.jpg</normaloff>resources/55c39703ef11466669e8c734030bd7f9.jpg</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
-  <widget class="QLineEdit" name="BalanceLineUSD">
+  <widget class="QPushButton" name="eye_old">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>200</y>
-     <width>321</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="BalanceLineRUB">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>270</y>
-     <width>321</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_4">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>240</y>
-     <width>171</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Balance RUB</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="eye">
-   <property name="geometry">
-    <rect>
-     <x>360</x>
-     <y>130</y>
+     <x>400</x>
+     <y>110</y>
      <width>21</width>
      <height>31</height>
     </rect>

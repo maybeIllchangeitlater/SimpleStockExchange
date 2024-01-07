@@ -54,15 +54,24 @@ set(PROJECT_SOURCES
         ViewBids.hpp
         ViewBids.cpp
         ViewBids.ui
-        DeleteAccountPopup.hpp
-        DeleteAccountPopup.cpp
-        DeleteAccountPopup.ui
         UpdateBidPopup.hpp
         UpdateBidPopup.cpp
         UpdateBidPopup.ui
         ViewTransactionsPopup.hpp
         ViewTransactionsPopup.cpp
         viewtransactionspopup.ui
+        UserSettings.hpp
+        UserSettings.cpp
+        UserSettings.ui
+        PasswordConfirmationPopup.hpp
+        PasswordConfirmationPopup.cpp
+        PasswordConfirmationPopup.ui
+        ChangePassPopup.hpp
+        ChangePassPopup.cpp
+        ChangePassPopup.ui
+        ChangeNamPopup.hpp
+        ChangeNamPopup.cpp
+        ChangeNamPopup.ui
 
 )
 

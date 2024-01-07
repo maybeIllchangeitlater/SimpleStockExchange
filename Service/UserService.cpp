@@ -4,6 +4,9 @@ namespace s21{
 
     void UserService::CreateUser(const std::string &user_name, const std::string &password,
                                  const std::string &user_balance_usd, const std::string &user_balance_rub){
+        if(!ValidateUnique(user_name)){
+            throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_NOT_UNIQUE_NAME));
+        }
         if(!ValidateUserName(user_name)){
             throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_BAD_NAME));
         }

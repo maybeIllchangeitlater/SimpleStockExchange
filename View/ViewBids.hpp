@@ -1,5 +1,5 @@
-#ifndef VIEWBIDS_HPP
-#define VIEWBIDS_HPP
+#ifndef SIMPLESTOCKEXCHANGE_VIEW_VIEWBIDS_HPP
+#define SIMPLESTOCKEXCHANGE_VIEW_VIEWBIDS_HPP
 
 #include <QDialog>
 #include <QJsonObject>
@@ -42,4 +42,4 @@ private:
     Ui::ViewBids *ui;
 };
 
-#endif // VIEWBIDS_HPP
+#endif // SIMPLESTOCKEXCHANGE_VIEW_VIEWBIDS_HPP

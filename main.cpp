@@ -47,7 +47,4 @@ int main() {
 }
 
 ///2 threads for server? prob not needed
-///custom errors for deleting finished/unfinished bid
 ///start with server
-///problem with message getting lost is write method in connection that pops messages
-
