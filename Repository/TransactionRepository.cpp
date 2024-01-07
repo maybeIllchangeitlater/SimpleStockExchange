@@ -117,4 +117,20 @@ namespace s21{
             throw;
         }
     }
+
+    pqxx::result TransactionRepository::GetTransactionsForLast(const std::string &time_period) {
+        pqxx::work task(db_connection_);
+        try{
+            std::string sql = "SELECT * FROM transaction_info WHERE " +
+                    std::string(BDNames::transaction_table_create_update_time) +  " >= CURRENT_DATE - INTERVAL '" +
+                    time_period + " days'";
+            std::cout << sql << "\n";
+            auto res = task.exec(sql);
+            return res;
+        }catch(const std::exception &e){
+            std::cout << "\naboorting task because " << e.what() << "\n";
+            task.abort();
+            throw;
+        }
+    }
 }

@@ -8,7 +8,6 @@ ChangeNamPopup::ChangeNamPopup(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->Ok, &QPushButton::clicked, this, [&](){
         emit NameChange(ui->UsernameLine->text().toStdString());
-        ui->UsernameLine->clear();
         close();
         hide();
     });
@@ -24,4 +23,10 @@ ChangeNamPopup::ChangeNamPopup(QWidget *parent) :
 ChangeNamPopup::~ChangeNamPopup()
 {
     delete ui;
+}
+
+void ChangeNamPopup::closeEvent(QCloseEvent *event)
+{
+     ui->UsernameLine->clear();
+    event->accept();
 }

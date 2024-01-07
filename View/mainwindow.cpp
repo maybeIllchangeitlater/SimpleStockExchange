@@ -167,6 +167,13 @@ void MainWindow::HandleUpdateBid(const std::string bid_id, const std::string bid
     }
 }
 
+void MainWindow::HandleViewQuotations(const size_t time_period)
+{
+    client_.CheckQuotations(time_period);
+    WaitForServer();
+    quot_pop_->SetQuotations(client_.CleanServerResponse());
+}
+
 bool MainWindow::WaitForServer()
 {
     if(!client_.WaitForResponse()){
@@ -227,6 +234,7 @@ void MainWindow::ConnectToHandlers()
     connect(create_bid_pop_.get(), &CreateBidPopup::MakeBid, this, &MainWindow::HandleCreateBid);
     connect(upd_bid_pop_.get(), &UpdateBidPopup::UpdateBid, this, &MainWindow::HandleUpdateBid);
     connect(view_bid_pop_.get(), &ViewBids::ViewBid, this, &MainWindow::HandleViewBid);
+    connect(quot_pop_.get(), &QuotationsPopup::Quotations, this, &MainWindow::HandleViewQuotations);
 
     connect(ui->Logout, &QPushButton::clicked, this, [&](){
         client_.Disconnect();
@@ -305,7 +313,6 @@ void MainWindow::ConnectToSettingsHandlers()
 
     connect(user_settings_.get(), &UserSettings::ChangePassword, this,
             [&](const std::string new_password, const std::string old_password){
-        std::cout << "new ps is :  " << new_password << "old is :  " << old_password << "\n\n";
         client_.ChangePassword(new_password, old_password);
         WaitForServer();
         auto error = client_.CleanServerResponse();
@@ -336,6 +343,9 @@ void MainWindow::ConnectToPopups()
     });
     connect(ui->Transactions, &QPushButton::clicked, this, [&](){
         viewtrans_pop_->exec();
+    });
+    connect(ui->Quotations, &QPushButton::clicked, this, [&](){
+        quot_pop_->exec();
     });
     connect(ui->Settings, &QPushButton::clicked, this, [&](){
         client_.CheckBalance();

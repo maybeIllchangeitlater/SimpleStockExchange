@@ -11,20 +11,10 @@ ChangePassPopup::ChangePassPopup(QWidget *parent) :
     ui->oldpass->setEchoMode(QLineEdit::Password);
     connect(ui->Ok, &QPushButton::clicked, this, [&](){
        emit ChangePassword(ui->newpass->text().toStdString(), ui->oldpass->text().toStdString());
-        ui->newpass->clear();
-        ui->oldpass->clear();
-        ui->newpass->setEchoMode(QLineEdit::Password);
-        ui->oldpass->setEchoMode(QLineEdit::Password);
-        ui->newpass->setFocus();
         close();
         hide();
     });
     connect(ui->No, &QPushButton::clicked, this, [&](){
-        ui->newpass->clear();
-        ui->oldpass->clear();
-        ui->newpass->setEchoMode(QLineEdit::Password);
-        ui->oldpass->setEchoMode(QLineEdit::Password);
-        ui->newpass->setFocus();
         close();
         hide();
     });
@@ -43,4 +33,14 @@ ChangePassPopup::ChangePassPopup(QWidget *parent) :
 ChangePassPopup::~ChangePassPopup()
 {
     delete ui;
+}
+
+void ChangePassPopup::closeEvent(QCloseEvent *event)
+{
+    ui->newpass->clear();
+    ui->oldpass->clear();
+    ui->newpass->setEchoMode(QLineEdit::Password);
+    ui->oldpass->setEchoMode(QLineEdit::Password);
+    ui->newpass->setFocus();
+    event->accept();
 }

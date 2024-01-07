@@ -17,16 +17,21 @@ RegisterPopup::RegisterPopup(QWidget *parent) :
                                      ui->PasswordLine->text().toStdString(),
                                      ui->BalanceLineUSD->text().toStdString(),
                                      ui->BalanceLineRUB->text().toStdString());
-                ui->LoginLine->clear();
-                ui->PasswordLine->clear();
-                ui->BalanceLineUSD->clear();
-                ui->BalanceLineRUB->clear();
-                ui->PasswordLine->setEchoMode(QLineEdit::Password);
-                ui->LoginLine->setFocus();
             });
 }
 
 RegisterPopup::~RegisterPopup()
 {
     delete ui;
+}
+
+void RegisterPopup::closeEvent(QCloseEvent *event)
+{
+    ui->LoginLine->clear();
+    ui->PasswordLine->clear();
+    ui->BalanceLineUSD->clear();
+    ui->BalanceLineRUB->clear();
+    ui->PasswordLine->setEchoMode(QLineEdit::Password);
+    ui->LoginLine->setFocus();
+    event->accept();
 }

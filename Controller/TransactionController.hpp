@@ -16,6 +16,8 @@ namespace s21 {
 
         nlohmann::json GetUserBuyTransactions(const nlohmann::json &request_body);
 
+        nlohmann::json GetQuotations(const nlohmann::json &request_body);
+
     private:
         void ResponseError(nlohmann::json &response, const char * exception);
         TransactionService &service_;

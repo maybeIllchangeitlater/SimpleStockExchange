@@ -2,6 +2,7 @@
 #define SIMPLESTOCKEXCHANGE_VIEW_CHANGENAMPOPUP_HPP
 
 #include <QDialog>
+#include <QCloseEvent>
 
 namespace Ui {
 class ChangeNamPopup;
@@ -16,6 +17,8 @@ public:
     ~ChangeNamPopup();
 signals:
     void NameChange(const std::string username);
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     Ui::ChangeNamPopup *ui;

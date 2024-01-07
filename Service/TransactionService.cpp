@@ -2,7 +2,7 @@
 
 namespace s21{
 
-    nlohmann::json TransactionService::GenerateTransactionInfo(const pqxx::row &transaction_info){
+    nlohmann::json TransactionService:GenerateTransactionInfo(const pqxx::row &transaction_info){
         nlohmann::json transaction_json;
         transaction_json[BDNames::transaction_id_for_join] =
                 transaction_info[BDNames::transaction_id_for_join].as<std::string>();
@@ -19,5 +19,19 @@ namespace s21{
         transaction_json[BDNames::transaction_table_create_update_time] =
                 transaction_info[BDNames::transaction_table_create_update_time].as<std::string>();
         return transaction_json;
+    }
+
+    nlohmann::json TransactionService::GetQuotations(const std::string &time_period) {
+        auto transactions = repository_.GetTransactionsForLast(time_period);
+        nlohmann::json transaction_info;
+        double rate(0.0);
+        size_t total_quantity(0);
+        for(const auto &transaction : transactions){
+            rate += transaction[BDNames::transaction_table_rate].as<double>()
+                    * transaction[BDNames::transaction_table_quantity].as<size_t>();
+            total_quantity += transaction[BDNames::transaction_table_quantity].as<size_t>();
+        }
+        transaction_info[ExtraJSONKeys::quotations] = rate/total_quantity;
+        return transaction_info;
     }
 }

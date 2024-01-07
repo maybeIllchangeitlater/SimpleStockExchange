@@ -12,6 +12,8 @@ namespace s21 {
         constexpr static const char * bid_transaction_rate = " USD with rate ";
         constexpr static const char * bid_creation_check = "Created bid to ";
         constexpr static const char * old_password = "old password";
+        constexpr static const char * time_period = "time period";
+        constexpr static const char * quotations = "quotations";
     };
 } //s21
 

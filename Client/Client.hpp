@@ -97,6 +97,10 @@ namespace s21 {
             Send(ClientController::GetMyBalance(user_id_));
         }
 
+        void CheckQuotations(size_t time_period){
+            Send(ClientController::GetQuotations(std::to_string(time_period)));
+        }
+
         bool WaitForResponse(){
 //            timer_->expires_from_now(boost::posix_time::seconds(3));
 //                    timer_->async_wait([&](const boost::system::error_code&) {
@@ -211,8 +215,8 @@ namespace s21 {
                     + std::string(s21::BDNames::balance_table_rub).length() + 2; //:
             size_t usd_start = msg.find(s21::BDNames::balance_table_usd)
                     + std::string(s21::BDNames::balance_table_usd).length() + 2; //:
-            std::string usd_balance = msg.substr(usd_start, msg.find(',') - usd_start);
-            std::string rub_balance = msg.substr(rub_start, msg.find('}') - rub_start);
+            std::string usd_balance = msg.substr(usd_start, msg.find('}') - usd_start);
+            std::string rub_balance = msg.substr(rub_start, msg.find(',') - rub_start);
             return std::make_pair(std::move(usd_balance), std::move(rub_balance));
         }
 

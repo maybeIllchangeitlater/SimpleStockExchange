@@ -14,14 +14,19 @@ LoginPopup::LoginPopup(QWidget *parent) :
     });
     connect(ui->Ok, &QPushButton::clicked, this, [&](){
                 emit LoginAttempt(ui->LoginLine->text().toStdString(), ui->PasswordLine->text().toStdString());
-                ui->LoginLine->clear();
-                ui->PasswordLine->clear();
-                ui->PasswordLine->setEchoMode(QLineEdit::Password);
-                ui->LoginLine->SetFocus();
             });
 }
 
 LoginPopup::~LoginPopup()
 {
     delete ui;
+}
+
+void LoginPopup::closeEvent(QCloseEvent *event)
+{
+    ui->LoginLine->clear();
+    ui->PasswordLine->clear();
+    ui->PasswordLine->setEchoMode(QLineEdit::Password);
+    ui->LoginLine->setFocus();
+    event->accept();
 }

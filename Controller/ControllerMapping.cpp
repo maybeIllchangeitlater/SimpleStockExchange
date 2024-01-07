@@ -24,6 +24,7 @@ namespace s21{
     };
     const std::unordered_map<std::string, ControllerMapping::TransactionFunction> ControllerMapping::method_mapping_transaction{
             {"GetUserBuyTransactions", [](TransactionController& c, const nlohmann::json &json){ return c.GetUserBuyTransactions(json); }},
-            {"GetUserSellTransactions", [](TransactionController& c, const nlohmann::json &json){ return c.GetUserSellTransactions(json); }}
+            {"GetUserSellTransactions", [](TransactionController& c, const nlohmann::json &json){ return c.GetUserSellTransactions(json); }},
+            {"GetQuotations", [](TransactionController& c, const nlohmann::json &json){ return c.GetQuotations(json); }}
     };
 }

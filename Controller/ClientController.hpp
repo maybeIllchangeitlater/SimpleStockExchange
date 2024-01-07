@@ -106,6 +106,12 @@ namespace s21 {
             return RequestStringBuilder::BuildRequest(RequestStringBuilder::GET_MY_BALANCE, body);
         }
 
+        static std::string GetQuotations(std::string &&time_period){
+            nlohmann::json body;
+            body[ExtraJSONKeys::time_period] = std::move(time_period);
+            return RequestStringBuilder::BuildRequest(RequestStringBuilder::GET_QUOTATIONS, body);
+        }
+
         static std::string DeleteMe(const std::string &user_id, const std::string &user_password){
             nlohmann::json body;
             body[BDNames::user_table_id] = user_id;

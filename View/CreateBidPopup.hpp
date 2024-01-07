@@ -2,6 +2,7 @@
 #define SIMPLESTOCKEXCHANGE_VIEW_CREATEBIDPOPUP_HPP
 
 #include <QDialog>
+#include <QCloseEvent>
 
 namespace Ui {
 class CreateBidPopup;
@@ -17,6 +18,8 @@ public:
 
 signals:
     void MakeBid(std::string quantity, std::string rate, std::string bid_type);
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     Ui::CreateBidPopup *ui;

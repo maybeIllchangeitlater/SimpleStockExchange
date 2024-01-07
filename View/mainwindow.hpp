@@ -9,6 +9,7 @@
 #include "BidTransactionMadePopup.hpp"
 #include "ViewBids.hpp"
 #include "ViewTransactionsPopup.hpp"
+#include "QuotationsPopup.hpp"
 #include "UpdateBidPopup.hpp"
 #include "UserSettings.hpp"
 #include <memory.h>
@@ -34,6 +35,7 @@ private slots:
     void HandleViewBid(const std::string bid_type);
     void HandleUpdateBid(const std::string bid_id, const std::string bid_rate,
                          const std::string bid_quantity, int index);
+    void HandleViewQuotations(const size_t time_period);
 
 private:
     bool WaitForServer();
@@ -48,6 +50,7 @@ private:
     std::unique_ptr<ViewBids> view_bid_pop_ = boost::make_unique<ViewBids>();
     std::unique_ptr<RegisterPopup> reg_pop_ = boost::make_unique<RegisterPopup>();
     std::unique_ptr<UserSettings> user_settings_ = boost::make_unique<UserSettings>();
+    std::unique_ptr<QuotationsPopup> quot_pop_ = boost::make_unique<QuotationsPopup>();
     std::unique_ptr<UpdateBidPopup> upd_bid_pop_ = boost::make_unique<UpdateBidPopup>();
     std::unique_ptr<CreateBidPopup> create_bid_pop_ = boost::make_unique<CreateBidPopup>();
     std::unique_ptr<ViewTransactionsPopup> viewtrans_pop_ = boost::make_unique<ViewTransactionsPopup>();

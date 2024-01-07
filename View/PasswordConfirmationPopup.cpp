@@ -16,12 +16,10 @@ PasswordConfirmationPopup::PasswordConfirmationPopup(QWidget *parent) :
         emit ConfirmAction(ui->password_line->text().toStdString());
         hide();
         close();
-        ui->password_line->setEchoMode(QLineEdit::Password);
     });
     connect(ui->No, &QPushButton::clicked, this, [&](){
         hide();
         close();
-        ui->password_line->setEchoMode(QLineEdit::Password);
     });
 }
 
@@ -33,5 +31,6 @@ PasswordConfirmationPopup::~PasswordConfirmationPopup()
 void PasswordConfirmationPopup::closeEvent(QCloseEvent *event)
 {
     ui->password_line->clear();
+    ui->password_line->setEchoMode(QLineEdit::Password);
     event->accept();
 }

@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <string>
+#include <QCloseEvent>
 
 namespace Ui {
 class LoginPopup;
@@ -18,6 +19,8 @@ public:
 
 signals:
     void LoginAttempt(std::string login, std::string password);
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     Ui::LoginPopup *ui;

@@ -32,6 +32,7 @@ namespace s21 {
             GET_TRANSACTION_BY_ID,
             GET_USER_SELL_TRANSACTIONS,
             GET_USER_BUY_TRANSACTIONS,
+            GET_QUOTATIONS,
         };
 
         static std::string BuildRequest(RequestType type, const nlohmann::json &body);

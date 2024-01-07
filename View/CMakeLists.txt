@@ -72,6 +72,9 @@ set(PROJECT_SOURCES
         ChangeNamPopup.hpp
         ChangeNamPopup.cpp
         ChangeNamPopup.ui
+        QuotationsPopup.hpp
+        QuotationsPopup.cpp
+        QuotationsPopup.ui
 
 )
 

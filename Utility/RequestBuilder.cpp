@@ -24,7 +24,8 @@ namespace s21{
             {MAKE_TRANSACTION, std::make_pair("POST", "TMakeTransaction")},
             {GET_TRANSACTION_BY_ID, std::make_pair("GET", "TGetTransaction")},
             {GET_USER_BUY_TRANSACTIONS, std::make_pair("GET", "TGetUserBuyTransactions")},
-            {GET_USER_SELL_TRANSACTIONS, std::make_pair("GET", "TGetUserSellTransactions")}
+            {GET_USER_SELL_TRANSACTIONS, std::make_pair("GET", "TGetUserSellTransactions")},
+            {GET_QUOTATIONS, std::make_pair("GET", "TGetQuotations")}
     };
 
     std::string RequestStringBuilder::BuildRequest(s21::RequestStringBuilder::RequestType type,

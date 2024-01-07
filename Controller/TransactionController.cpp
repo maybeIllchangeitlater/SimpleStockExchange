@@ -30,6 +30,18 @@ namespace s21{
         }
     }
 
+    nlohmann::json TransactionController::GetQuotations(const nlohmann::json &request_body) {
+        nlohmann::json response;
+        try{
+            response = service_.GetQuotations(request_body.at(ExtraJSONKeys::time_period));
+            response[ExtraJSONKeys::status] = ServerMessage::OK;
+            return response;
+        }catch(const std::exception &e){
+            ResponseError(response, e.what());
+            return response;
+        }
+    }
+
     void TransactionController::ResponseError(nlohmann::json &response, const char *exception) {
         response[ExtraJSONKeys::status] = ServerMessage::response_code.find(exception) != ServerMessage::response_code.end()
                                           ? ServerMessage::response_code.at(exception)

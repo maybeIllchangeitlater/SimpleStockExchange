@@ -16,6 +16,7 @@ namespace s21 {
         pqxx::result ReadTransaction(const std::string &id);
         pqxx::result ReadAllUserSellTransactions(const std::string &user_id);
         pqxx::result ReadAllUserBuyTransactions(const std::string &user_id);
+        pqxx::result GetTransactionsForLast(const std::string &time_period);
     private:
         pqxx::connection &db_connection_;
     };

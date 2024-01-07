@@ -8,13 +8,18 @@ CreateBidPopup::CreateBidPopup(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->Ok, &QPushButton::clicked, this, [&](){
                 emit MakeBid(ui->QuantityLine->text().toStdString(), ui->RateLine->text().toStdString(), ui->comboBox->currentText().toStdString());
-                ui->QuantityLine->clear();
-                ui->RateLine->clear();
-                ui->QuantityLine->setFocus();
             });
 }
 
 CreateBidPopup::~CreateBidPopup()
 {
     delete ui;
+}
+
+void CreateBidPopup::closeEvent(QCloseEvent *event)
+{
+    ui->QuantityLine->clear();
+    ui->RateLine->clear();
+    ui->QuantityLine->setFocus();
+    event->accept();
 }

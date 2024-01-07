@@ -2,6 +2,7 @@
 #define SIMPLESTOCKEXCHANGE_VIEW_REGISTERPOPUP_HPP
 
 #include <QDialog>
+#include <QCloseEvent>
 
 namespace Ui {
 class RegisterPopup;
@@ -17,6 +18,8 @@ public:
 
 signals:
     void RegisterAttempt(std::string login, std::string password, std::string balance_usd, std::string balance_rub);
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     Ui::RegisterPopup *ui;

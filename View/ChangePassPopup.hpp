@@ -2,6 +2,7 @@
 #define SIMPLESTOCKEXCHANGE_VIEW_CHANGEPASSPOPUP_HPP
 
 #include <QDialog>
+#include <QCloseEvent>
 
 namespace Ui {
 class ChangePassPopup;
@@ -17,6 +18,8 @@ public:
 
 signals:
     void ChangePassword(const std::string new_password, const std::string old_password);
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     Ui::ChangePassPopup *ui;

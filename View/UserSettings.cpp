@@ -41,8 +41,8 @@ void UserSettings::SetFields(const std::string &name, const std::string &id,
 {
     ui->Username->setText(QString::fromStdString(name));
     ui->Id->setText(QString::fromStdString(id));
-    ui->BalanceUSD->setText(QString::fromStdString(usd_balance));
-    ui->BalanceRUB->setText(QString::fromStdString(rub_balance));
+    ui->BalanceUSD->setText("usd balance: " + QString::fromStdString(usd_balance).remove('"'));
+    ui->BalanceRUB->setText("rub balance: " + QString::fromStdString(rub_balance).remove('"'));
 }
 
 void UserSettings::SetFields(const std::string &name)

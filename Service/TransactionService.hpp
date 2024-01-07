@@ -4,6 +4,7 @@
 #include "../Repository/TransactionRepository.hpp"
 #include "BalanceService.hpp"
 #include "../Utility/Timestamper.hpp"
+#include "../Utility/ExtraJSONKeys.hpp"
 
 namespace s21{
     class TransactionService{
@@ -40,6 +41,8 @@ namespace s21{
             }
             return res;
         }
+
+        nlohmann::json GetQuotations(const std::string &time_period);
     private:
         nlohmann::json GenerateTransactionInfo(const pqxx::row & transaction_info);
         TransactionRepository& repository_;
