@@ -10,6 +10,12 @@
     <height>549</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>Transactions</string>
   </property>
@@ -17,6 +23,14 @@
    <string notr="true">QWidget {
     background-color: #1E1E1E;
     color: #FFFFFF;
+}
+
+QTableView { 
+	gridline-color: #FFFFFF; 
+}
+
+QHeaderView::section { 
+	border: 1px solid #FFFFFF; 
 }
 
 QLineEdit, QTextEdit, QPlainTextEdit {
@@ -33,16 +47,6 @@ QPushButton {
 }
 </string>
   </property>
-  <widget class="QListWidget" name="TransactionViewer">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>991</width>
-     <height>481</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QPushButton" name="Sell">
    <property name="geometry">
     <rect>
@@ -73,6 +77,22 @@ QPushButton {
    </property>
    <property name="autoDefault">
     <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="TransactionViewer">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>991</width>
+     <height>481</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
    </property>
   </widget>
  </widget>

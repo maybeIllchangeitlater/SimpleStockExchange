@@ -12,7 +12,9 @@ ViewBids::ViewBids(QWidget *parent) :
             });
     ui->BidsListWidget->setColumnCount(7);
     ui->BidsListWidget->setHorizontalHeaderLabels(
-                    {"Bid ID", "Buyer Username", "Seller Username", "Quantity", "Rate", "Time", "Status"});
+                    {s21::BDNames::bid_id_for_join, s21::BDNames::joined_buyer_name,
+                     s21::BDNames::joined_seller_name, s21::BDNames::bid_table_quantity,
+                     s21::BDNames::bid_table_rate, s21::BDNames::bid_table_create_update_time, "Status"});
     ui->BidsListWidget->setColumnWidth(1, 150);
     ui->BidsListWidget->setColumnWidth(2, 150);
     ui->BidsListWidget->setShowGrid(true);
@@ -101,7 +103,9 @@ void ViewBids::closeEvent(QCloseEvent *event)
     ui->BidsListWidget->clear();
     ui->BidsListWidget->setRowCount(0);
     ui->BidsListWidget->setHorizontalHeaderLabels(
-                    {"Bid ID", "Buyer Username", "Seller Username", "Quantity", "Rate", "Time", "Status"});
+                {s21::BDNames::bid_id_for_join, s21::BDNames::joined_buyer_name,
+                 s21::BDNames::joined_seller_name, s21::BDNames::bid_table_quantity,
+                 s21::BDNames::bid_table_rate, s21::BDNames::bid_table_create_update_time, "Status"});
     ui->bid_status_label->clear();
     event->accept();
 }

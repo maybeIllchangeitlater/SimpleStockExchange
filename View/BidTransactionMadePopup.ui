@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>694</width>
-    <height>520</height>
+    <width>452</width>
+    <height>506</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Transactions</string>
@@ -17,6 +23,14 @@
    <string notr="true">QWidget {
     background-color: #1E1E1E;
     color: #FFFFFF;
+}
+
+QTableView { 
+	gridline-color: #FFFFFF; 
+}
+
+QHeaderView::section { 
+	border: 1px solid #FFFFFF; 
 }
 
 QLineEdit, QTextEdit, QPlainTextEdit {
@@ -37,9 +51,9 @@ QPushButton {
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>0</y>
-     <width>681</width>
-     <height>511</height>
+     <y>10</y>
+     <width>441</width>
+     <height>481</height>
     </rect>
    </property>
   </widget>

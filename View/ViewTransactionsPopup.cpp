@@ -12,6 +12,15 @@ ViewTransactionsPopup::ViewTransactionsPopup(QWidget *parent) :
     connect(ui->Sell, &QPushButton::clicked, this, [&](){
         emit ShowSellTransactions();
     });
+    ui->TransactionViewer->setColumnCount(5);
+    ui->TransactionViewer->setHorizontalHeaderLabels(
+                    {s21::BDNames::joined_buyer_name,
+                     s21::BDNames::joined_seller_name, s21::BDNames::transaction_table_quantity,
+                     s21::BDNames::transaction_table_rate, s21::BDNames::transaction_table_create_update_time});
+    ui->TransactionViewer->setColumnWidth(1, 150);
+    ui->TransactionViewer->setColumnWidth(2, 150);
+    ui->TransactionViewer->setShowGrid(true);
+    ui->TransactionViewer->verticalHeader()->setVisible(false);
 }
 
 
@@ -21,36 +30,30 @@ ViewTransactionsPopup::~ViewTransactionsPopup()
     delete ui;
 }
 
-void ViewTransactionsPopup::DisplayTransactions(const std::string &type, const std::string &raw_response)
+void ViewTransactionsPopup::DisplayTransactions(const std::string &raw_response)
 {
     QJsonArray  jsons = QJsonDocument::fromJson(QString::fromStdString(raw_response).toUtf8()).array();
-    ui->TransactionViewer->addItem(QString::fromStdString(type) + " :");
-    if(jsons.empty()){
-        ui->TransactionViewer->addItem("No transactions");
-    }
     for(const auto& json : jsons){
-        ui->TransactionViewer->addItem(GrabTransactionFromJson(json));
+       int row = ui->TransactionViewer->rowCount();
+        ui->TransactionViewer->insertRow(row);
+        ui->TransactionViewer->setItem(row, 0, new QTableWidgetItem(json.toObject().value(s21::BDNames::joined_buyer_name).toString()));
+        ui->TransactionViewer->setItem(row, 1, new QTableWidgetItem(json.toObject().value(s21::BDNames::joined_seller_name).toString()));
+        ui->TransactionViewer->setItem(row, 2, new QTableWidgetItem(json.toObject().value(s21::BDNames::bid_table_quantity).toString()));
+        ui->TransactionViewer->setItem(row, 3, new QTableWidgetItem(json.toObject().value(s21::BDNames::bid_table_rate).toString()));
+        ui->TransactionViewer->setItem(row, 4, new QTableWidgetItem(json.toObject().value(s21::BDNames::bid_table_create_update_time).toString()));
     }
+        ui->TransactionViewer->resizeColumnsToContents();
+        ui->TransactionViewer->setColumnWidth(0, 150);
+        ui->TransactionViewer->setColumnWidth(1, 150);
 }
 
 void ViewTransactionsPopup::closeEvent(QCloseEvent *event)
 {
     ui->TransactionViewer->clear();
+    ui->TransactionViewer->setRowCount(0);
+    ui->TransactionViewer->setHorizontalHeaderLabels(
+                    {s21::BDNames::joined_buyer_name,
+                     s21::BDNames::joined_seller_name, s21::BDNames::transaction_table_quantity,
+                     s21::BDNames::transaction_table_rate, s21::BDNames::transaction_table_create_update_time});
     event->accept();
-}
-
-QString ViewTransactionsPopup::GrabTransactionFromJson(const QJsonValueRef &json)
-{
-    return QString(s21::BDNames::transaction_id_for_join) + " : "
-            +json.toObject().value(s21::BDNames::transaction_id_for_join).toString() + "  " +
-            s21::BDNames::joined_buyer_name + " : "
-            + json.toObject().value(s21::BDNames::joined_buyer_name).toString() + "  " +
-            s21::BDNames::joined_seller_name + " : "
-            + json.toObject().value(s21::BDNames::joined_seller_name).toString() + "  " +
-            s21::BDNames::transaction_table_quantity + " : "
-            + json.toObject().value(s21::BDNames::transaction_table_quantity).toString() + "  " +
-            s21::BDNames::transaction_table_rate + " : "
-            + json.toObject().value(s21::BDNames::transaction_table_rate).toString() + "  " +
-            s21::BDNames::transaction_table_create_update_time + " : "
-            + json.toObject().value(s21::BDNames::transaction_table_create_update_time).toString();
 }

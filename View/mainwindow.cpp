@@ -273,8 +273,7 @@ void MainWindow::ConnectToHandlers()
         if(!s21::ResponseParser::CheckStatus(server_response)){
              SetErrorText(std::move(server_response));
         }else{
-            viewtrans_pop_->DisplayTransactions("Buy",
-                                                s21::ResponseParser::ExtractTransactionInfoJson(server_response));
+            viewtrans_pop_->DisplayTransactions(s21::ResponseParser::ExtractTransactionInfoJson(server_response));
         }
     });
     connect(viewtrans_pop_.get(), &ViewTransactionsPopup::ShowSellTransactions, this, [&](){
@@ -286,8 +285,7 @@ void MainWindow::ConnectToHandlers()
         if(!s21::ResponseParser::CheckStatus(server_response)){
             SetErrorText(std::move(server_response));
         }else{
-            viewtrans_pop_->DisplayTransactions("Sell",
-                                                s21::ResponseParser::ExtractTransactionInfoJson(server_response));
+            viewtrans_pop_->DisplayTransactions(s21::ResponseParser::ExtractTransactionInfoJson(server_response));
         }
     });
 }

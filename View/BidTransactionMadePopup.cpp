@@ -19,7 +19,7 @@ std::string BidTransactionMadePopup::DisplayNewTransactions(const std::string &r
 {
     QString extracted_json_array = QString::fromStdString(raw_response.substr(raw_response.find('['), raw_response.find(']') + 1));
     QJsonArray  jsons = QJsonDocument::fromJson(extracted_json_array.toUtf8()).array();
-    QString transaction_type = extracted_json_array.contains("Bought")
+    QString transaction_type = extracted_json_array.contains(s21::ExtraJSONKeys::buy_transaction)
             ? s21::ExtraJSONKeys::buy_transaction
             : s21::ExtraJSONKeys::sell_transaction;
     for(const auto& json : jsons){

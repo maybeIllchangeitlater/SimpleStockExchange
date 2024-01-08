@@ -20,7 +20,7 @@ public:
     explicit ViewTransactionsPopup(QWidget *parent = nullptr);
     ~ViewTransactionsPopup();
 
-    void DisplayTransactions(const std::string &type, const std::string &raw_response);
+    void DisplayTransactions(const std::string &raw_response);
 
 signals:
     void ShowBuyTransactions();
@@ -30,7 +30,6 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
-    QString GrabTransactionFromJson(const QJsonValueRef &json);
     Ui::ViewTransactionsPopup *ui;
 };
 
