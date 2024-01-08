@@ -2,10 +2,12 @@
 #define SIMPLESTOCKEXCHANGE_VIEW_MAINWINDOW_HPP
 
 #include <QMainWindow>
+#include <QCloseEvent>
 #include <memory.h>
 #include <boost/make_unique.hpp>
 #include "../Client/Client.hpp"
 #include "../Utility/ResponseParser.hpp"
+#include "../Utility/ClientDisplayMessages.hpp"
 #include "LoginPopup.hpp"
 #include "RegisterPopup.hpp"
 #include "CreateBidPopup.hpp"
@@ -37,6 +39,9 @@ private slots:
     void HandleUpdateBid(const std::string bid_id, const std::string bid_rate,
                          const std::string bid_quantity, int index);
     void HandleViewQuotations(const size_t time_period);
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     bool WaitForServer();

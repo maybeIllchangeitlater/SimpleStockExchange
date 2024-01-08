@@ -6,6 +6,7 @@
 #include <ChangePassPopup.hpp>
 #include <ChangeNamPopup.hpp>
 #include <boost/make_unique.hpp>
+#include "../Utility/ClientDisplayMessages.hpp"
 
 namespace Ui {
 class UserSettings;

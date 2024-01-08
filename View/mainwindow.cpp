@@ -38,7 +38,8 @@ void MainWindow::HandleLoginAttempt(const std::string username, const std::strin
     }
     if(s21::ResponseParser::CheckStatus(client_.Inbox().Front().second)){
         client_.Authorize();
-        ui->ServerMessageInitScreen->setText(QString::fromStdString("Loged in as " + username));
+        ui->ServerMessageInitScreen->setText(QString::fromStdString(
+                                                 s21::ClientDisplayMessages::logged_in + username));
         ui->LoggedAs->setText(QString::fromStdString(username));
         SetLoginnedButtons();
     }else{
@@ -62,7 +63,8 @@ void MainWindow::HandleRegisterAttempt(const std::string username, const std::st
     }
     if(s21::ResponseParser::CheckStatus(client_.Inbox().Front().second)){
         client_.Authorize();
-        ui->ServerMessageInitScreen->setText(QString::fromStdString("Registered with username " + username));
+        ui->ServerMessageInitScreen->setText(QString::fromStdString(
+                                                 s21::ClientDisplayMessages::registred + username));
         ui->LoggedAs->setText(QString::fromStdString(username));
         SetLoginnedButtons();
     }else{
@@ -76,7 +78,7 @@ void MainWindow::HandleCreateBid(const std::string quantity, const std::string r
 {
     create_bid_pop_->hide();
     create_bid_pop_->close();
-    bid_type.find("Sell") != std::string::npos
+    bid_type.find(s21::ClientDisplayMessages::sell_bid_type) != std::string::npos
             ? client_.CreateSellBid(quantity, rate)
             : client_.CreateBuyBid(quantity, rate);
 
@@ -98,7 +100,7 @@ void MainWindow::HandleCreateBid(const std::string quantity, const std::string r
     }else{
         server_response = newtrans_pop_->DisplayNewTransactions(server_response);
         ui->ServerMessageInitScreen->setText(QString::fromStdString(server_response.empty()
-                                                                ? "Bid fullfilled"
+                                                                ? s21::ClientDisplayMessages::bid_fulfilled
                                                                 : server_response));
         if(view_bid_pop_->isVisible()){
             view_bid_pop_->InsertNewBid(server_response);
@@ -110,7 +112,7 @@ void MainWindow::HandleCreateBid(const std::string quantity, const std::string r
 
 void MainWindow::HandleViewBid(const std::string bid_type)
 {
-    if(bid_type.find("Sell") != std::string::npos){
+    if(bid_type.find(s21::ClientDisplayMessages::sell_bid_type) != std::string::npos){
         client_.GetMySellBids();
         if(!WaitForServer()){
             create_bid_pop_->hide();
@@ -118,8 +120,9 @@ void MainWindow::HandleViewBid(const std::string bid_type)
             return;
         }
         auto server_response = client_.Inbox().PopFront().second;
-        view_bid_pop_->ShowBids(s21::ResponseParser::CleanServerResponse(server_response), "Sell");
-    }else if(bid_type.find("Buy") != std::string::npos){
+        view_bid_pop_->ShowBids(s21::ResponseParser::CleanServerResponse(server_response),
+                                s21::ClientDisplayMessages::sell_bid_type);
+    }else if(bid_type.find(s21::ClientDisplayMessages::buy_bid_type) != std::string::npos){
         client_.GetMyBuyBids();
         if(!WaitForServer()){
             create_bid_pop_->hide();
@@ -127,9 +130,10 @@ void MainWindow::HandleViewBid(const std::string bid_type)
             return;
         }
         auto server_response = client_.Inbox().PopFront().second;
-        view_bid_pop_->ShowBids(s21::ResponseParser::CleanServerResponse(server_response), "Buy");
+        view_bid_pop_->ShowBids(s21::ResponseParser::CleanServerResponse(server_response),
+                                s21::ClientDisplayMessages::buy_bid_type);
     }else{
-        ui->ServerMessageInitScreen->setText("Invalid bid type");
+        ui->ServerMessageInitScreen->setText(s21::ClientDisplayMessages::invalid_bid_type);
     }
     create_bid_pop_->hide();
     create_bid_pop_->close();
@@ -174,7 +178,7 @@ void MainWindow::HandleUpdateBid(const std::string bid_id, const std::string bid
         }
         newtrans_pop_->DisplayNewTransactions(server_response);
         ui->ServerMessageInitScreen->setText(QString::fromStdString(display_msg.empty()
-                                                                ? "Bid fullfilled"
+                                                                ? s21::ClientDisplayMessages::bid_fulfilled
                                                                 : display_msg));
         if(view_bid_pop_->isVisible()){
             view_bid_pop_->InsertUpdatedBidBack(detailed_bid, index);
@@ -191,6 +195,12 @@ void MainWindow::HandleViewQuotations(const size_t time_period)
     }
     auto server_response = client_.Inbox().PopFront().second;
     quot_pop_->SetQuotations(s21::ResponseParser::CleanServerResponse(server_response));
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    client_.Disconnect();
+    event->accept();
 }
 
 bool MainWindow::WaitForServer()
@@ -260,7 +270,7 @@ void MainWindow::ConnectToHandlers()
 
     connect(ui->Logout, &QPushButton::clicked, this, [&](){
         client_.Disconnect();
-        ui->ServerMessageInitScreen->setText("Signed Out");
+        ui->ServerMessageInitScreen->setText(s21::ClientDisplayMessages::logged_out);
         ui->LoggedAs->clear();
         SetNotLoginnedButtons();
     });
@@ -273,7 +283,7 @@ void MainWindow::ConnectToHandlers()
         auto error_msg = client_.Inbox().PopFront().second;
         error_msg = s21::ResponseParser::CleanServerResponse(error_msg);
         ui->ServerMessageInitScreen->setText(error_msg.empty()
-                                             ? "Bid Cancelled"
+                                             ? s21::ClientDisplayMessages::bid_cancelled
                                              : QString::fromStdString(error_msg));
     });
     connect(view_bid_pop_.get(), &ViewBids::UpdateBid, this, [&](const std::string bid_id,
@@ -312,7 +322,7 @@ void MainWindow::ConnectToSettingsHandlers()
     connect(user_settings_.get(), &UserSettings::DeleteAccount, this, [&](const std::string user_password){
         if(client_.DeleteMe(user_password)){
             ui->LoggedAs->clear();
-            ui->ServerMessageInitScreen->setText("Account Deleted");
+            ui->ServerMessageInitScreen->setText(s21::ClientDisplayMessages::account_del);
             SetNotLoginnedButtons();
             user_settings_->close();
             user_settings_->hide();
@@ -327,8 +337,9 @@ void MainWindow::ConnectToSettingsHandlers()
         if(client_.ChangeName(user_name)){
             ui->LoggedAs->setText(QString::fromStdString(user_name));
             user_settings_->SetFields(user_name);
-            user_settings_->SetStatus("Username changed to " + user_name);
-            ui->ServerMessageInitScreen->setText(QString::fromStdString("Username changed to " + user_name));
+            user_settings_->SetStatus(s21::ClientDisplayMessages::namechange + user_name);
+            ui->ServerMessageInitScreen->setText(QString::fromStdString(
+                                                     s21::ClientDisplayMessages::namechange + user_name));
             client_.Inbox().PopFront();
         }else{
             auto error = client_.Inbox().PopFront().second;

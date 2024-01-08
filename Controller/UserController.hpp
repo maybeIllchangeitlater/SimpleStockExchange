@@ -7,6 +7,7 @@
 #include "../Utility/Encoder.hpp"
 #include "../Repository/BdNames.hpp"
 #include "../Utility/ExtraJSONKeys.hpp"
+#include "../Utility/ResponseError.hpp"
 
 namespace s21 {
     class UserController {
@@ -33,7 +34,6 @@ namespace s21 {
         nlohmann::json DeleteUser(const nlohmann::json &request_body);
 
     private:
-        void ResponseError(nlohmann::json &response, const char * exception);
         UserService &service_;
     };
 } //s21

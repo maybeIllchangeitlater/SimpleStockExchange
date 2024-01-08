@@ -18,7 +18,7 @@ namespace s21{
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::LOGIN_BAD_PASSWORD));
             }
         }catch(const std::exception &e){
-            ResponseError(response, e.what());
+            ResponseError::Error(response, e.what());
             return response;
         }
     }
@@ -28,7 +28,7 @@ namespace s21{
         try {
             auto check_if_exists = service_.GetUserByName(request_body.at(BDNames::user_table_user_name));
             if(!check_if_exists.empty()) {
-                ResponseError(response, ServerMessage::server_message.at(ServerMessage::REGISTER_NOT_UNIQUE_NAME));
+                ResponseError::Error(response, ServerMessage::server_message.at(ServerMessage::REGISTER_NOT_UNIQUE_NAME));
                 return response;
             }
         }catch(const std::exception &e){
@@ -42,7 +42,7 @@ namespace s21{
                 response[BDNames::user_table_id] = user.at(BDNames::user_table_id);
                 return response;
             }catch(const std::exception &e){
-                ResponseError(response, e.what());
+                ResponseError::Error(response, e.what());
                 return response;
             }
         }
@@ -57,7 +57,7 @@ namespace s21{
             response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
-            ResponseError(response, e.what());
+            ResponseError::Error(response, e.what());
             return response;
         }
     }
@@ -71,7 +71,7 @@ namespace s21{
             response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         } catch (const std::exception &e) {
-            ResponseError(response, e.what());
+            ResponseError::Error(response, e.what());
             return response;
         }
     }
@@ -84,7 +84,7 @@ namespace s21{
             response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
-            ResponseError(response, e.what());
+            ResponseError::Error(response, e.what());
             return response;
         }
     }
@@ -97,7 +97,7 @@ namespace s21{
             response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
-            ResponseError(response, e.what());
+            ResponseError::Error(response, e.what());
             return response;
         }
     }
@@ -111,7 +111,7 @@ namespace s21{
             response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
-            ResponseError(response, e.what());
+            ResponseError::Error(response, e.what());
             return response;
         }
     }
@@ -125,7 +125,7 @@ namespace s21{
             response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
-            ResponseError(response, e.what());
+            ResponseError::Error(response, e.what());
             return response;
         }
     }
@@ -137,15 +137,8 @@ namespace s21{
             response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
             return response;
         }catch(const std::exception &e){
-            ResponseError(response, e.what());
+            ResponseError::Error(response, e.what());
             return response;
         }
-    }
-
-    void UserController::ResponseError(nlohmann::json &response, const char *exception) {
-        response[ExtraJSONKeys::status] = ServerMessage::response_code.find(exception) != ServerMessage::response_code.end()
-                             ? ServerMessage::response_code.at(exception)
-                             : ServerMessage::ResponseCode::BAD_REQUEST;
-        response[ExtraJSONKeys::message] = exception;
     }
 }

@@ -20,8 +20,10 @@ namespace s21{
     void Client::Disconnect() {
         if(Connected()){
             Send(ClientController::Logout());
-            WaitForResponse();
-            std::cout << from_server_.PopFront().second << "\n";
+            try{
+                WaitForResponse();
+                from_server_.PopFront();
+            }catch(...){}
             CutConnection();
         }
     }

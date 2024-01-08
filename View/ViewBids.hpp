@@ -8,6 +8,7 @@
 #include <QCloseEvent>
 #include "../Repository/BdNames.hpp"
 #include "../Utility/ExtraJSONKeys.hpp"
+#include "../Utility/ClientDisplayMessages.hpp"
 
 namespace Ui {
 class ViewBids;

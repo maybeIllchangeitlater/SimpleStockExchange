@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QCloseEvent>
 #include "../Utility/ExtraJSONKeys.hpp"
+#include "../Utility/ClientDisplayMessages.hpp"
 
 namespace Ui {
 class QuotationsPopup;

@@ -11,7 +11,7 @@ namespace s21{
             response.emplace_back(status);
             return response;
         }catch(const std::exception &e){
-            ResponseError(response, e.what());
+            ResponseError::Error(response, e.what());
             return response;
         }
     }
@@ -25,7 +25,7 @@ namespace s21{
             response.emplace_back(status);
             return response;
         }catch(const std::exception &e){
-            ResponseError(response, e.what());
+            ResponseError::Error(response, e.what());
             return response;
         }
     }
@@ -37,16 +37,8 @@ namespace s21{
             response[ExtraJSONKeys::status] = ServerMessage::OK;
             return response;
         }catch(const std::exception &e){
-            ResponseError(response, e.what());
+            ResponseError::Error(response, e.what());
             return response;
         }
     }
-
-    void TransactionController::ResponseError(nlohmann::json &response, const char *exception) {
-        response[ExtraJSONKeys::status] = ServerMessage::response_code.find(exception) != ServerMessage::response_code.end()
-                                          ? ServerMessage::response_code.at(exception)
-                                          : ServerMessage::ResponseCode::BAD_REQUEST;
-        response[ExtraJSONKeys::message] = exception;
-    }
-
 }

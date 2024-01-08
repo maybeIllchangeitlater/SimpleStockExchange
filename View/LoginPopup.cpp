@@ -13,7 +13,8 @@ LoginPopup::LoginPopup(QWidget *parent) :
                 : ui->PasswordLine->setEchoMode(QLineEdit::Password);
     });
     connect(ui->Ok, &QPushButton::clicked, this, [&](){
-                emit LoginAttempt(ui->LoginLine->text().toStdString(), ui->PasswordLine->text().toStdString());
+                emit LoginAttempt(ui->LoginLine->text().toStdString(),
+                                  ui->PasswordLine->text().toStdString());
             });
 }
 

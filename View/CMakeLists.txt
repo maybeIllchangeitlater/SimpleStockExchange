@@ -34,12 +34,12 @@ set(PROJECT_SOURCES
         ../Utility/RequestBuilder.hpp
         ../Connection/Connection.cpp
         ../Connection/Connection.hpp
-        ../Controller/ClientController.cpp
         ../Controller/ClientController.hpp
         ../Utility/ThreadSafeQ.hpp
         ../Utility/ExtraJSONKeys.hpp
         ../Utility/ResponseParser.hpp
         ../Utility/ResponseParser.cpp
+        ../Utility/ClientDisplayMessages.hpp
         ../Repository/BdNames.hpp
         LoginPopup.hpp
         LoginPopup.cpp

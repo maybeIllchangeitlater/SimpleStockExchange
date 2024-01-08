@@ -39,6 +39,9 @@ ADD_EXECUTABLE(ServerR
         Utility/ExtraJSONKeys.hpp
         Repository/BalanceRepository.cpp
         Repository/BalanceRepository.hpp
-        Service/BalanceService.hpp Utility/ResponseParser.cpp Utility/ResponseParser.hpp)
+        Service/BalanceService.hpp
+        Utility/ResponseParser.cpp
+        Utility/ResponseParser.hpp
+        Utility/ResponseError.hpp)
 TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx
         ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/cryptopp890/libcryptopp.a)

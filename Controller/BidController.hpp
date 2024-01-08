@@ -5,6 +5,7 @@
 #include "../3rdParty/json.hpp"
 #include "../Repository/BdNames.hpp"
 #include "../Utility/ExtraJSONKeys.hpp"
+#include "../Utility/ResponseError.hpp"
 
 namespace s21 {
     class BidController {
@@ -27,7 +28,6 @@ namespace s21 {
         nlohmann::json CancelBid(const nlohmann::json &request_body);
 
     private:
-        void ResponseError(nlohmann::json &response, const char * exception);
         BidService &service_;
     };
 } //s21

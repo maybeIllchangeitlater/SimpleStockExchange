@@ -7,7 +7,9 @@ CreateBidPopup::CreateBidPopup(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->Ok, &QPushButton::clicked, this, [&](){
-                emit MakeBid(ui->QuantityLine->text().toStdString(), ui->RateLine->text().toStdString(), ui->comboBox->currentText().toStdString());
+                emit MakeBid(ui->QuantityLine->text().toStdString(),
+                             ui->RateLine->text().toStdString(),
+                             ui->comboBox->currentText().toStdString());
             });
 }
 
