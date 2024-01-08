@@ -44,6 +44,8 @@ void ViewBids::ShowBids(const std::string &bids, const char * type)
     QJsonArray  jsons = QJsonDocument::fromJson(QString::fromStdString("[{" + bids + "}]").toUtf8()).array();
     if(jsons.empty()){
         ui->bid_status_label->setText("No " + QString(type) + " bids");
+    }else{
+        ClearExistingBidsOfMatchingType(type);
     }
     for(const auto& json : jsons){
         int row = ui->BidsListWidget->rowCount();
@@ -102,6 +104,18 @@ void ViewBids::closeEvent(QCloseEvent *event)
                     {"Bid ID", "Buyer Username", "Seller Username", "Quantity", "Rate", "Time", "Status"});
     ui->bid_status_label->clear();
     event->accept();
+}
+
+void ViewBids::ClearExistingBidsOfMatchingType(const char *type)
+{
+    bool delete_sell = !std::strcmp(type, "Sell");
+    for(std::ptrdiff_t row = ui->BidsListWidget->rowCount() - 1; row >= 0; --row){
+        if(ui->BidsListWidget->item(row, 1)->text() != s21::BDNames::missing_buyer && !delete_sell){
+            ui->BidsListWidget->removeRow(row);
+        }else if(ui->BidsListWidget->item(row, 2)->text() != s21::BDNames::missing_seller && delete_sell){
+            ui->BidsListWidget->removeRow(row);
+        }
+    }
 }
 
 std::string ViewBids::GrabId()

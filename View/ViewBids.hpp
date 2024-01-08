@@ -35,10 +35,10 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
+    void ClearExistingBidsOfMatchingType(const char * type);
     std::string GrabId();
     std::string GrabRate();
     std::string GrabQuantity();
-//    QString GrabBidFromJson(const QJsonValueRef &json);
     Ui::ViewBids *ui;
 };
 
