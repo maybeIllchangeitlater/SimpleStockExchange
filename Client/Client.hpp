@@ -11,6 +11,7 @@
 #include <boost/make_unique.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
+#include <chrono>
 
 namespace s21 {
     class Client {
@@ -102,19 +103,14 @@ namespace s21 {
             Send(ClientController::GetQuotations(std::to_string(time_period)));
         }
 
-        bool WaitForResponse(){
-//            timer_->expires_from_now(boost::posix_time::seconds(3));
-//                    timer_->async_wait([&](const boost::system::error_code&) {
-//                            CutConnection();
-//                            return false;
-//                    });
-            while (from_server_.Empty()) {}
-//            timer_->cancel();
-            return true;
+        void WaitForResponse(){
+            auto time = std::chrono::high_resolution_clock::now();
+            while (from_server_.Empty()) {
+                if(std::chrono::high_resolution_clock::now() - time > std::chrono::seconds(2)){
+                    throw std::runtime_error("Lost connection to server");
+                }
+            }
         }
-//        bool CheckStatus(){
-//            return from_server_.Front().second.find("OK") != std::string::npos;
-//        }
 
         void Authorize(){
             auto msg = from_server_.PopFront().second;
@@ -133,7 +129,6 @@ namespace s21 {
             connection_->Disconnect();
             connection_.reset();
             context_.reset();
-            timer_.reset();
             from_server_.Clear();
          }
 
@@ -143,7 +138,6 @@ namespace s21 {
 
     private:
         std::unique_ptr<boost::asio::io_context> context_;
-        std::unique_ptr<boost::asio::deadline_timer> timer_;
         boost::thread thread_context_;
         std::unique_ptr<Connection> connection_;
         ThreadSafeQ<std::pair<connection_ptr, std::string>> from_server_;

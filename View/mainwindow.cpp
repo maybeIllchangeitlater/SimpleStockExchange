@@ -27,8 +27,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::HandleLoginAttempt(const std::string username, const std::string password)
 {
+    if(!client_.Connected()){
+        Connect();
+    }
     client_.LogIn(username, password);
     if(!WaitForServer()){
+        log_pop_->hide();
+        log_pop_->close();
         return;
     }
     if(s21::ResponseParser::CheckStatus(client_.Inbox().Front().second)){
@@ -46,8 +51,13 @@ void MainWindow::HandleLoginAttempt(const std::string username, const std::strin
 void MainWindow::HandleRegisterAttempt(const std::string username, const std::string password,
                                        const std::string balance_usd, const std::string balance_rub)
 {
+    if(!client_.Connected()){
+        Connect();
+    }
     client_.Register(username, password, balance_usd, balance_rub);
     if(!WaitForServer()){
+        reg_pop_->hide();
+        reg_pop_->close();
         return;
     }
     if(s21::ResponseParser::CheckStatus(client_.Inbox().Front().second)){
@@ -103,6 +113,8 @@ void MainWindow::HandleViewBid(const std::string bid_type)
     if(bid_type.find("Sell") != std::string::npos){
         client_.GetMySellBids();
         if(!WaitForServer()){
+            create_bid_pop_->hide();
+            create_bid_pop_->close();
             return;
         }
         auto server_response = client_.Inbox().PopFront().second;
@@ -110,6 +122,8 @@ void MainWindow::HandleViewBid(const std::string bid_type)
     }else if(bid_type.find("Buy") != std::string::npos){
         client_.GetMyBuyBids();
         if(!WaitForServer()){
+            create_bid_pop_->hide();
+            create_bid_pop_->close();
             return;
         }
         auto server_response = client_.Inbox().PopFront().second;
@@ -181,10 +195,13 @@ void MainWindow::HandleViewQuotations(const size_t time_period)
 
 bool MainWindow::WaitForServer()
 {
-    if(!client_.WaitForResponse()){
+    try{
+        client_.WaitForResponse();
+    }catch(const std::exception &e){
+        client_.CutConnection();
         SetNotLoginnedButtons();
         ui->LoggedAs->clear();
-        ui->ServerMessageInitScreen->setText("Lost connection to Server");
+        ui->ServerMessageInitScreen->setText(e.what());
         return false;
     }
     return true;
