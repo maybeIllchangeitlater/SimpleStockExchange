@@ -38,7 +38,7 @@ private:
     std::string GrabId();
     std::string GrabRate();
     std::string GrabQuantity();
-    QString GrabBidFromJson(const QJsonValueRef &json);
+//    QString GrabBidFromJson(const QJsonValueRef &json);
     Ui::ViewBids *ui;
 };
 

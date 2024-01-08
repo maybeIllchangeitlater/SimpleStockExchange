@@ -10,6 +10,12 @@
     <height>501</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="acceptDrops">
    <bool>false</bool>
   </property>
@@ -20,6 +26,14 @@
    <string notr="true">QWidget {
     background-color: #1E1E1E;
     color: #FFFFFF;
+}
+
+QTableView { 
+	gridline-color: #FFFFFF; 
+}
+
+QHeaderView::section { 
+	border: 1px solid #FFFFFF; 
 }
 
 QLineEdit, QTextEdit, QPlainTextEdit {
@@ -67,16 +81,6 @@ QPushButton {
    </property>
    <property name="text">
     <string>View</string>
-   </property>
-  </widget>
-  <widget class="QListWidget" name="BidsListWidget">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>991</width>
-     <height>451</height>
-    </rect>
    </property>
   </widget>
   <widget class="QPushButton" name="Cancel">
@@ -138,6 +142,25 @@ QPushButton {
    </property>
    <property name="autoDefault">
     <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="BidsListWidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>991</width>
+     <height>451</height>
+    </rect>
+   </property>
+   <property name="editTriggers">
+    <set>QAbstractItemView::NoEditTriggers</set>
+   </property>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::SingleSelection</enum>
+   </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectRows</enum>
    </property>
   </widget>
  </widget>

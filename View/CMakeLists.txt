@@ -38,6 +38,8 @@ set(PROJECT_SOURCES
         ../Controller/ClientController.hpp
         ../Utility/ThreadSafeQ.hpp
         ../Utility/ExtraJSONKeys.hpp
+        ../Utility/ResponseParser.hpp
+        ../Utility/ResponseParser.cpp
         ../Repository/BdNames.hpp
         LoginPopup.hpp
         LoginPopup.cpp

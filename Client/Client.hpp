@@ -6,6 +6,7 @@
 #include "../Connection/Connection.hpp"
 #include "../Controller/ClientController.hpp"
 #include "../Utility/ThreadSafeQ.hpp"
+#include "../Utility/ResponseParser.hpp"
 #include "../Utility/ExtraJSONKeys.hpp"
 #include <boost/make_unique.hpp>
 #include <boost/shared_ptr.hpp>
@@ -23,7 +24,7 @@ namespace s21 {
         bool Connected();
         void Send(const std::string &message);
 
-        ThreadSafeQ<std::pair<connection_ptr, std::string>> & Inbox(){
+        ThreadSafeQ<std::pair<connection_ptr, std::string>> &Inbox(){
             return from_server_;
         }
 
@@ -67,7 +68,7 @@ namespace s21 {
         bool ChangeName(const std::string &user_name){
             Send(ClientController::ChangeUserName(GetUserId(), user_name));
             while (from_server_.Empty()) {}
-            return CheckStatus();
+            return s21::ResponseParser::CheckStatus(from_server_.Front().second);
         }
 
         void ChangePassword(const std::string &new_password, const std::string &old_password){
@@ -77,7 +78,7 @@ namespace s21 {
         bool DeleteMe(const std::string &user_password){
             Send(ClientController::DeleteMe(GetUserId(), user_password));
             while (from_server_.Empty()) {}
-            if(CheckStatus()){
+            if(s21::ResponseParser::CheckStatus(from_server_.Front().second)){
                 Disconnect();
                 return true;
             }
@@ -111,9 +112,9 @@ namespace s21 {
 //            timer_->cancel();
             return true;
         }
-        bool CheckStatus(){
-            return from_server_.Front().second.find("OK") != std::string::npos;
-        }
+//        bool CheckStatus(){
+//            return from_server_.Front().second.find("OK") != std::string::npos;
+//        }
 
         void Authorize(){
             auto msg = from_server_.PopFront().second;
@@ -124,104 +125,21 @@ namespace s21 {
             user_id_ = json["id"];
         }
 
-        std::string CleanServerResponse(){
-            auto msg = from_server_.PopFront().second;
-            std::cout << msg << "\n";
-            bool error = msg.find("message") != std::string::npos;
-                size_t json_start = error
-                        ? msg.find_last_of('{')
-                        : msg.find('{');
-
-                size_t json_end = error
-                        ? msg.find('}')
-                        : msg.rfind('}');
-                return msg.substr(json_start +1 , json_end - json_start - 1);
-        }
-
-        bool CheckIfTransactionsWereMade() const noexcept{
-            return from_server_.Front().second.find(s21::ExtraJSONKeys::buy_transaction) != std::string::npos
-                    ||from_server_.Front().second.find(s21::ExtraJSONKeys::sell_transaction) != std::string::npos;
-        }
-
-        bool CheckIfTransactionsWereMade(const std::string &msg) const noexcept{
-            return msg.find(s21::ExtraJSONKeys::buy_transaction) != std::string::npos
-                    ||msg.find(s21::ExtraJSONKeys::sell_transaction) != std::string::npos;
-        }
-
         void CutConnection(){
             context_->stop();
-            if(thread_context_.joinable())
+            if(thread_context_.joinable()){
                 thread_context_.join();
+            }
             connection_->Disconnect();
             connection_.reset();
             context_.reset();
             timer_.reset();
             from_server_.Clear();
-        }
-
-        std::string CleanBidCreatedResponse(std::string &msg){
-            size_t first_part_start = msg.rfind(',');
-            size_t second_part_start = msg.rfind('{');
-            std::string first_part = msg.substr(first_part_start + 1, msg.rfind('}') - first_part_start - 1);
-            std::string second_part = msg.substr(second_part_start + 1, msg.find(',') - second_part_start - 1);
-
-            auto human_readable =  (first_part + second_part + " RUB per 1 USD");
-            human_readable.
-                    erase(std::remove_if(human_readable.begin(), human_readable.end(), [](char c) { return c == '\"' || c == ':'; }),
-                          human_readable.end());
-
-            return human_readable;
-        }
-
-        std::string ExtractDetailedBidInfoRaw(std::string &msg){
-            std::cout << msg << "\t-\tbid creating detailed server info\n";
-            if(msg.find(s21::BDNames::bid_table_create_update_time) == std::string::npos){
-                return "";
-            }
-            size_t info_start = msg.rfind('{');
-            size_t info_end = msg.rfind('}');
-            auto detailed_info = msg.substr(info_start +1 , info_end - info_start - 1);
-            msg.erase(info_start - 2, info_end);
-            return detailed_info;
-
-        }
-
-        std::string ExtractCleanBidUpdateResponse(std::string &msg){
-            std::string msg_bid_type = msg.find(s21::BDNames::missing_buyer) != std::string::npos
-                    ? " sell "
-                    : " buy ";
-
-            std::string msg_bid = msg.substr(msg.find(s21::BDNames::bid_id_for_join) + 8,
-                                      msg.find(',') - msg.find(s21::BDNames::bid_id_for_join) - 8);
-
-            size_t quant_start_pos = msg.find(s21::BDNames::bid_table_quantity);
-            std::string msg_quant = msg.substr(quant_start_pos, msg.find(',', quant_start_pos) - quant_start_pos);
-
-            size_t rate_start_pos = msg.find(s21::BDNames::bid_table_rate);
-            std::string msg_rate = msg.substr(rate_start_pos, msg.find(',', rate_start_pos) - rate_start_pos);
-
-            std::string bid_update("Updated" + msg_bid_type +  "bid :\n" + msg_bid + "\nto " + msg_quant + " and " + msg_rate);
-            bid_update.erase(std::remove(bid_update.begin(), bid_update.end(), '"'), bid_update.end());
-            return bid_update;
-        }
+         }
 
         const std::string &GetUserId() const{
             return user_id_;
         }
-
-        ///usd, rub
-        std::pair<std::string, std::string> ExtractCleanBalance(std::string &&msg){
-            size_t rub_start = msg.find(s21::BDNames::balance_table_rub)
-                    + std::string(s21::BDNames::balance_table_rub).length() + 2; //:
-            size_t usd_start = msg.find(s21::BDNames::balance_table_usd)
-                    + std::string(s21::BDNames::balance_table_usd).length() + 2; //:
-            std::string usd_balance = msg.substr(usd_start, msg.find('}') - usd_start);
-            std::string rub_balance = msg.substr(rub_start, msg.find(',') - rub_start);
-            return std::make_pair(std::move(usd_balance), std::move(rub_balance));
-        }
-
-
-
 
     private:
         std::unique_ptr<boost::asio::io_context> context_;

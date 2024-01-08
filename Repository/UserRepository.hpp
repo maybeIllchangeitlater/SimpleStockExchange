@@ -5,7 +5,6 @@
 #include <string>
 #include "BdNames.hpp"
 #include "../Utility/Encoder.hpp"
-#include "../Utility/UUIDGenerator.hpp"
 #include "../Utility/ServerMessage.hpp"
 
 namespace s21 {

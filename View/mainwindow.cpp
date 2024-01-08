@@ -28,14 +28,16 @@ MainWindow::~MainWindow()
 void MainWindow::HandleLoginAttempt(const std::string username, const std::string password)
 {
     client_.LogIn(username, password);
-    client_.WaitForResponse();
-    if(client_.CheckStatus()){
+    if(!WaitForServer()){
+        return;
+    }
+    if(s21::ResponseParser::CheckStatus(client_.Inbox().Front().second)){
         client_.Authorize();
         ui->ServerMessageInitScreen->setText(QString::fromStdString("Loged in as " + username));
         ui->LoggedAs->setText(QString::fromStdString(username));
         SetLoginnedButtons();
     }else{
-        ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+        SetErrorText(client_.Inbox().PopFront().second);
     }
     log_pop_->hide();
     log_pop_->close();
@@ -48,13 +50,13 @@ void MainWindow::HandleRegisterAttempt(const std::string username, const std::st
     if(!WaitForServer()){
         return;
     }
-    if(client_.CheckStatus()){
+    if(s21::ResponseParser::CheckStatus(client_.Inbox().Front().second)){
         client_.Authorize();
         ui->ServerMessageInitScreen->setText(QString::fromStdString("Registered with username " + username));
         ui->LoggedAs->setText(QString::fromStdString(username));
         SetLoginnedButtons();
     }else{
-        ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+        SetErrorText(client_.Inbox().PopFront().second);
     }
     reg_pop_->hide();
     reg_pop_->close();
@@ -71,27 +73,27 @@ void MainWindow::HandleCreateBid(const std::string quantity, const std::string r
     if(!WaitForServer()){
         return;
     }
-    if(!client_.CheckStatus()){
-        ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+    auto server_response = client_.Inbox().PopFront().second;
+    if(!s21::ResponseParser::CheckStatus(server_response)){
+        SetErrorText(server_response);
         return;
     }
 
-    auto server_response = client_.Inbox().PopFront().second;
-    if(!client_.CheckIfTransactionsWereMade(server_response)){
-        ui->ServerMessageInitScreen->setText(
-            QString::fromStdString(client_.CleanBidCreatedResponse(server_response)));
+    if(!s21::ResponseParser::CheckIfTransactionsWereMade(server_response)){
         if(view_bid_pop_->isVisible()){
                 view_bid_pop_->InsertNewBid(server_response);
-            }
+        }
+        ui->ServerMessageInitScreen->setText(
+            QString::fromStdString(s21::ResponseParser::CleanBidCreatedResponse(std::move(server_response))));
     }else{
         server_response = newtrans_pop_->DisplayNewTransactions(server_response);
-    ui->ServerMessageInitScreen->setText(QString::fromStdString(server_response.empty()
+        ui->ServerMessageInitScreen->setText(QString::fromStdString(server_response.empty()
                                                                 ? "Bid fullfilled"
                                                                 : server_response));
         if(view_bid_pop_->isVisible()){
             view_bid_pop_->InsertNewBid(server_response);
         }
-    newtrans_pop_->exec();
+        newtrans_pop_->exec();
     }
 
 }
@@ -103,13 +105,15 @@ void MainWindow::HandleViewBid(const std::string bid_type)
         if(!WaitForServer()){
             return;
         }
-        view_bid_pop_->ShowBids(client_.CleanServerResponse(), "Sell");
+        auto server_response = client_.Inbox().PopFront().second;
+        view_bid_pop_->ShowBids(s21::ResponseParser::CleanServerResponse(server_response), "Sell");
     }else if(bid_type.find("Buy") != std::string::npos){
         client_.GetMyBuyBids();
         if(!WaitForServer()){
             return;
         }
-        view_bid_pop_->ShowBids(client_.CleanServerResponse(), "Buy");
+        auto server_response = client_.Inbox().PopFront().second;
+        view_bid_pop_->ShowBids(s21::ResponseParser::CleanServerResponse(server_response), "Buy");
     }else{
         ui->ServerMessageInitScreen->setText("Invalid bid type");
     }
@@ -126,33 +130,31 @@ void MainWindow::HandleUpdateBid(const std::string bid_id, const std::string bid
     if(!WaitForServer()){
         return;
     }
-    if(!client_.CheckStatus()){
-        ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+    auto server_response = client_.Inbox().PopFront().second;
+    if(!s21::ResponseParser::CheckStatus(server_response)){
+        SetErrorText(server_response);
         return;
     }
-    client_.Inbox().PopFront();
     client_.UpdateBidRate(bid_id, bid_rate);
     if(!WaitForServer()){
         return;
     }
-    if(!client_.CheckStatus()){
-        ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+    server_response = client_.Inbox().PopFront().second;
+    if(!s21::ResponseParser::CheckStatus(server_response)){
+        SetErrorText(server_response);
         return;
     }
-
-    std::string server_response = client_.Inbox().PopFront().second;
-    std::string detailed_bid = client_.ExtractDetailedBidInfoRaw(server_response);
+    std::string detailed_bid = s21::ResponseParser::ExtractDetailedBidInfoRaw(server_response);
     std::string display_msg = detailed_bid.empty()
             ? ""
-            : client_.ExtractCleanBidUpdateResponse(detailed_bid);
-    if(!client_.CheckIfTransactionsWereMade(server_response)){
+            : s21::ResponseParser::ExtractCleanBidUpdateResponse(detailed_bid);
+    if(!s21::ResponseParser::CheckIfTransactionsWereMade(server_response)){
         ui->ServerMessageInitScreen->setText(
             QString::fromStdString(display_msg));
         if(view_bid_pop_->isVisible()){
                 view_bid_pop_->InsertUpdatedBidBack(detailed_bid, index);
             }
     }else{
-        std::cout << server_response << "\n" << detailed_bid << "\n" << display_msg << "\n";
         if(server_response.find(']') == std::string::npos){
             server_response += "}]";
         }
@@ -170,8 +172,11 @@ void MainWindow::HandleUpdateBid(const std::string bid_id, const std::string bid
 void MainWindow::HandleViewQuotations(const size_t time_period)
 {
     client_.CheckQuotations(time_period);
-    WaitForServer();
-    quot_pop_->SetQuotations(client_.CleanServerResponse());
+    if(!WaitForServer()){
+        return;
+    }
+    auto server_response = client_.Inbox().PopFront().second;
+    quot_pop_->SetQuotations(s21::ResponseParser::CleanServerResponse(server_response));
 }
 
 bool MainWindow::WaitForServer()
@@ -223,7 +228,7 @@ void MainWindow::Connect()
         if(!WaitForServer()){
             return;
         }
-        ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+        SetErrorText(client_.Inbox().PopFront().second);
     }
 }
 
@@ -248,7 +253,8 @@ void MainWindow::ConnectToHandlers()
         if(!WaitForServer()){
             return;
         }
-        auto error_msg = client_.CleanServerResponse();
+        auto error_msg = client_.Inbox().PopFront().second;
+        error_msg = s21::ResponseParser::CleanServerResponse(error_msg);
         ui->ServerMessageInitScreen->setText(error_msg.empty()
                                              ? "Bid Cancelled"
                                              : QString::fromStdString(error_msg));
@@ -263,10 +269,12 @@ void MainWindow::ConnectToHandlers()
         if(!WaitForServer()){
             return;
         }
-        if(!client_.CheckStatus()){
-             ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+        auto server_response = client_.Inbox().PopFront().second;
+        if(!s21::ResponseParser::CheckStatus(server_response)){
+             SetErrorText(std::move(server_response));
         }else{
-            viewtrans_pop_->DisplayTransactions("Buy", client_.CleanServerResponse());
+            viewtrans_pop_->DisplayTransactions("Buy",
+                                                s21::ResponseParser::ExtractTransactionInfoJson(server_response));
         }
     });
     connect(viewtrans_pop_.get(), &ViewTransactionsPopup::ShowSellTransactions, this, [&](){
@@ -274,10 +282,12 @@ void MainWindow::ConnectToHandlers()
         if(!WaitForServer()){
             return;
         }
-        if(!client_.CheckStatus()){
-             ui->ServerMessageInitScreen->setText(QString::fromStdString(client_.CleanServerResponse()));
+        auto server_response = client_.Inbox().PopFront().second;
+        if(!s21::ResponseParser::CheckStatus(server_response)){
+            SetErrorText(std::move(server_response));
         }else{
-            viewtrans_pop_->DisplayTransactions("Sell", client_.CleanServerResponse());
+            viewtrans_pop_->DisplayTransactions("Sell",
+                                                s21::ResponseParser::ExtractTransactionInfoJson(server_response));
         }
     });
 }
@@ -292,7 +302,8 @@ void MainWindow::ConnectToSettingsHandlers()
             user_settings_->close();
             user_settings_->hide();
         }else{
-            auto error = client_.CleanServerResponse();
+            auto error = client_.Inbox().PopFront().second;
+            error = s21::ResponseParser::CleanServerResponse(error);
             user_settings_->SetStatus(error);
             ui->ServerMessageInitScreen->setText(QString::fromStdString(error));
         }
@@ -305,7 +316,8 @@ void MainWindow::ConnectToSettingsHandlers()
             ui->ServerMessageInitScreen->setText(QString::fromStdString("Username changed to " + user_name));
             client_.Inbox().PopFront();
         }else{
-            auto error = client_.CleanServerResponse();
+            auto error = client_.Inbox().PopFront().second;
+            error = s21::ResponseParser::CleanServerResponse(error);
             user_settings_->SetStatus(error);
             ui->ServerMessageInitScreen->setText(QString::fromStdString(error));
         }
@@ -315,9 +327,10 @@ void MainWindow::ConnectToSettingsHandlers()
             [&](const std::string new_password, const std::string old_password){
         client_.ChangePassword(new_password, old_password);
         WaitForServer();
-        auto error = client_.CleanServerResponse();
-        user_settings_->SetStatus(error.empty() ? "Password changed" : error);
-        ui->ServerMessageInitScreen->setText(QString::fromStdString(error.empty() ? "Password changed" : error));
+        auto error = client_.Inbox().PopFront().second;
+        error = s21::ResponseParser::CleanServerResponse(error);
+        user_settings_->SetStatus(error);
+        ui->ServerMessageInitScreen->setText(QString::fromStdString(error));
     });
 }
 
@@ -339,7 +352,6 @@ void MainWindow::ConnectToPopups()
     });
     connect(ui->Bids, &QPushButton::clicked, this, [&](){
        view_bid_pop_->exec();
-
     });
     connect(ui->Transactions, &QPushButton::clicked, this, [&](){
         viewtrans_pop_->exec();
@@ -352,9 +364,16 @@ void MainWindow::ConnectToPopups()
         if(!WaitForServer()){
             return;
         }
-        auto [usd_balance, rub_balance] = client_.ExtractCleanBalance(client_.Inbox().PopFront().second);
+        auto [usd_balance, rub_balance] = s21::ResponseParser::ExtractCleanBalance(
+                std::move(client_.Inbox().PopFront().second));
         user_settings_->SetFields(ui->LoggedAs->text().toStdString(), client_.GetUserId(), usd_balance, rub_balance);
         user_settings_->exec();
     });
+    }
+
+void MainWindow::SetErrorText(const std::string &msg)
+{
+            ui->ServerMessageInitScreen->setText(QString::fromStdString(
+                                                     s21::ResponseParser::CleanServerResponse(msg)));
 }
 

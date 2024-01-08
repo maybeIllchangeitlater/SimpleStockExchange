@@ -2,7 +2,10 @@
 #define SIMPLESTOCKEXCHANGE_VIEW_MAINWINDOW_HPP
 
 #include <QMainWindow>
+#include <memory.h>
+#include <boost/make_unique.hpp>
 #include "../Client/Client.hpp"
+#include "../Utility/ResponseParser.hpp"
 #include "LoginPopup.hpp"
 #include "RegisterPopup.hpp"
 #include "CreateBidPopup.hpp"
@@ -12,8 +15,6 @@
 #include "QuotationsPopup.hpp"
 #include "UpdateBidPopup.hpp"
 #include "UserSettings.hpp"
-#include <memory.h>
-#include <boost/make_unique.hpp>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -45,6 +46,7 @@ private:
     void ConnectToHandlers();
     void ConnectToSettingsHandlers();
     void ConnectToPopups();
+    void SetErrorText(const std::string &msg);
     Ui::MainWindow *ui;
     std::unique_ptr<LoginPopup> log_pop_ = boost::make_unique<LoginPopup>();
     std::unique_ptr<ViewBids> view_bid_pop_ = boost::make_unique<ViewBids>();

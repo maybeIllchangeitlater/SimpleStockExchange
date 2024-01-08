@@ -32,7 +32,6 @@ ADD_EXECUTABLE(ServerR
         Utility/ServerMessage.cpp
         Utility/ThreadSafeQ.hpp
         Utility/Timestamper.hpp
-        Utility/UUIDGenerator.hpp
         3rdParty/json.hpp
         main.cpp
         Connection/Connection.cpp
@@ -40,6 +39,6 @@ ADD_EXECUTABLE(ServerR
         Utility/ExtraJSONKeys.hpp
         Repository/BalanceRepository.cpp
         Repository/BalanceRepository.hpp
-        Service/BalanceService.hpp)
+        Service/BalanceService.hpp Utility/ResponseParser.cpp Utility/ResponseParser.hpp)
 TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx
         ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/cryptopp890/libcryptopp.a)

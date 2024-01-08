@@ -3,7 +3,6 @@
 
 #include "../3rdParty/libpqxx/include/pqxx/pqxx"
 #include "BdNames.hpp"
-#include "../Utility/UUIDGenerator.hpp"
 #include "../Utility/ServerMessage.hpp"
 
 namespace s21 {
