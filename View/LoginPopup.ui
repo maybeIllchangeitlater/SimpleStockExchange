@@ -11,7 +11,30 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Login</string>
+  </property>
+  <property name="accessibleName">
+   <string>Login</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+    background-color: #1E1E1E;
+    color: #FFFFFF;
+}
+
+QLineEdit, QTextEdit, QPlainTextEdit {
+    background-color: #2E2E2E;
+    color: #FFFFFF;
+}
+
+QPushButton {
+    background-color: #404040;
+    color: #FFFFFF;
+    border: 1px solid #606060;
+    border-radius: 10px; 
+    padding: 5px 10px;  
+}
+</string>
   </property>
   <widget class="QLineEdit" name="LoginLine">
    <property name="geometry">

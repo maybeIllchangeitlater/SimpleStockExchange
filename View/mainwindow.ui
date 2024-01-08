@@ -17,7 +17,31 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>StockExchange</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+    background-color: #1E1E1E;
+    color: #FFFFFF;
+}
+
+QMainWindow::titleBar {
+    background-color: #1E1E1E;
+}
+
+QLineEdit, QTextEdit, QPlainTextEdit {
+    background-color: #2E2E2E;
+    color: #FFFFFF;
+}
+
+QPushButton {
+    background-color: #404040;
+    color: #FFFFFF;
+    border: 1px solid #606060;
+    border-radius: 10px; 
+    padding: 5px 10px;  
+}
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="ServerMessageInitScreen">

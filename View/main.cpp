@@ -8,6 +8,7 @@ int main(int argc, char *argv[])
 {
     s21::Client client;
     QApplication a(argc, argv);
+    a.setStyleSheet("QMainWindow { background-color: #333333; color: #FFFFFF; }");
     MainWindow w(client);
     w.show();
     return a.exec();
