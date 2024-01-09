@@ -5,12 +5,13 @@
 #include "BdNames.hpp"
 #include "../3rdParty/json.hpp"
 #include "../Utility/ServerMessage.hpp"
+#include "DatabaseInterface.hpp"
 #include <iostream>
 
 namespace s21 {
     class TransactionRepository {
     public:
-        explicit TransactionRepository(pqxx::connection &db_conn) : db_connection_(db_conn) {}
+        explicit TransactionRepository(DatabaseInterface &db) : db_(db) {}
         void CreateTransaction(const std::string &seller_id, const std::string &buyer_id,
                                const std::string &rate, const std::string &quantity, const std::string &timestamp);
         pqxx::result ReadTransaction(const std::string &id);
@@ -18,7 +19,7 @@ namespace s21 {
         pqxx::result ReadAllUserBuyTransactions(const std::string &user_id);
         pqxx::result GetTransactionsForLast(const std::string &time_period);
     private:
-        pqxx::connection &db_connection_;
+        DatabaseInterface &db_;
     };
 } //s21
 

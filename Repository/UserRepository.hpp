@@ -6,12 +6,13 @@
 #include "BdNames.hpp"
 #include "../Utility/Encoder.hpp"
 #include "../Utility/ServerMessage.hpp"
+#include "DatabaseInterface.hpp"
 
 namespace s21 {
 
     class UserRepository {
     public:
-        explicit UserRepository(pqxx::connection &db_conn) : db_connection_(db_conn) {}
+        explicit UserRepository(DatabaseInterface &db) : db_(db) {}
 
         void CreateUser(const std::string &username,
                                         const std::string &password);
@@ -29,7 +30,7 @@ namespace s21 {
 
 
     private:
-        pqxx::connection &db_connection_;
+        DatabaseInterface &db_;
     };
 
 } // s21

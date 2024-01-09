@@ -4,12 +4,12 @@
 #include "../3rdParty/libpqxx/include/pqxx/pqxx"
 #include "BdNames.hpp"
 #include "../Utility/ServerMessage.hpp"
-#include <iostream>
+#include "DatabaseInterface.hpp"
 
 namespace s21 {
     class BalanceRepository {
     public:
-        explicit BalanceRepository(pqxx::connection &db_connection) : db_connection_(db_connection){}
+        explicit BalanceRepository(DatabaseInterface &db) : db_(db){}
         void CreateUserBalance(const std::string &user_id, const std::string &balance_usd,
                                const std::string &balance_rub);
         pqxx::result GetUserBalance(const std::string &user_id);
@@ -17,7 +17,7 @@ namespace s21 {
                             const std::string &balance_rub);
 
     private:
-        pqxx::connection &db_connection_;
+        DatabaseInterface &db_;
     };
 }
 

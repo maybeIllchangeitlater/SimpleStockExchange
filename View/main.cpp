@@ -18,6 +18,3 @@ int main(int argc, char *argv[])
 /// unit test coverage with boost tests
 /// docker image for server
 
-/// move all string raw literals to utility
-///create Bid created, Bid fullfilled status messages as variables in utility
-///token authentifiaction

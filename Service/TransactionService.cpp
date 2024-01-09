@@ -2,7 +2,7 @@
 
 namespace s21{
 
-    nlohmann::json TransactionService:GenerateTransactionInfo(const pqxx::row &transaction_info){
+    nlohmann::json TransactionService::GenerateTransactionInfo(const pqxx::row &transaction_info){
         nlohmann::json transaction_json;
         transaction_json[BDNames::transaction_id_for_join] =
                 transaction_info[BDNames::transaction_id_for_join].as<std::string>();
