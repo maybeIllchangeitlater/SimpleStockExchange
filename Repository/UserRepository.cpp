@@ -22,13 +22,13 @@ namespace s21 {
             return db_.Execute(sql);
     }
 
-    pqxx::result UserRepository::ReadUserByName(const std::string &user_name) {
+    pqxx::result UserRepository::ReadUserByName(const std::string &username) {
             std::string sql = "SELECT " + std::string(BDNames::user_table_id)
                     + ", " + BDNames::user_table_user_name
                     + ", " + BDNames::user_table_password
                     + " FROM " + BDNames::user_table
                     + " WHERE " + BDNames::user_table_user_name
-                    + " = '" + user_name + "'";
+                    + " = '" + username + "'";
             auto result = db_.Execute(sql);
             if(result.empty()){
                 throw std::runtime_error(ServerMessage::server_message.at(ServerMessage::USER_NOT_FOUND));
