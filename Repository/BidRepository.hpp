@@ -4,11 +4,12 @@
 #include "../3rdParty/libpqxx/include/pqxx/pqxx"
 #include "BdNames.hpp"
 #include "../Utility/ServerMessage.hpp"
+#include "DatabaseInterface.hpp"
 
 namespace s21 {
     class BidRepository {
     public:
-        explicit BidRepository(pqxx::connection &db_conn) : db_connection_(db_conn) {}
+        explicit BidRepository(DatabaseInterface &db) : db_(db) {}
 
         void CreateSellBid(const std::string &seller_id,
                                    const std::string& rate, const std::string &quantity,
@@ -27,7 +28,7 @@ namespace s21 {
         void UpdateBidQuantity(const std::string &bid_id, const std::string &quantity, const std::string &time);
         void DeleteBid(const std::string &bid_id);
     private:
-        pqxx::connection &db_connection_;
+        DatabaseInterface &db_;
     };
 } //s21
 

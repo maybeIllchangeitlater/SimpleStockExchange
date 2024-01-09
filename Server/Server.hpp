@@ -9,6 +9,7 @@
 #include "../Controller/UserController.hpp"
 #include "../Controller/BidController.hpp"
 #include "../Controller/TransactionController.hpp"
+#include "../Utility/ExtraJSONKeys.hpp"
 #include <deque>
 
 namespace s21 {

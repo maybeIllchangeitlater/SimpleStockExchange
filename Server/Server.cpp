@@ -48,16 +48,14 @@ namespace s21{
         while(!in_.Empty()){
             auto [client, message] = in_.PopFront();
             OnMessage(client, message);
-        } ///Add Logic For Sending Transaction notifications?
+        }
     }
 
     void Server::OnDisconnect(connection_ptr) {
         std::cout << "Removing client \n";
-
     }
 
     void Server::OnConnect(connection_ptr client) {
-        std::cout << "Server:: in client connected\n";
         Response response;
         response.body = ServerMessage::server_message.at(ServerMessage::WELCOME);
         response.status = ServerMessage::response_code.at(ServerMessage::server_message.at(ServerMessage::WELCOME));
@@ -65,24 +63,17 @@ namespace s21{
     }
 
     void Server::OnMessage(s21::Server::connection_ptr client, const std::string &message) {
-        std::cout << "here at onmsg start\nMessage is:\n" << message << "\n";
         Response response;
         nlohmann::json result;
         if(client->Authorized() || (LoginRegisterAttempt(message) && !client->Authorized())) {
             auto request = Request::Parse(message);
-            std::cout << "parse successful\n";
             if (request.path[0] == 'U') {
-                std::cout << "parsing user request\n" << request.path.substr(1) << "\n";
                 result = (ControllerMapping::method_mapping_user.at(request.path.substr(1)))(user_controller_,
                                                                                            request.body);
             } else if (request.path[0] == 'B') {
-                std::cout << "parsing bid request\n" << request.path.substr(1) << "\nbody is :\n"
-                << request.body.dump() << "\n";
                 result = ControllerMapping::method_mapping_bid.at(request.path.substr(1))(bid_controller_,
                                                                                               request.body);
             } else if (request.path[0] == 'T') {
-                std::cout << "parsing transaction request\n" << request.path.substr(1) << "\nbody is :\n"
-                          << request.body.dump() << "\n";
                 result = ControllerMapping::method_mapping_transaction.at(request.path.substr(1))(
                         transaction_controller_, request.body);
             }
@@ -94,9 +85,9 @@ namespace s21{
                 return;
             }
             if(result.is_array()) {
-                response.status = result.back()["status"];
+                response.status = result.back()[ExtraJSONKeys::status];
             }else{
-                response.status = result["status"];
+                response.status = result[ExtraJSONKeys::status];
             }
             if(LoginRegisterAttempt(message) && response.status == ServerMessage::ResponseCode::OK){
                 client->Authorize(result[BDNames::user_table_id]);
@@ -104,12 +95,10 @@ namespace s21{
             if(result.is_array()) {
                 result.erase(--result.end());
             }else{
-                result.erase("status");
+                result.erase(ExtraJSONKeys::status);
             }
             response.body = result;
-            std::cout << "about to send response json back\n";
         }else{
-            std::cout << "here at readmsg error\n";
             response.status = ServerMessage::ResponseCode::BAD_REQUEST;
             response.body = ServerMessage::server_message.at(ServerMessage::NOT_LOGGED_IN);
         }

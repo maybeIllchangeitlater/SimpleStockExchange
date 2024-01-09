@@ -3,7 +3,6 @@
 
 #include "../Repository/UserRepository.hpp"
 #include "../Repository/BdNames.hpp"
-#include "../Utility/UUIDGenerator.hpp"
 #include "../Utility/Encoder.hpp"
 #include "../Utility/ServerMessage.hpp"
 #include "../3rdParty/json.hpp"

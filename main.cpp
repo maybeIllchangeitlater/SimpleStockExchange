@@ -1,4 +1,4 @@
-#include <iostream>
+#include "Repository/DatabaseImpl.hpp"
 #include "Repository/UserRepository.hpp"
 #include "Repository/TransactionRepository.hpp"
 #include "Repository/BidRepository.hpp"
@@ -12,26 +12,11 @@
 
 int main() {
     pqxx::connection connection("dbname=postgres user=postgres password=postgres host=localhost port=5432");
-//    if(connection.is_open()){
-//        std::cout << "connected to db\n";
-//        pqxx::work task(connection);
-//        std::string sql = "SELECT username FROM user_info;";
-//        auto result = task.exec(sql);
-//        std::cout << "got " << result.size() << "from debug\n";
-//        std::cout << "select usernmae res is: " << result[0]["username"].as<std::string>() << "\ntrying to insert";
-//        try {
-//            std::string sql2 = "INSERT INTO user_info (username, password, balance) VALUES ('aboba', 'biba123', 123);";
-//            result = task.exec(sql2);
-//            task.commit();
-//            std::cout << "inserted\n";
-//        }catch (const std::exception &e){
-//            std::cout << e.what();
-//        }
-//    }
-    s21::BalanceRepository balance_repository(connection);
-    s21::UserRepository user_repository(connection);
-    s21::BidRepository bid_repository(connection);
-    s21::TransactionRepository transaction_repository(connection);
+    s21::DatabaseImpl db(connection);
+    s21::BalanceRepository balance_repository(db);
+    s21::UserRepository user_repository(db);
+    s21::BidRepository bid_repository(db);
+    s21::TransactionRepository transaction_repository(db);
     s21::BalanceService balance_service(balance_repository);
     s21::UserService user_service(user_repository, balance_service);
     s21::TransactionService transaction_service(transaction_repository, balance_service);
