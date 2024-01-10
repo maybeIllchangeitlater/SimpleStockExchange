@@ -9,40 +9,39 @@
 #include "../Utility/Timestamper.hpp"
 #include "../Utility/ServerMessage.hpp"
 #include "../Utility/ExtraJSONKeys.hpp"
+#include "BidServiceInterface.hpp"
 
 
 
 namespace s21{
-    class BidService{
+    class BidService : public BidServiceInterface{
     public:
-        enum BidType{
-            BUYING,
-            SELLING,
-        };
 
         BidService(BidRepository &repository, TransactionService &service)
         : repository_(repository), transaction_service_(service)
         {}
 
+        ~BidService() override = default;
+
         nlohmann::json CreateBid(const std::string &user_id, const std::string& rate,
-                               const std::string &quantity, BidType bid_type);
+                               const std::string &quantity, BidType bid_type) override;
 
-        void CancelBid(const std::string &bid_id, const std::string &user_id);
+        void CancelBid(const std::string &bid_id, const std::string &user_id) override;
 
-        nlohmann::json UpdateBidRate(const std::string &bid_id, const std::string &rate);
+        nlohmann::json UpdateBidRate(const std::string &bid_id, const std::string &rate) override;
 
-        void UpdateBidQuantity(const std::string &bid_id, const std::string &quantity){
+        void UpdateBidQuantity(const std::string &bid_id, const std::string &quantity) override{
             if(!ValidateQuantity(quantity)){
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::BID_BAD_QUANTITY));
             }
             repository_.UpdateBidQuantity(bid_id, quantity, Timestamper::GetTimestamp());
         }
 
-        nlohmann::json ReadBid(const std::string &bid_id){
+        nlohmann::json ReadBid(const std::string &bid_id) override{
             return(GenerateBidInfo(repository_.ReadBid(bid_id)[0]));
 
         }
-        nlohmann::json ReadAllUserSellBids(const std::string &user_id){
+        nlohmann::json ReadAllUserSellBids(const std::string &user_id) override{
             auto transactions_info = repository_.ReadAllUserSellBids(user_id);
             nlohmann::json res;
             for(const auto& v: transactions_info){
@@ -51,7 +50,7 @@ namespace s21{
             return res;
         }
 
-        nlohmann::json ReadAllUserBuyBids(const std::string &user_id){
+        nlohmann::json ReadAllUserBuyBids(const std::string &user_id) override{
             auto transactions_info = repository_.ReadAllUserBuyBids(user_id);
             nlohmann::json res;
             for(const auto& v: transactions_info){

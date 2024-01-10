@@ -3,16 +3,44 @@ PROJECT(SimpleStockExchange)
 
 ADD_SUBDIRECTORY(3rdParty/libpqxx build-pqxx)
 
-FIND_PACKAGE(Boost 1.40 COMPONENTS thread system REQUIRED)
+FIND_PACKAGE(Boost 1.40 COMPONENTS thread system unit_test_framework REQUIRED)
 FIND_PACKAGE(Threads REQUIRED)
-
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} 3rdParty/cryptopp890)
 
 SET(CMAKE_CXX_STANDARD 17)
+SET(GMOCK_SOURCE_DIR ${CMAKE_SOURCE_DIR}/gmock)
+
+include(FetchContent)
+FetchContent_Declare(
+        gmock_t
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG main
+)
+FetchContent_MakeAvailable(gmock_t)
+INCLUDE_DIRECTORIES(${gmock_t_SOURCE_DIR}/googlemock/include)
+INCLUDE_DIRECTORIES(${gmock_t_SOURCE_DIR}/googletest/include)
 
 ADD_COMPILE_OPTIONS(-Wall -Werror -Wextra -pedantic)
 
+
+
+ADD_EXECUTABLE(Test
+        Tests/BD_Tests.cpp
+        Tests/Service_Tests.cpp
+        Repository/BdNames.hpp
+        Repository/BalanceRepository.cpp
+        Repository/UserRepository.cpp
+        Repository/TransactionRepository.cpp
+        Repository/BidRepository.cpp
+        Service/BalanceService.hpp
+        Service/BidService.cpp
+        Service/TransactionService.cpp
+        Service/UserService.cpp
+        Utility/ServerMessage.cpp
+        Tests/TestsMain.cpp Tests/Controller_Tests.cpp)
+#add_dependencies(Test gmock_t)
+target_compile_definitions(Test PRIVATE GTEST_LINKED_AS_SHARED_LIBRARY=1)
 ADD_EXECUTABLE(ServerR
         Repository/BdNames.hpp
         Repository/UserRepository.cpp
@@ -42,6 +70,12 @@ ADD_EXECUTABLE(ServerR
         Service/BalanceService.hpp
         Utility/ResponseParser.cpp
         Utility/ResponseParser.hpp
-        Utility/ResponseError.hpp Repository/DatabaseInterface.hpp Repository/DatabaseImpl.hpp)
+        Utility/ResponseError.hpp
+        Repository/DatabaseInterface.hpp
+        Repository/DatabaseImpl.hpp Service/BalanceServiceInterface.hpp Service/BidServiceInterface.hpp Service/TransactionServiceInterface.hpp Service/UserServiceInterface.hpp)
+
 TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx
+        ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/cryptopp890/libcryptopp.a)
+
+TARGET_LINK_LIBRARIES(Test PRIVATE Threads::Threads ${Boost_LIBRARIES} gmock_main pqxx
         ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/cryptopp890/libcryptopp.a)

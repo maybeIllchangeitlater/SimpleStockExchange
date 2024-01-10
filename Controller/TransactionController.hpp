@@ -2,7 +2,7 @@
 #define SIMPLESTOCKEXCHANGE_TRANSACTIONCONTROLLER_HPP
 
 #include <vector>
-#include "../Service/TransactionService.hpp"
+#include "../Service/TransactionServiceInterface.hpp"
 #include "../3rdParty/json.hpp"
 #include "../Repository/BdNames.hpp"
 #include "../Utility/ExtraJSONKeys.hpp"
@@ -11,7 +11,7 @@
 namespace s21 {
     class TransactionController {
     public:
-        explicit TransactionController(TransactionService &service) : service_(service){}
+        explicit TransactionController(TransactionServiceInterface &service) : service_(service){}
 
         nlohmann::json GetUserSellTransactions(const nlohmann::json &request_body);
 
@@ -20,7 +20,7 @@ namespace s21 {
         nlohmann::json GetQuotations(const nlohmann::json &request_body);
 
     private:
-        TransactionService &service_;
+        TransactionServiceInterface &service_;
     };
 }
 

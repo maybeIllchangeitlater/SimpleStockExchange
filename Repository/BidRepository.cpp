@@ -132,7 +132,8 @@ namespace s21{
             std::string sql = "SELECT " + std::string(BDNames::bid_table_id)
                     + ", " + std::string(BDNames::bid_table_rate)
                     + ", " + std::string(BDNames::bid_table_buyer_id)
-                    + ", " + std::string(BDNames::bid_table_quantity) + " FROM " + std::string(BDNames::bid_table)
+                    + ", " + std::string(BDNames::bid_table_quantity)
+                    + " FROM " + std::string(BDNames::bid_table)
                     + " WHERE " + std::string(BDNames::bid_table_seller_id) + " is NULL AND "
                     + std::string(BDNames::bid_table_buyer_id) + " != '" + user_id
                     + "' AND " + std::string(BDNames::bid_table_rate) + " >= " + rate
@@ -146,7 +147,8 @@ namespace s21{
             std::string sql = "SELECT " + std::string(BDNames::bid_table_id)
                               + ", " + std::string(BDNames::bid_table_rate)
                               + ", " + std::string(BDNames::bid_table_seller_id)
-                              + ", " + std::string(BDNames::bid_table_quantity) + " FROM " + std::string(BDNames::bid_table)
+                              + ", " + std::string(BDNames::bid_table_quantity)
+                              + " FROM " + std::string(BDNames::bid_table)
                               + " WHERE " + std::string(BDNames::bid_table_buyer_id) + " is NULL AND "
                               + std::string(BDNames::bid_table_seller_id) + " != '" + user_id
                               + "' AND " + std::string(BDNames::bid_table_rate) + " <= " + rate

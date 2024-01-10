@@ -1,7 +1,7 @@
 #ifndef SIMPLESTOCKEXCHANGE_BIDCONTROLLER_HPP
 #define SIMPLESTOCKEXCHANGE_BIDCONTROLLER_HPP
 
-#include "../Service/BidService.hpp"
+#include "../Service/BidServiceInterface.hpp"
 #include "../3rdParty/json.hpp"
 #include "../Repository/BdNames.hpp"
 #include "../Utility/ExtraJSONKeys.hpp"
@@ -11,7 +11,7 @@ namespace s21 {
     class BidController {
     public:
 
-        explicit BidController(BidService &service) :service_(service){}
+        explicit BidController(BidServiceInterface &service) :service_(service){}
 
         nlohmann::json CreateBid(const nlohmann::json &request_body);
 
@@ -28,7 +28,7 @@ namespace s21 {
         nlohmann::json CancelBid(const nlohmann::json &request_body);
 
     private:
-        BidService &service_;
+        BidServiceInterface &service_;
     };
 } //s21
 

@@ -19,7 +19,7 @@ namespace s21 {
 
         pqxx::result ReadUserById(const std::string &user_id);
 
-        pqxx::result ReadUserByName(const std::string &user_name);
+        pqxx::result ReadUserByName(const std::string &username);
 
         void UpdateUserName(const std::string &user_id, const std::string &new_username);
 

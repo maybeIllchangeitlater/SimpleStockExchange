@@ -7,18 +7,20 @@
 #include "../Utility/ServerMessage.hpp"
 #include "../3rdParty/json.hpp"
 #include "../Service/BalanceService.hpp"
-#include <iostream>
+#include "UserServiceInterface.hpp"
 
 namespace s21 {
-    class UserService {
+    class UserService : public UserServiceInterface{
     public:
         explicit UserService(UserRepository &repository, BalanceService &balance_service)
         : repository_(repository), balance_service_(balance_service){}
 
-        void CreateUser(const std::string &user_name, const std::string &password,
-                        const std::string &user_balance_usd, const std::string &user_balance_rub);
+        ~UserService() override = default;
 
-        nlohmann::json GetUserByName(const std::string &user_name){
+        void CreateUser(const std::string &user_name, const std::string &password,
+                        const std::string &user_balance_usd, const std::string &user_balance_rub) override;
+
+        nlohmann::json GetUserByName(const std::string &user_name) override{
             auto result_json = GenerateUserInfo(repository_.ReadUserByName(user_name));
             auto balance_json = balance_service_.GetUserBalance(result_json[BDNames::user_table_id]);
             result_json[BDNames::balance_table_usd] = balance_json[BDNames::balance_table_usd];
@@ -26,7 +28,7 @@ namespace s21 {
             return result_json;
         }
 
-        nlohmann::json GetUserById(const std::string &user_id){
+        nlohmann::json GetUserById(const std::string &user_id) override{
             auto result_json = GenerateUserInfo(repository_.ReadUserById(user_id));
             auto balance_json = balance_service_.GetUserBalance(user_id);
             result_json[BDNames::balance_table_usd] = balance_json[BDNames::balance_table_usd];
@@ -34,7 +36,7 @@ namespace s21 {
             return result_json;
         }
 
-        void UpdateUserName(const std::string &user_id, const std::string &new_name){
+        void UpdateUserName(const std::string &user_id, const std::string &new_name) override{
             if(!ValidateUnique(new_name)){
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::REGISTER_NOT_UNIQUE_NAME));
             }
@@ -45,7 +47,7 @@ namespace s21 {
         }
 
         void UpdateUserBalance(const std::string &user_id, const std::string &new_balance_usd,
-                               const std::string &new_balance_rub){
+                               const std::string &new_balance_rub) override{
             if(!balance_service_.ValidateBalance(new_balance_rub)
             || !balance_service_.ValidateBalance(new_balance_usd)){
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::BALANCE_BAD_BALANCE));
@@ -54,7 +56,7 @@ namespace s21 {
         }
 
         void UpdateUserPassword(const std::string &user_id,
-                                const std::string &new_password, const std::string &old_password){
+                                const std::string &new_password, const std::string &old_password) override{
             auto user = repository_.ReadUserById(user_id);
             if(!(user[0][BDNames::user_table_password].as<std::string>() == Encoder::Encode(old_password))) {
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::LOGIN_BAD_PASSWORD));
@@ -64,7 +66,7 @@ namespace s21 {
             }
             repository_.UpdateUserPassword(user_id, Encoder::Encode(new_password));
         }
-        void DeleteUser(const std::string &user_id, const std::string &user_password){
+        void DeleteUser(const std::string &user_id, const std::string &user_password) override{
             auto user = repository_.ReadUserById(user_id);
             if(!(user[0][BDNames::user_table_password].as<std::string>() == Encoder::Encode(user_password))) {
                 throw std::logic_error(ServerMessage::server_message.at(ServerMessage::LOGIN_BAD_PASSWORD));

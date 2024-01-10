@@ -4,8 +4,8 @@ all: clean
 serv:
 	cd build && ./ServerR
 
-cli:
-	cd build && ./ClientR
+test:
+	cd build && ./Test
 
 clean:
 	rm -rf build
