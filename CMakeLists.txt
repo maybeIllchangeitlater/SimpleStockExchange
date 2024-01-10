@@ -28,6 +28,8 @@ ADD_COMPILE_OPTIONS(-Wall -Werror -Wextra -pedantic)
 ADD_EXECUTABLE(Test
         Tests/BD_Tests.cpp
         Tests/Service_Tests.cpp
+        Tests/TestsMain.cpp
+        Tests/Controller_Tests.cpp
         Repository/BdNames.hpp
         Repository/BalanceRepository.cpp
         Repository/UserRepository.cpp
@@ -38,7 +40,18 @@ ADD_EXECUTABLE(Test
         Service/TransactionService.cpp
         Service/UserService.cpp
         Utility/ServerMessage.cpp
-        Tests/TestsMain.cpp Tests/Controller_Tests.cpp)
+        Service/BalanceServiceInterface.hpp
+        Service/BidServiceInterface.hpp
+        Service/TransactionServiceInterface.hpp
+        Service/UserServiceInterface.hpp
+        Controller/UserController.cpp
+        Controller/UserController.hpp
+        Controller/BidController.cpp
+        Controller/BidController.hpp
+        Controller/TransactionController.cpp
+        Controller/TransactionController.hpp
+        Utility/Encoder.hpp
+        )
 #add_dependencies(Test gmock_t)
 target_compile_definitions(Test PRIVATE GTEST_LINKED_AS_SHARED_LIBRARY=1)
 ADD_EXECUTABLE(ServerR
@@ -72,7 +85,11 @@ ADD_EXECUTABLE(ServerR
         Utility/ResponseParser.hpp
         Utility/ResponseError.hpp
         Repository/DatabaseInterface.hpp
-        Repository/DatabaseImpl.hpp Service/BalanceServiceInterface.hpp Service/BidServiceInterface.hpp Service/TransactionServiceInterface.hpp Service/UserServiceInterface.hpp)
+        Repository/DatabaseImpl.hpp
+        Service/BalanceServiceInterface.hpp
+        Service/BidServiceInterface.hpp
+        Service/TransactionServiceInterface.hpp
+        Service/UserServiceInterface.hpp)
 
 TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx
         ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/cryptopp890/libcryptopp.a)

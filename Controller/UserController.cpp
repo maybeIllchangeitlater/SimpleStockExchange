@@ -2,15 +2,12 @@
 
 namespace s21{
     nlohmann::json UserController::AuthenticateUser(const nlohmann::json &request_body) {
-        std::cout << "Login attempt from " << request_body.at("username") << "\n";
         nlohmann::json response;
         try {
             auto user = service_.GetUserByName(request_body.at(BDNames::user_table_user_name));
             if (user.at(
                     BDNames::user_table_password)
                 == Encoder::Encode(request_body.at(BDNames::user_table_password))) {
-                std::cout << "user password is " << user.at(
-                        BDNames::user_table_password) << " vs passed password " << Encoder::Encode(request_body.at(BDNames::user_table_password));
                 response[ExtraJSONKeys::status] = ServerMessage::ResponseCode::OK;
                 response[BDNames::user_table_id] = user.at(BDNames::user_table_id);
                 return response;
