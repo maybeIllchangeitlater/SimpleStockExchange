@@ -1,8 +1,6 @@
-#define BOOST_TEST_MODULE BD_Test
 #include <string>
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 #include <gmock/gmock.h>
-#include <boost/asio/io_context.hpp>
 #include "../3rdParty/libpqxx/include/pqxx/pqxx"
 #include "../Repository/BdNames.hpp"
 #include "../Repository/BalanceRepository.hpp"
@@ -115,6 +113,8 @@ BOOST_AUTO_TEST_CASE(SetUserBalance) {
                              });
 }
 
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_FIXTURE_TEST_SUITE(TransactionRepositoryTests, TransactionRepositoryTO)
 
 BOOST_AUTO_TEST_CASE(CreateTransaction) {
@@ -225,7 +225,8 @@ BOOST_AUTO_TEST_CASE(GetAllTransactionsForLast) {
                                  BOOST_ASSERT(res == mock_res);
                              });
 }
-}
+
+BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_FIXTURE_TEST_SUITE(UserRepositoryTests, UserRepositoryTO)
 
@@ -309,7 +310,8 @@ BOOST_AUTO_TEST_CASE(DeleteUser) {
                                  user_repo.DeleteUser(user_id);
                              });
 }
-}
+
+BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_FIXTURE_TEST_SUITE(BidRepositoryTests, BidRepositoryTO)
 
@@ -515,5 +517,6 @@ BOOST_AUTO_TEST_CASE(MatchSellBids) {
                                  BOOST_ASSERT(res == mock_res);
                              });
 }
-}
-}
+
+BOOST_AUTO_TEST_SUITE_END()
+

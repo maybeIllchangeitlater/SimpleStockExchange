@@ -71,7 +71,6 @@ namespace s21{
         nlohmann::json send_back;
         pqxx::result res = MatchBids(user_id, rate, type);
         if(!res.empty()){
-            std::cout << "transaction matched\n";
             auto remaining_quantity = MakeTransactions(send_back, res, user_id, rate, quantity, type);
             if(remaining_quantity > 0){
                 send_back += MakeBid(user_id, rate, std::to_string(remaining_quantity), type);
@@ -132,8 +131,6 @@ namespace s21{
         auto seller_quant = type == SELLING
                             ? std::stoll(quantity)
                             : raw_match[BDNames::bid_table_quantity].as<std::ptrdiff_t>();
-        std::cout << "Compile transaction : calculated buyer and seller quants\n";
-
         if(type == BUYING) {
             current_transaction[ExtraJSONKeys::buy_transaction] = seller_quant <= buyer_quant
                                                                   ? std::to_string(seller_quant)
@@ -144,12 +141,9 @@ namespace s21{
                                                                    : std::to_string(buyer_quant);
         }
 
-        std::cout << "Compile transaction : figured out the exact amount\n";
-
         current_transaction[ExtraJSONKeys::bid_transaction_rate] = type == BUYING
                                                                    ? raw_match[BDNames::bid_table_rate].as<std::string>()
                                                                    : rate;
-        std::cout << "current transaction is :\n" << current_transaction.dump() << "\n";
         return current_transaction;
     }
 
@@ -177,7 +171,6 @@ namespace s21{
             bid[ExtraJSONKeys::created_sell_bid_quantity] = quantity;
             repository_.CreateSellBid(user_id, rate, quantity, Timestamper::GetTimestamp());
         }
-        std::cout << "Make bid: bid made\n";
         return bid;
     }
 

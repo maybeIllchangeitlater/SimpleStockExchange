@@ -27,12 +27,18 @@ ADD_COMPILE_OPTIONS(-Wall -Werror -Wextra -pedantic)
 
 ADD_EXECUTABLE(Test
         Tests/BD_Tests.cpp
+        Tests/Service_Tests.cpp
         Repository/BdNames.hpp
         Repository/BalanceRepository.cpp
         Repository/UserRepository.cpp
         Repository/TransactionRepository.cpp
         Repository/BidRepository.cpp
-        Utility/ServerMessage.cpp)
+        Service/BalanceService.hpp
+        Service/BidService.cpp
+        Service/TransactionService.cpp
+        Service/UserService.cpp
+        Utility/ServerMessage.cpp
+        Tests/TestsMain.cpp Tests/Controller_Tests.cpp)
 #add_dependencies(Test gmock_t)
 target_compile_definitions(Test PRIVATE GTEST_LINKED_AS_SHARED_LIBRARY=1)
 ADD_EXECUTABLE(ServerR
@@ -64,9 +70,12 @@ ADD_EXECUTABLE(ServerR
         Service/BalanceService.hpp
         Utility/ResponseParser.cpp
         Utility/ResponseParser.hpp
-        Utility/ResponseError.hpp Repository/DatabaseInterface.hpp Repository/DatabaseImpl.hpp)
+        Utility/ResponseError.hpp
+        Repository/DatabaseInterface.hpp
+        Repository/DatabaseImpl.hpp Service/BalanceServiceInterface.hpp Service/BidServiceInterface.hpp Service/TransactionServiceInterface.hpp Service/UserServiceInterface.hpp)
 
 TARGET_LINK_LIBRARIES(ServerR PRIVATE Threads::Threads ${Boost_LIBRARIES} pqxx
         ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/cryptopp890/libcryptopp.a)
 
-target_link_libraries(Test PRIVATE Threads::Threads ${Boost_LIBRARIES} gmock_main pqxx)
+TARGET_LINK_LIBRARIES(Test PRIVATE Threads::Threads ${Boost_LIBRARIES} gmock_main pqxx
+        ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/cryptopp890/libcryptopp.a)

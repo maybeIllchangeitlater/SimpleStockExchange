@@ -2,7 +2,7 @@
 #define SIMPLESTOCKEXCHANGE_USERCONTROLLER_HPP
 
 #include "../3rdParty/json.hpp"
-#include "../Service/UserService.hpp"
+#include "../Service/UserServiceInterface.hpp"
 #include "../HTTP/Http.hpp"
 #include "../Utility/Encoder.hpp"
 #include "../Repository/BdNames.hpp"
@@ -13,7 +13,7 @@ namespace s21 {
     class UserController {
     public:
 
-        explicit UserController(UserService &service) : service_(service){}
+        explicit UserController(UserServiceInterface &service) : service_(service){}
 
         nlohmann::json AuthenticateUser(const nlohmann::json &request_body);
 
@@ -34,7 +34,7 @@ namespace s21 {
         nlohmann::json DeleteUser(const nlohmann::json &request_body);
 
     private:
-        UserService &service_;
+        UserServiceInterface &service_;
     };
 } //s21
 

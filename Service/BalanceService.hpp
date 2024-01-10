@@ -2,21 +2,24 @@
 #define SIMPLESTOCKEXCHANGE_BALANCESERVICE_HPP
 
 #include "../Repository/BalanceRepository.hpp"
+#include "../Service/BalanceServiceInterface.hpp"
 #include "../Repository/BdNames.hpp"
 #include "../3rdParty/json.hpp"
 
 
 namespace s21 {
-    class BalanceService {
+    class BalanceService : public BalanceServiceInterface {
     public:
         explicit BalanceService(BalanceRepository &balance_repository) : balance_repository_(balance_repository){}
 
+        ~BalanceService() override = default;
+
         void CreateUserBalance(const std::string &user_id, const std::string &user_balance_usd,
-                               const std::string &user_balance_rub){
+                               const std::string &user_balance_rub) override{
             balance_repository_.CreateUserBalance(user_id, user_balance_usd, user_balance_rub);
         }
 
-        nlohmann::json GetUserBalance(const std::string &user_id){
+        nlohmann::json GetUserBalance(const std::string &user_id) override{
             nlohmann::json res;
             auto balance_info = balance_repository_.GetUserBalance(user_id);
             res[BDNames::balance_table_usd] = balance_info[0][BDNames::balance_table_usd].as<std::string>();
@@ -25,12 +28,12 @@ namespace s21 {
         }
 
         void SetUserBalance(const std::string &user_id, const std::string &user_balance_usd,
-                            const std::string &user_balance_rub){
+                            const std::string &user_balance_rub) override{
             balance_repository_.SetUserBalance(user_id, user_balance_usd, user_balance_rub);
         }
 
         void IncreaseUsdDecreaseRubBalance(const std::string &user_id, const std::string &transaction_rate,
-                                           const std::string &transaction_quantity){
+                                           const std::string &transaction_quantity) override{
             auto buyer_balance = balance_repository_.GetUserBalance(user_id);
             auto change_rub_balance_by = std::stod(transaction_rate) * std::stoll(transaction_quantity);
             SetUserBalance(user_id,
@@ -42,7 +45,7 @@ namespace s21 {
         }
 
         void DecreaseUsdIncreaseRubBalance(const std::string &user_id, const std::string &transaction_rate,
-                                           const std::string &transaction_quantity){
+                                           const std::string &transaction_quantity) override{
             auto seller_balance = balance_repository_.GetUserBalance(user_id);
             auto change_rub_balance_by = std::stod(transaction_rate) * std::stoll(transaction_quantity);
             SetUserBalance(user_id,
@@ -52,7 +55,7 @@ namespace s21 {
                                           + change_rub_balance_by));
         }
 
-        bool ValidateBalance(const std::string &balance){
+        bool ValidateBalance(const std::string &balance) override{
             try{
                 std::stod(balance);
                 return true;
