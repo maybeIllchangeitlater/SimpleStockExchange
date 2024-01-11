@@ -13,6 +13,7 @@ namespace s21 {
         virtual nlohmann::json ReadTransaction(const std::string &transaction_id) = 0;
         virtual nlohmann::json ReadAllUserSellTransactions(const std::string &user_id) = 0;
         virtual nlohmann::json ReadAllUserBuyTransactions(const std::string &user_id) = 0;
+        ///time period in days
         virtual nlohmann::json GetQuotations(const std::string &time_period) = 0;
     };
 

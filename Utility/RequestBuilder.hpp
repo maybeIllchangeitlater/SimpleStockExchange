@@ -1,5 +1,5 @@
-#ifndef SIMPLESTOCKEXCHANGE_REQUESTBUILDER_HPP
-#define SIMPLESTOCKEXCHANGE_REQUESTBUILDER_HPP
+#ifndef SIMPLESTOCKEXCHANGE_UTILITY_REQUESTBUILDER_HPP
+#define SIMPLESTOCKEXCHANGE_UTILITY_REQUESTBUILDER_HPP
 
 #include <string>
 #include <iostream>
@@ -35,6 +35,7 @@ namespace s21 {
             GET_QUOTATIONS,
         };
 
+        /// Builds normalized request string from request type and body
         static std::string BuildRequest(RequestType type, const nlohmann::json &body);
 
         static const std::unordered_map<RequestType, std::pair<const char *, const char*>> request_method;
@@ -42,4 +43,4 @@ namespace s21 {
     };
 }
 
-#endif //SIMPLESTOCKEXCHANGE_REQUESTBUILDER_HPP
+#endif //SIMPLESTOCKEXCHANGE_UTILITY_REQUESTBUILDER_HPP

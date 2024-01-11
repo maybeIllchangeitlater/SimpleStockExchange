@@ -19,10 +19,13 @@ namespace s21 {
                                     const std::string& timestamp);
 
         pqxx::result ReadBid(const std::string &bid_id);
+        ///read bid in select * format. user ids are returned instead of names
         pqxx::result ReadBidRaw(const std::string &bid_id);
         pqxx::result ReadAllUserSellBids(const std::string &seller_id);
         pqxx::result ReadAllUserBuyBids(const std::string &buyer_id);
+        ///match sell bids against fresh buy bid
         pqxx::result MatchSellBids(const std::string &user_id, const std::string &rate);
+        ///match buy bids against fresh sell bid
         pqxx::result MatchBuyBids(const std::string &user_id, const std::string &rate);
         void UpdateBidRate(const std::string &bid_id, const std::string &rate, const std::string &time);
         void UpdateBidQuantity(const std::string &bid_id, const std::string &quantity, const std::string &time);

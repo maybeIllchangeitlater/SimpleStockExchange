@@ -14,7 +14,7 @@ namespace s21 {
         std::string method;
         std::string path;
         nlohmann::json body;
-
+        ///parse raw request and store it into a structured object
         static Request Parse(const std::string &raw_request_header){
             Request request;
             std::istringstream request_stream(raw_request_header);
@@ -69,7 +69,7 @@ namespace s21 {
     struct Response{
         nlohmann::json body;
         ServerMessage::ResponseCode status;
-
+        ///create http response based on json object
         std::string ToString() const {
             return "HTTP/1.1 " + std::to_string(status) + " " + ServerMessage::status_message.at(status) + "\nContent-Length: "
             + std::to_string(body.dump().size()) + "\r\n\r\n" + body.dump();

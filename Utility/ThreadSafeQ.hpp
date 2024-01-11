@@ -1,5 +1,5 @@
-#ifndef SIMPLESTOCKEXCHANGE_THREADSAFEQ_HPP
-#define SIMPLESTOCKEXCHANGE_THREADSAFEQ_HPP
+#ifndef SIMPLESTOCKEXCHANGE_UTILITY_THREADSAFEQ_HPP
+#define SIMPLESTOCKEXCHANGE_UTILITY_THREADSAFEQ_HPP
 
 #include <boost/thread.hpp>
 #include <boost/noncopyable.hpp>
@@ -19,13 +19,13 @@ namespace s21 {
         ~ThreadSafeQ() {
             Clear();
         }
-
+        ///returns the first element in the queue
         const T& Front() const noexcept{
             scoped_lock lock(q_mutex_);
             return message_que_.front();
         }
 
-
+        ///returns the first element in the queue removing it from the queue
         T PopFront(){
             scoped_lock lock(q_mutex_);
             auto t = std::move(message_que_.front());
@@ -33,16 +33,13 @@ namespace s21 {
             return t;
         }
 
-
+        ///adds an element to the back of the queue
         template<typename ... Args>
         void EmplaceBack(Args&& ... args){
-            std::cout << "starting to emplace\n";
             scoped_lock lock(q_mutex_);
-            std::cout << "locked\n";
             message_que_.emplace_back(std::forward<Args>(args)...);
-            std::cout << "data is in \n";
         }
-
+        ///remove target value
         void Erase(T& value){
             scoped_lock lock(q_mutex_);
             message_que_.erase(std::remove(message_que_.begin(), message_que_.end(), value), message_que_.end());
@@ -66,4 +63,4 @@ namespace s21 {
     };
 }
 
-#endif //SIMPLESTOCKEXCHANGE_THREADSAFEQ_HPP
+#endif //SIMPLESTOCKEXCHANGE_UTILITY_THREADSAFEQ_HPP

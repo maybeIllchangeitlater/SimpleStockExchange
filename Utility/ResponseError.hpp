@@ -8,6 +8,7 @@
 
 namespace s21 {
     struct ResponseError {
+        /// Adds response error to json based on caught exception
         static void Error(nlohmann::json &response, const char * exception){
             response[ExtraJSONKeys::status] = ServerMessage::response_code.find(exception) != ServerMessage::response_code.end()
                                               ? ServerMessage::response_code.at(exception)

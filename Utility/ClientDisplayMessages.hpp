@@ -19,7 +19,6 @@ namespace s21 {
         constexpr static const char * logged_out = "Signed out";
         constexpr static const char * account_del = "Account Deleted";
         constexpr static const char * namechange = "Username changed to ";
-
         //quotations
         constexpr static const char * daily_rate_for_usd = "Today's rate for USD is:";
         constexpr static const char * weekly_rate_for_usd = "This week rate for USD is:";
