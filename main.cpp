@@ -11,7 +11,7 @@
 #include "Server/Server.hpp"
 
 int main() {
-    pqxx::connection connection("dbname=postgres user=postgres password=postgres host=localhost port=5432");
+    pqxx::connection connection("dbname=postgres user=postgres password=postgres host=postgres-container port=5432");
     s21::DatabaseImpl db(connection);
     s21::BalanceRepository balance_repository(db);
     s21::UserRepository user_repository(db);

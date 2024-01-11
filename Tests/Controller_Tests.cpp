@@ -13,6 +13,8 @@
 #include "../Utility/ExtraJSONKeys.hpp"
 #include "../Utility/Encoder.hpp"
 
+using namespace s21;
+
 namespace s21{
     class MockBidService : public BidServiceInterface{
     public:
@@ -168,8 +170,6 @@ namespace s21{
 
     };
 }
-
-using namespace s21;
 
 struct BidControllerTO{
     MockBidService mock_bids;

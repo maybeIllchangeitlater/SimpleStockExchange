@@ -2,6 +2,7 @@
 #define SIMPLESTOCKEXCHANGE_UTILITY_RESPONSEPARSER_HPP
 
 #include <string>
+#include <algorithm>
 #include "../Repository/BdNames.hpp"
 #include "ExtraJSONKeys.hpp"
 

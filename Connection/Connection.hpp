@@ -39,8 +39,6 @@ class Connection : public boost::enable_shared_from_this<Connection>{
 
     void Write();
 
-//    void Read();
-
     void ReadHeader();
 
     void ReadBody(size_t body_length);

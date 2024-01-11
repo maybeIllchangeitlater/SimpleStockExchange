@@ -21,7 +21,6 @@ namespace s21{
     }
 
     void Connection::Send(const std::string &msg) {
-        std::cout << "I'm sending\n";
         boost::asio::post(context_,
                           [this, msg]() {
                               bool writing = !out_.Empty();
@@ -33,7 +32,6 @@ namespace s21{
     }
 
     void Connection::Write() {
-        std::cout << "I'm writing\n";
         if(!out_.Empty()) {
                 boost::asio::async_write(socket_, boost::asio::buffer(out_.Front().data(), out_.Front().length()),
                                          [this](error_code ec, size_t) {
@@ -95,7 +93,6 @@ namespace s21{
 
 
     void Connection::AddToIncomingQueue(){
-        std::cout << "Adding " << unfinished_message_ << " to incoming queue\n";
         if(owner_ == SERVER)
             in_.EmplaceBack(std::make_pair(shared_from_this(), std::move(unfinished_message_)));
         else if(owner_ == CLIENT){

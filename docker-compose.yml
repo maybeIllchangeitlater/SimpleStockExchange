@@ -1,0 +1,26 @@
+version: '3.1'
+services:
+    postgres:
+      build:
+        context: .
+        dockerfile: Dockerfile.postgres
+      container_name: postgres-container
+      ports:
+        - "5432:5432"
+      networks:
+        - mynetwork
+
+    server:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: server-container
+      ports:
+        - "5050:5050"
+      depends_on:
+        - postgres
+      networks:
+        - mynetwork
+
+networks:
+  mynetwork:

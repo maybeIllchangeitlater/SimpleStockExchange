@@ -34,7 +34,6 @@ namespace s21{
 
     void Client::Send(const std::string &message) {
         if(Connected()){
-            std::cout << "Sending out " << message << std::endl;
             connection_->Send(message);
         }
     }
