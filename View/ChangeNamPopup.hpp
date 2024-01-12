@@ -1,27 +1,27 @@
 #ifndef SIMPLESTOCKEXCHANGE_VIEW_CHANGENAMPOPUP_HPP
 #define SIMPLESTOCKEXCHANGE_VIEW_CHANGENAMPOPUP_HPP
 
-#include <QDialog>
 #include <QCloseEvent>
+#include <QDialog>
 
 namespace Ui {
 class ChangeNamPopup;
 }
 
-class ChangeNamPopup : public QDialog
-{
-    Q_OBJECT
+class ChangeNamPopup : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit ChangeNamPopup(QWidget *parent = nullptr);
-    ~ChangeNamPopup();
-signals:
-    void NameChange(const std::string username);
-protected:
-    void closeEvent(QCloseEvent *event) override;
+ public:
+  explicit ChangeNamPopup(QWidget *parent = nullptr);
+  ~ChangeNamPopup();
+ signals:
+  void NameChange(const std::string username);
 
-private:
-    Ui::ChangeNamPopup *ui;
+ protected:
+  void closeEvent(QCloseEvent *event) override;
+
+ private:
+  Ui::ChangeNamPopup *ui;
 };
 
-#endif // SIMPLESTOCKEXCHANGE_VIEW_CHANGENAMPOPUP_HPP
+#endif  // SIMPLESTOCKEXCHANGE_VIEW_CHANGENAMPOPUP_HPP

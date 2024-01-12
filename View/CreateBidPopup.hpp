@@ -1,28 +1,28 @@
 #ifndef SIMPLESTOCKEXCHANGE_VIEW_CREATEBIDPOPUP_HPP
 #define SIMPLESTOCKEXCHANGE_VIEW_CREATEBIDPOPUP_HPP
 
-#include <QDialog>
 #include <QCloseEvent>
+#include <QDialog>
 
 namespace Ui {
 class CreateBidPopup;
 }
 
-class CreateBidPopup : public QDialog
-{
-    Q_OBJECT
+class CreateBidPopup : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit CreateBidPopup(QWidget *parent = nullptr);
-    ~CreateBidPopup();
+ public:
+  explicit CreateBidPopup(QWidget *parent = nullptr);
+  ~CreateBidPopup();
 
-signals:
-    void MakeBid(std::string quantity, std::string rate, std::string bid_type);
-protected:
-    void closeEvent(QCloseEvent *event) override;
+ signals:
+  void MakeBid(std::string quantity, std::string rate, std::string bid_type);
 
-private:
-    Ui::CreateBidPopup *ui;
+ protected:
+  void closeEvent(QCloseEvent *event) override;
+
+ private:
+  Ui::CreateBidPopup *ui;
 };
 
-#endif // SIMPLESTOCKEXCHANGE_VIEW_CREATEBIDPOPUP_HPP
+#endif  // SIMPLESTOCKEXCHANGE_VIEW_CREATEBIDPOPUP_HPP

@@ -1,53 +1,59 @@
 #ifndef SIMPLESTOCKEXCHANGE_SERVER_HPP
 #define SIMPLESTOCKEXCHANGE_SERVER_HPP
 #include <boost/asio.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
-#include "../Utility/ThreadSafeQ.hpp"
-#include "../Connection/Connection.hpp"
-#include "../Controller/ControllerMapping.hpp"
-#include "../Controller/UserController.hpp"
-#include "../Controller/BidController.hpp"
-#include "../Controller/TransactionController.hpp"
-#include "../Utility/ExtraJSONKeys.hpp"
+#include <boost/shared_ptr.hpp>
 #include <deque>
 
+#include "../Connection/Connection.hpp"
+#include "../Controller/BidController.hpp"
+#include "../Controller/ControllerMapping.hpp"
+#include "../Controller/TransactionController.hpp"
+#include "../Controller/UserController.hpp"
+#include "../Utility/ExtraJSONKeys.hpp"
+#include "../Utility/ThreadSafeQ.hpp"
+
 namespace s21 {
-    class Server {
-        using connection_ptr = boost::shared_ptr<Connection>;
-        using tcp = boost::asio::ip::tcp;
-        using error_code = boost::system::error_code;
-    public:
-        Server(short port, UserController &uc, BidController &bc, TransactionController &tc)
-                : acceptor_(context_, tcp::endpoint(tcp::v4(), port)),
-                  user_controller_(uc), bid_controller_(bc), transaction_controller_(tc){}
-        ~Server() { Stop(); }
+class Server {
+  using connection_ptr = boost::shared_ptr<Connection>;
+  using tcp = boost::asio::ip::tcp;
+  using error_code = boost::system::error_code;
 
-        bool Start();
-        void Stop();
+ public:
+  Server(short port, UserController &uc, BidController &bc,
+         TransactionController &tc)
+      : acceptor_(context_, tcp::endpoint(tcp::v4(), port)),
+        user_controller_(uc),
+        bid_controller_(bc),
+        transaction_controller_(tc) {}
+  ~Server() { Stop(); }
 
-        void WaitForClient();
-        void Update();
-        void RemoveClient(connection_ptr client);
+  bool Start();
+  void Stop();
 
-    private:
-        bool LoginRegisterAttempt(const std::string &message){
-            return message.find("Authenticate") != std::string::npos || message.find("Register") != std::string::npos;
-        }
-        void OnConnect(connection_ptr);
-        void OnDisconnect(connection_ptr);
-        void OnMessage(connection_ptr, const std::string &message);
-        ThreadSafeQ<std::pair<connection_ptr, std::string>> in_;
-        std::vector<connection_ptr> connections_;
+  void WaitForClient();
+  void Update();
+  void RemoveClient(connection_ptr client);
 
-        boost::asio::io_context context_;
-        boost::thread thread_context_;
-        tcp::acceptor acceptor_;
+ private:
+  bool LoginRegisterAttempt(const std::string &message) {
+    return message.find("Authenticate") != std::string::npos ||
+           message.find("Register") != std::string::npos;
+  }
+  void OnConnect(connection_ptr);
+  void OnDisconnect(connection_ptr);
+  void OnMessage(connection_ptr, const std::string &message);
+  ThreadSafeQ<std::pair<connection_ptr, std::string>> in_;
+  std::vector<connection_ptr> connections_;
 
-        UserController &user_controller_;
-        BidController &bid_controller_;
-        TransactionController &transaction_controller_;
-    };
-}
+  boost::asio::io_context context_;
+  boost::thread thread_context_;
+  tcp::acceptor acceptor_;
 
-#endif //SIMPLESTOCKEXCHANGE_SERVER_HPP
+  UserController &user_controller_;
+  BidController &bid_controller_;
+  TransactionController &transaction_controller_;
+};
+}  // namespace s21
+
+#endif  // SIMPLESTOCKEXCHANGE_SERVER_HPP

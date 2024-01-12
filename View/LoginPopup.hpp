@@ -1,29 +1,29 @@
 #ifndef SIMPLESTOCKEXCHANGE_VIEW_LOGINPOPUP_HPP
 #define SIMPLESTOCKEXCHANGE_VIEW_LOGINPOPUP_HPP
 
+#include <QCloseEvent>
 #include <QDialog>
 #include <string>
-#include <QCloseEvent>
 
 namespace Ui {
 class LoginPopup;
 }
 
-class LoginPopup : public QDialog
-{
-    Q_OBJECT
+class LoginPopup : public QDialog {
+  Q_OBJECT
 
-public:
-    explicit LoginPopup(QWidget *parent = nullptr);
-    ~LoginPopup();
+ public:
+  explicit LoginPopup(QWidget *parent = nullptr);
+  ~LoginPopup();
 
-signals:
-    void LoginAttempt(std::string login, std::string password);
-protected:
-    void closeEvent(QCloseEvent *event) override;
+ signals:
+  void LoginAttempt(std::string login, std::string password);
 
-private:
-    Ui::LoginPopup *ui;
+ protected:
+  void closeEvent(QCloseEvent *event) override;
+
+ private:
+  Ui::LoginPopup *ui;
 };
 
-#endif // SIMPLESTOCKEXCHANGE_VIEW_LOGINPOPUP_HPP
+#endif  // SIMPLESTOCKEXCHANGE_VIEW_LOGINPOPUP_HPP
